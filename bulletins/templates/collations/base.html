@@ -1,0 +1,516 @@
+{% extends 'base.html' %}
+{% block css %}
+    <style type="text/css">
+    @media screen and (min-width: 768px) {
+        #addEditProduct .modal-dialog,
+        #previewOrderingForm .modal-dialog {
+            right: auto;
+            left: 50%;
+            width: 600px;
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+    }
+    #ProductPriceTable thead tr
+    {
+        display:none;
+    }
+    #orderingForm td input {
+        width:80px;
+        height:30px;
+    }
+    #orderingForm td {
+        text-align: center;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+<div class="modal fade" id="addEditProduct">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">×</button>
+                <h3>Create/ Update Product</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                <div class="row">
+                    <div class="col-12">
+                        <input type="hidden" id="lineid"/>
+                        <div class="control-group">
+                            <label for="model" class="control-label">
+                                Model
+                            </label>
+                            <div class="controls">
+                                <input type="text" style="width:200px;" id="model"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Order Details</label>
+                            <div class="controls">
+                                <h5>Price breakdown <a class="btn btn-xs suppress" href="#" id="addProductPriceBtn"><i class="glyphicon glyphicon-plus"></i></a></h5>
+                                <div id="ProductPriceTable">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="completeAddProduct" class="btn btn-primary">Save Product</a>
+                <button class="btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="previewOrderingForm">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">×</button>
+                <h3>Preview Ordering Form</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="orderingForm">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascript %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/unicorn.form_common.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.collation.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.linestable.js"></script>
+<script type="text/template" id="orderPreviewTemplate">
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Model</th>
+            <% _.each(deliveryMonths, function(v) { %>
+            <th class="<% if (v.hidden||v.deleted) { %>hidden<% } %>"><%= v.month %></th>
+            <% }); %>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Order numbers</td>
+            <% _.each(deliveryMonths, function(v) { %>
+            <td class="<% if (v.hidden||v.deleted) { %>hidden<% } %>"><input type="text" class="storeOrderNum" value=""/></td>
+            <% }); %>
+        </tr>
+        <% _.each(models, function(v) { %>
+            <tr class="<% if (v.hidden||v.deleted) { %>hidden<% } %>">
+            <td><%= v.model %><input type="hidden" class="model" value="<%= v.model %>"/></td>
+            <% _.each(deliveryMonths, function(v) { %>
+                <td class="orderNum<% if (v.hidden||v.deleted) { %> hidden<% } %>"><input type="number" min="0" value="0"/></td>
+            <% }); %>
+            </tr>
+            <%
+        }); %>
+    </tbody>
+</table>
+</script>
+<script type="text/template" id="generateContentTemplate">
+<div class="WordSection1">
+    <%= collation.notes %>
+
+    <p>&nbsp;</p>
+
+    <p><strong><span style="color:red; font-family:arial,sans-serif; font-size:20.0pt">All Pricing only available via Collation</span></strong></p>
+
+    <p><strong><span style="font-family:arial,sans-serif; font-size:20pt">Collation closes <span style="color:red"><%= collation.endDate %></span></span></strong></p>
+
+    <p>&nbsp;</p>
+
+    <% _.each(collation.collationItems,function(item) { %>
+        <p><strong><span style="color:green; font-family:arial,sans-serif; font-size:20.0pt"><%= item.model %></span></strong></p>
+        <% _.each(item.prices, function(price, key) {
+            var color = '#B22222';
+            if (key%4==1) {
+                color= '#00B0F0';
+            } else if (key%4==2) {
+                color= '#00B050';
+            } else if (key%4==3) {
+                color= '#FFA500';
+            }
+        %>
+            <p><strong><span style="color:<%= color %>; font-family:arial,sans-serif; font-size:20.0pt"> <%= price.priceType %>: <%= price.value %></span></strong></p>
+        <% }); %>
+        <p>&nbsp;</p>
+    <% });%>
+</div>
+</script>
+<script type="text/template" id="ProductRowTemplate">
+<tr class="item">
+    <td> <% if (values.deleted) { %><del><%= values.model %></del><%  }
+        else if (values.hidden) { %><i><%= values.model %></i><% }
+        else { %> <%= values.model %>
+        <% } %>
+        <% if (!values.deleted) { %>
+            <a class="btn btn-xs suppress editProductBtn" href=""><i class="glyphicon glyphicon-pencil"></i></a>
+            <a class="btn btn-xs suppress hideUnhideProduct" href=""><i class="glyphicon <% if (values.hidden) { %>glyphicon-eye-open<%  } else { %>glyphicon-eye-close<% } %>"></i></a>
+            <a class="btn btn-xs suppress removeProductBtn" href=""><i class="glyphicon glyphicon-remove"></i></a>
+        <% } %>
+    </td>
+</tr>
+</script>
+<script type="text/template" id="DeliveryMonthRowTemplate">
+<tr class="item">
+    <td><% if (values.deleted) { %><del><%= values.month %></del><%  }
+        else if (values.hidden) { %><i><%= values.month %></i><% }
+        else { %> <%= values.month %>
+        <% } %>
+        <% if (!values.deleted) { %>
+            <a class="btn btn-xs suppress hideUnhideDeliveryMonth" href=""><i class="glyphicon <% if (values.hidden) { %>glyphicon-eye-open<%  } else { %>glyphicon-eye-close<% } %>"></i></a>
+            <a class="btn btn-xs suppress removeDeliveryMonthBtn" href=""><i class="glyphicon glyphicon-remove"></i></a>
+        <% } %>
+    </td>
+</tr>
+</script>
+<script type="text/template" id="PriceRowTemplate">
+<tr class="item">
+    <td><%= values.priceType %></td>
+    <td><%= values.value %></td>
+    <td>
+        <a class="btn btn-xs suppress removePriceBtn" href=""><i class="glyphicon glyphicon-remove"></i></a>
+    </td>
+</tr>
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+    //models
+    var collationModel = br.collationModel();
+    collationModel.saveURL = "{% url 'bulletins:saveCollation' type %}";
+    var editingMode = false;
+
+    var productsTable = br.lineTableWidget({
+        totals: [
+            {title: '',key :'',value: ''}
+        ],
+        rowTemplate: _.template($('#ProductRowTemplate').html()),
+        tableClass: '',
+        headers: [
+            {title: "Model Num",key: 'model'},
+            {title: "Hidden",key: 'hidden'},
+            {title: "Deleted",key: 'deleted'}
+        ],
+        emptyText: "<i>No Models have been added</i>",
+        rowBindingFunction: function(row) {
+            var line = row.data('line');
+            row.find('.editProductBtn').click(function(e) {
+                e.preventDefault();
+                editingMode = true;
+                var collationLine = collationModel.getCollationItem(line);
+                var editingModal =  $('#addEditProduct');
+                collationModel.completeChangeCollationItemPrices(collationLine.prices);
+                editingModal.find('input#model').val(collationLine.model);
+                editingModal.find('input#lineid').val(line);
+                editingModal.modal('show');
+            });
+            row.find('.removeProductBtn').click(function(e) {
+                e.preventDefault();
+                if (!confirm("Are you sure you want to remove this product from the collation?")) {
+                    return;
+                }
+                collationModel.removeCollationItem(line)
+            });
+            row.find('.hideUnhideProduct').click(function(e) {
+                e.preventDefault();
+                var collationLine = collationModel.getCollationItem(line);
+                if (!collationLine.hidden&&!confirm("Are you sure you want to hide this product from the collation?")) {
+                    return;
+                }
+                if (collationLine.hidden&&!confirm("Are you sure you want to unhide this product from the collation?")) {
+                    return;
+                }
+                collationModel.hideUnhideCollationItem(line)
+            });
+            return row
+        },
+        rowUnBindingFunction: function(row) {
+            row.find('.editProductBtn').unbind('click');
+            row.find('.removeProductBtn').unbind('click');
+            row.find('.hideUnhideProduct').unbind('click');
+            return row;
+        }
+    });
+
+    $('#ProductsTable').append(productsTable.tableElement);
+
+    var deliveryMonthsTable = br.lineTableWidget({
+        totals: [
+            {title: '',key :'',value: ''}
+        ],
+        rowTemplate: _.template($('#DeliveryMonthRowTemplate').html()),
+        tableClass: '',
+        headers: [
+            {title: "Month",key: 'month'},
+            {title: "Hidden",key: 'hidden'},
+            {title: "Deleted",key: 'deleted'}
+        ],
+        emptyText: "<i>No Months have been added</i>",
+        rowBindingFunction: function(row) {
+            var line = row.data('line');
+            row.find('.removeDeliveryMonthBtn').click(function(e) {
+                e.preventDefault();
+                if (!confirm("Are you sure you want to remove this delivery month from the collation?")) {
+                    return;
+                }
+                collationModel.removeDeliveryMonth(line)
+            });
+            row.find('.hideUnhideDeliveryMonth').click(function(e) {
+                e.preventDefault();
+                var deliveryLine = collationModel.getDeliveryMonth(line);
+                if (!deliveryLine.hidden&&!confirm("Are you sure you want to hide this product from the collation?")) {
+                    return;
+                }
+                if (deliveryLine.hidden&&!confirm("Are you sure you want to unhide this product from the collation?")) {
+                    return;
+                }
+                collationModel.hideUnhideDeliveryMonth(line)
+            });
+            return row
+        },
+        rowUnBindingFunction: function(row) {
+            row.find('.removeDeliveryMonthBtn').unbind('click');
+            row.find('.hideUnhideDeliveryMonth').unbind('click');
+            return row;
+        }
+    });
+
+    $('#DeliveryMonthsTable').append(deliveryMonthsTable.tableElement);
+
+    var selectedCollationItemTable = br.lineTableWidget({
+        totals: [
+            {title: '',key :'',value: ''}
+        ],
+        rowTemplate: _.template($('#PriceRowTemplate').html()),
+        tableClass: '',
+        headers: [
+            {title: "Price Type",key: 'priceType'},
+            {title: "Value",key: 'value'},
+            {title: "Actions",key: ''}
+        ],
+        emptyText: "<i>No prices have been added</i>",
+        rowBindingFunction: function(row) {
+            var line = row.data('line');
+            row.find('.removePriceBtn').click(function(e) {
+                e.preventDefault();
+                if (!confirm("Are you sure you want to remove this price from the product?")) {
+                    return;
+                }
+                collationModel.removeCollationItemPrice(line)
+            });
+            return row
+        },
+        rowUnBindingFunction: function(row) {
+            row.find('.removePriceBtn').unbind('click');
+            return row;
+        }
+    });
+
+    $('#ProductPriceTable').append(selectedCollationItemTable.tableElement);
+
+    //table collection bindings
+    collationModel.bindCollectionToTable(productsTable,"collationItems");
+    collationModel.bindCollectionToTable(deliveryMonthsTable,"deliveryMonths");
+    collationModel.bindCollectionToTable(selectedCollationItemTable,"selectedCollationItemPrices");
+    //control value bindings
+    collationModel.completeControlBind($('#subject'),'subject');
+    collationModel.completeControlBind($('#startDate'),'startDate');
+    collationModel.completeControlBind($('#endDate'),'endDate');
+    collationModel.completeControlBind($('#archiveDate'),'archiveDate');
+
+    collationModel.bindEvent('sendEmail', 'update', function(newVal) {
+        if (newVal) {
+            $('#sendEmail').iCheck('check');
+        } else {
+            $('#sendEmail').iCheck('uncheck');
+        }
+    });
+    collationModel.bindEvent('sendSMS', 'update', function(newVal) {
+        if (newVal) {
+            $('#sendSMS').iCheck('check');
+        } else {
+            $('#sendSMS').iCheck('uncheck');
+        }
+    });
+    collationModel.bindEvent('sendEmailReminder', 'update', function(newVal) {
+        if (newVal) {
+            $('#sendEmailReminder').iCheck('check');
+        } else {
+            $('#sendEmailReminder').iCheck('uncheck');
+        }
+    });
+    collationModel.bindEvent('sendSMSReminder', 'update', function(newVal) {
+        if (newVal) {
+            $('#sendSMSReminder').iCheck('check');
+        } else {
+            $('#sendSMSReminder').iCheck('uncheck');
+        }
+    });
+    collationModel.completeControlBind($('#toStores'),'toStores',true);
+    collationModel.completeControlBind($('#toGroups'),'toGroups',true);
+    collationModel.completeControlBind($('#orderMethod'),'orderMethod',true);
+    collationModel.completeControlBind($('#collationNotes'),'notes');
+    collationModel.completeControlBind($('#collationContent'),'content');
+    //
+{#    CKEDITOR.replace('collationNotes', {#}
+{#        filebrowserBrowseUrl: '{{ STATIC_URL }}filemanager/index.html'#}
+{#    });#}
+{##}
+{#    CKEDITOR.instances.collationNotes.on('blur', function() {#}
+{#        var value = this.getData();#}
+{#        $('#collationNotes').val(value);#}
+{#        $('#collationNotes').trigger('change');#}
+{#    });#}
+
+    CKEDITOR.replace('collationContent', {
+        filebrowserBrowseUrl: '{{ STATIC_URL }}filemanager/index.html',
+        height: '400px'
+    });
+
+    $("#toStores").select2({
+        width : '200px',
+        placeholder: 'To Stores'
+    });
+
+    $("#toGroups").select2({
+        width : '200px',
+        placeholder: 'To Groups'
+    });
+
+    CKEDITOR.instances.collationContent.on('blur', function() {
+        var value = this.getData();
+        $('#collationContent').val(value);
+        $('#collationContent').trigger('change');
+    });
+
+    //UI changes
+    $( "#startDate" ).change(function(){
+        var endDate = $(this).datepicker('getDate');
+        endDate.setDate(endDate.getDate()+7); //endDate 7 days after
+        $( "#endDate").datepicker('setDate', endDate);
+        $( "#endDate").trigger('change');
+    });
+
+    $( "#endDate").change(function() {
+        var endDate = $(this).datepicker('getDate');
+        endDate.setDate(endDate.getDate()+1); //endDate 7 days after
+        $( "#archiveDate").datepicker('setDate', endDate);
+        $( "#archiveDate").trigger('change');
+    });
+
+    $('.suppress').click(function(e){
+        e.preventDefault();
+    });
+
+    $('#addEditProduct').bind('shown.bs.modal', function() {
+        $(this).find('input#model').focus();
+    });
+
+    $('#addEditProduct').keybind('Enter', function() {
+        $('#completeAddProduct').click();
+    });
+
+    $('#addProductBtn').click(function() {
+        $('#addEditProduct').modal('show');
+    });
+
+    $('#completeAddProduct').click(function() {
+        var modal = $('#addEditProduct');
+        var model = modal.find('input#model').val();
+        var line = parseInt(modal.find('input#lineid').val());
+        if (editingMode) {
+            collationModel.updateCollationItem(line, model);
+        }else {
+            collationModel.addCollationItemFromModal(model);
+        }
+        modal.modal('hide');
+    });
+
+    $('#addEditProduct').on('hidden.bs.modal', function() {
+        $(this).find('input#model').val('');
+        collationModel.removeAllCollationItemPrices();
+        editingMode = false;
+    });
+
+    $('#addProductPriceBtn').click(function(e) {
+        e.preventDefault();
+        var model = prompt("Please enter a price type for this product");
+        if (model == '' || model == null) {
+            return;
+        }
+        var value = prompt("Please enter a value for this price type");
+        collationModel.addCollationItemPriceFromPrompt(model, value);
+    });
+
+    $('#addDeliveryMonthBtn').click(function(e) {
+        e.preventDefault();
+        var month = prompt("Please enter a delivery month to add to this collation");
+        collationModel.addDeliveryMonthFromPrompt(month);
+    });
+
+    $('#previewOrderingForm').on('shown.bs.modal', function() {
+        var renderTable = _.template($('#orderPreviewTemplate').html(), {
+            viewType: collationModel.viewType,
+            deliveryMonths: collationModel.deliveryMonths,
+            models: collationModel.collationItems
+        });
+        $('#orderingForm').html(renderTable);
+    });
+
+    $('#generateContent').click(function(e) {
+        e.preventDefault();
+        var render = _.template($('#generateContentTemplate').html(), {collation: collationModel});
+        CKEDITOR.instances.collationContent.setData(render);
+        $('#collationContent').val(render);
+        $('#collationContent').trigger('change');
+    });
+
+    $('#saveCollation').click(function(e) {
+        e.preventDefault();
+        //update value of textfield and trigger change
+        var value = CKEDITOR.instances.collationContent.getData();
+        $('#collationContent').val(value);
+        $('#collationContent').trigger('change');
+        collationModel.completeCollation()
+    });
+
+    //collationLoading
+        {% if collationData %}
+            collationModel.loadCollation({{ collationData|safe }});
+            console.log(collationModel);
+        {% endif %}
+    //end of sale loading
+
+    //need to assign these checkboxe events after loading or it will create a call stack error going back and forth.
+    $('#sendEmail').on('ifToggled', function() {
+        collationModel.set('sendEmail',!collationModel.sendEmail);
+    });
+    $('#sendSMS').on('ifToggled', function() {
+        collationModel.set('sendSMS',!collationModel.sendSMS);
+    });
+    $('#sendEmailReminder').on('ifToggled', function() {
+        collationModel.set('sendEmailReminder',!collationModel.sendEmailReminder);
+    });
+    $('#sendSMSReminder').on('ifToggled', function() {
+        collationModel.set('sendSMSReminder',!collationModel.sendSMSReminder);
+    });
+
+});
+</script>
+{% endblock %}

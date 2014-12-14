@@ -1,0 +1,219 @@
+
+{% extends "stock_range_base.html" %}
+
+
+
+{%block upper_area%}
+        {% if success%}
+
+	<div class="alert alert-success">
+		<button class="close" data-dismiss="alert">×</button>
+		<strong>Success!</strong> {{store_name_success}} has been added to a range
+	</div>
+{%endif%}
+{% if fail%}
+	<div class="alert alert-danger">
+		<button class="close" data-dismiss="alert">×</button>
+		<strong>Error!</strong> Failed to add new store, store already exists for this month
+	</div>
+{%endif%}
+{% if bad%}
+	<div class="alert alert-danger">
+		<button class="close" data-dismiss="alert">×</button>
+		<strong>Error!</strong> Failed To Add new Store, Bad Entry
+	</div>
+{%endif%}
+	<h1>Core Stock Ranging for {{month}} </h1>
+    <div class="row">
+        <div class="col-3 col-sm-12 col-xs-12 col-lg-3" style="float: right; margin-right: 75px; margin-top: -66px;">
+            <div class="widget-box">
+
+                <div class="input-group form-control">
+                    <input type="text" id="storeMonthPicker"class="form-control" placeholder="Filter by month"/>
+                </div>
+            </div>
+        </div>
+        <div class="btn-group">
+            {% if can_edit%}
+        <a href="#addEntity"class="addEntity btn btn-large tip-bottom supress"
+           data-toggle="modal" title="Add Store" data-original-title="Add Customer"><i class="glyphicon glyphicon-plus"></i></a>
+            {%endif%}
+    </div>
+
+    </div>
+	<div id="edit_modal"  class="modal fade" aria-hidden="false"></div>
+<div id="addEntity" class="modal fade" aria-hidden="false" style="display: none;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button data-dismiss="modal" class="close" type="button">×</button>
+				<h3>Add Store</h3>
+			</div>
+
+		    <div class="modal-body">
+				{%if form.errors%}
+					{{form.errors}}
+					{{form.non_field_errors}}
+						{{form.store.errors}}
+						{{form.rangeType.errors}}
+						{{form.month.errors}}
+					{%endif%}
+                <form method="post" class="form-horizontal" role="form">{% csrf_token %}
+
+                    <div class="form-group">
+                    {{form.as_p}}
+                    </div>
+                <input type="submit" value="Submit" class="form-control btn btn-primary">
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{%endblock%}
+
+{%block table_area%}
+
+{%if form.errors%}
+	{{form.errors}}
+	{{form.non_field_errors}}
+		{{form.store.errors}}
+		{{form.rangeType.errors}}
+		{{form.month.errors}}
+	{%endif%}
+{%include "stock_ranges_table.html"%}
+
+
+{%endblock%}
+
+
+
+{% block javascript%}
+<div id="store_ranges_holder" style="display: none;">
+	{% url 'core_stock:stock_range'%}
+</div>
+<div id="product_ranges_holder" style="display: none;">
+	{%url 'core_stock:editRange'%}
+</div>
+<link rel="stylesheet" media="all" href="{{ STATIC_URL }}css/MonthPicker.2.1.css" />
+<script type="text/javascript" src="{{ STATIC_URL }}js/javascript-input-mask.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/MonthPicker.2.1.min.js"></script>
+
+	<script>
+
+
+
+	$(document).ready(function() {
+    $('#id_gold_bonus').attr("disabled", true);
+    $('#id_silver_bonus').attr("disabled", true);
+    $('#id_bronze_bonus').attr("disabled", true);
+
+    $('#id_rangeType_gold').click(function() {
+    var $this = $(this);
+    if ($this.is(':checked')) {
+       $('#id_gold_bonus').attr("disabled", false);
+       $('#add_product_submit').attr("disabled",!checkBoxValue())
+
+    } else {
+       $('#id_gold_bonus').attr("disabled", true);
+       $('#id_gold_bonus').val("");
+       $('#add_product_submit').attr("disabled",!checkBoxValue())
+    }
+        });
+
+    $('#id_rangeType_silver').click(function() {
+    var $this = $(this);
+    if ($this.is(':checked')) {
+       $('#id_silver_bonus').attr("disabled", false);
+       $('#add_product_submit').attr("disabled",!checkBoxValue())
+
+    } else {
+       $('#id_silver_bonus').attr("disabled", true);
+       $('#id_silver_bonus').val("");
+       $('#add_product_submit').attr("disabled",!checkBoxValue())
+    }
+        });
+
+    $('#id_rangeType_bronz').click(function() {
+    var $this = $(this);
+    if ($this.is(':checked')) {
+       $('#id_bronze_bonus').attr("disabled", false);
+       $('#add_product_submit').attr("disabled",!checkBoxValue())
+    } else {
+       $('#id_bronze_bonus').attr("disabled", true);
+       $('#id_bronze_bonus').val("");
+       $('#add_product_submit').attr("disabled",!checkBoxValue())
+
+    }
+        });
+
+	function update_datepicker()
+	{
+	$('.datepicker ,.hasDatepicker ,#datepicker').datepicker({
+	dateFormat:"dd/mm/yy",
+	numberOfMonths: 1,
+	onClose: function( selectedDate ) {
+	$( ".datepicker, .hasDatepicker" ).datepicker( "option", "maxDate", selectedDate );
+		}
+	});
+
+	}
+
+	$('.monthpicker,#id_month,#productMonthPicker').MonthPicker({ShowIcon:false});
+    $('#productMonthPicker,.monthpicker,#id_month').mask("99/9999");
+
+	$(".edit").click(function(ev) {
+	ev.preventDefault();
+	var url = $(this).data("form");
+	$("#edit_modal").load(url, function() {
+	$('#monthpicker').MonthPicker();
+
+	$(this).modal('show');
+	});
+	return false;});
+
+$('#productMonthPicker').MonthPicker({
+					OnAfterChooseMonth:function()
+						{
+							month = $('#productMonthPicker').MonthPicker('GetSelectedMonth');
+							year = $('#productMonthPicker').MonthPicker('GetSelectedYear');
+
+							url_mask = $( "#product_ranges_holder" ).html()+month+'/'+year
+							window.location = url_mask;
+						},
+
+					ShowIcon: false ,
+					width:200,
+					})
+
+});
+
+$('#storeMonthPicker').MonthPicker({
+					OnAfterChooseMonth:function()
+						{
+							month = $('#storeMonthPicker').MonthPicker('GetSelectedMonth');
+							year = $('#storeMonthPicker').MonthPicker('GetSelectedYear');
+
+							url_mask = $( "#store_ranges_holder" ).html()+month+'/'+year
+							window.location = url_mask;
+						},
+
+					ShowIcon: false ,
+					width:200,
+					})
+
+function checkBoxValue()
+{
+    result =  $('#id_rangeType_silver').is(':checked') || $('#id_rangeType_gold').is(':checked') ||$('#id_rangeType_bronz').is(':checked')
+    return result
+
+}
+
+</script>
+
+{%endblock%}
+
+

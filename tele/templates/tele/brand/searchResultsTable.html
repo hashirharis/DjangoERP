@@ -1,0 +1,17 @@
+<thead>
+    <th>Brand</th>
+    <th class="visible-lg">Distributor</th>
+    <th>Email</th>
+    <th class="visible-lg">Actions </th>
+</thead>
+<tbody>
+    {% for object in searchResults %}
+        <tr>
+            <td class="hidden-lg"><a class="btn btn-primary tip-bottom" href="{% url 'tele:viewBrand' object.id %}" data-original-title="View Brand"><i class="glyphicon glyphicon-eye-open"></i> {{ object.brand }}</a></td>
+            <td>{{ object.brand }}</td>
+            <td class="visible-lg">{{ object.distributor }}</td>
+            <td>{{ object.email }}</td>
+            <td class="visible-lg"><a class="btn btn-primary tip-bottom" href="{% url 'tele:viewBrand' object.id %}" data-original-title="View Brand"><i class="glyphicon glyphicon-eye-open"></i> View</a></td>
+        </tr>
+    {% endfor %}
+</tbody>

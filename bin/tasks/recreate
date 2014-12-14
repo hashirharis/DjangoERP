@@ -1,0 +1,49 @@
+#!/bin/sh
+#mysql -u root -ppassword < sql/createschema.sql
+mkdir -p database
+rm database/br
+python manage.py syncdb --noinput
+echo "importing stores.."
+python manage.py loaddata ./import-data/import/storegroup.yaml
+python manage.py loaddata ./import-data/import/store.json
+echo "importing categories.."
+python manage.py loaddata ./import-data/import/productcategory.json
+echo "importing brands.."
+python manage.py loaddata ./import-data/import/brand.json
+echo "importing models.."
+python manage.py loaddata ./import-data/import/producttags.yaml
+python manage.py loaddata ./import-data/import/productWithoutDuplicates.json
+echo "importing postcodes.."
+python manage.py loaddata ./import-data/import/postcode.json
+echo "importing customers.."
+python manage.py loaddata ./import-data/import/customer.json
+echo "importing payment methods.."
+python manage.py loaddata ./import-data/import/paymentmethod.yaml
+echo "importing warranties.."
+python manage.py importwarranties
+echo "initialising stores..(creating users)"
+python manage.py initstores
+
+#for reports module ########################################
+read -p "Are you sure? " -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    echo "importing terminals.."
+    python manage.py loaddata ./import-data/import/testdata/terminal.json
+    echo "importing sales.."
+    python manage.py loaddata ./import-data/import/testdata/sale.json
+    echo "importing salesLines.."
+    python manage.py loaddata ./import-data/import/testdata/salesline.json
+    echo "importing sale Invoice.."
+    python manage.py loaddata ./import-data/import/testdata/saleinvoice.json
+    echo "importing sale Invoice Lines.."
+    python manage.py loaddata ./import-data/import/testdata/saleinvoiceline.json
+    echo "importing sales payments.."
+    python manage.py loaddata ./import-data/import/testdata/salespayment.json
+    #echo "importing tester.."
+    #python manage.py loaddata ./import-data/import/testdata/tester.json
+fi
+
+
+    #python manage.py loaddata ./import-data/import/testdata/HOInvoice.json

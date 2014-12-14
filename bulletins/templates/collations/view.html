@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+{% block css %}
+    <style type="text/css">
+    @media screen and (min-width: 768px) {
+        #updateStatus .modal-dialog {
+            right: auto;
+            left: 50%;
+            width: 600px;
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+    }
+    </style>
+{% endblock %}
+{% block title %}Collation Store Orders{% endblock %}
+{% block content %}
+<div id="content-header">
+    <h1>Collation <small>View Orders</small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'bulletins:collations' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Collations</a>
+    <a href="" class="current">View Collation: {{ collation.subject }}</a>
+</div>
+
+<div class="row">
+    {% if collation.type == "short" %}
+        <div class="col-12 col-lg-12">
+    {% else %}
+        <div class="col-12 col-lg-12">
+    {% endif %}
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon with-checkbox">
+                    <i class="glyphicon glyphicon-th"></i>
+                </span>
+                <h5>{{ collation.subject }} Orders</h5>
+                <div class="buttons">
+                    <a href="{% url 'bulletins:downloadCollation' collation.id %}" id="downloadbtn" class="btn"><i class="glyphicon glyphicon-download"></i> Download</a>
+                    <a href="#" class="btn createbtn"><i class="glyphicon glyphicon-envelope"></i> Email Orders</a>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="row" style="margin-bottom:10px;">
+                    <div class="col-lg-2"></div>
+                    <div class="col-lg-2">
+                        <button id="markDoneAndDusted" class="btn btn-warning btn-block"><i class="glyphicon glyphicon-eye-close"></i> Show<small>/hide hidden</small></button>
+                    </div>
+                    <div class="col-lg-2">
+                        <button id="deleteOrders" class="btn btn-danger btn-block"><i class="glyphicon glyphicon-trash"></i> Delete <small>selected</small></button>
+                    </div>
+{#                    {% if collation.orderMethod == "EDI" %}#}
+{#                    <div class="col-lg-2">#}
+{#                        <button id="useStoreOrder" class="btn btn-primary btn-block"><i class="glyphicon glyphicon-paperclip"></i> Copy Store Order</button>#}
+{#                    </div>#}
+{#                    {% endif %}#}
+                    <div class="col-lg-2">
+                        <button id="bulkUpdateStatus" class="btn btn-info btn-block"><i class="glyphicon glyphicon-refresh"></i> Update <small>Status'</small></button>
+                    </div>
+                    <div class="col-lg-2">
+                        <button id="saveOrders" type="button" class="btn btn-success btn-block" data-loading-text="Updating..."><i class="glyphicon glyphicon-hdd"></i> Save <small>all</small></button>
+                    </div>
+                    <div class="col-lg-2"></div>
+                </div>
+                <br/>
+                <div style="overflow-x: scroll;">
+                    <table id="orders" class="table table-bordered table-striped table-hover with-check" style="white-space: nowrap;">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="toggleAll"/></th>
+                                <th>Store</th>
+                                <th>Delivery Month</th>
+                                <th>Created</th>
+                                {% for model in collation.CollationItems %}
+                                    <th>{{ model.model }}</th>
+                                {% endfor %}
+                                <th>Order #</th>
+                                {% if collation.orderMethod == "EDI" %}
+                                    <th>HO Order #</th>
+                                {% endif %}
+                                <th>Store Comment</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                 <tr data-id="{{ order.id }}" {% if order.hoHidden %}class="hoHidden" style="display:none;"{% endif %}>
+                                    <td><input class="selected" type="checkbox"/></td>
+                                    <td>{{ order.store.name }}</td>
+                                    <td>{{ order.deliveryMonth.month }}</td>
+                                    <td>{{ order.created }}</td>
+                                    {% for line in order.collationorderline_set.all %}
+                                        <td>{{ line.quantity }}</td>
+                                    {% endfor %}
+                                    <td>{{ order.orderNumber }}</td>
+                                    {% if collation.orderMethod == "EDI" %}
+                                        <td><input type="text" class="hoOrderNumber" data-ordernum="{{ order.orderNumber }}" value="{{ order.hoOrderNumber }}"/></td>
+                                    {% endif %}
+                                    <td>{{ order.storeComment }}</td>
+                                    <td>
+                                        <select name="status" class="status">
+                                            <option value="Open" {% if order.status == "Open" %}selected{% endif %} >Open</option>
+                                            <option value="Pending" {% if order.status == "Pending" %}selected{% endif %} >Pending</option>
+                                            <option value="Sent to Supplier" {% if order.status == "Sent to Supplier" %}selected{% endif %} >Sent to Supplier</option>
+                                            <option value="Awaiting Target" {% if order.status == "Awaiting Target" %}selected{% endif %} >Awaiting Target</option>
+                                            <option value="Cancelled" {% if order.status == "Cancelled" %}selected{% endif %} >Cancelled</option>
+                                            <option value="Completed" {% if order.status == "Completed" %}selected{% endif %} >Completed</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="success">
+                                <td colspan="3">Totals</td>
+                                <td>All : {{ collation.completeTotal }}</td>
+                                {% for total in collation.lineTotals %}
+                                    <td>{{ total }}</td>
+                                {% endfor %}
+                                <td colspan="3"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if collation.type == "short" %}
+    <div class="col-lg-6 col-lg-offset-3 col-12">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon with-checkbox">
+                    <i class="glyphicon glyphicon-th"></i>
+                </span>
+                <h5>{{ declined|length }} Rejections</h5>
+            </div>
+            <div class="widget-content">
+                <table class="table-bordered table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Store</th>
+                        <th>Reason</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for decline in declined %}
+                        <tr>
+                            <td>{{ decline.store.name }}</td>
+                            <td>{{ decline.reason }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<div id="updateStatus" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button data-dismiss="modal" class="close" type="button">×</button>
+                <h3>Bulk Update Status' To</h3>
+            </div>
+            <div class="modal-body">
+                <div class="col-12" style="text-align: center;">
+                    <select name="status" class="status">
+                        <option value="Open" selected>Open</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Sent to Supplier">Sent to Supplier</option>
+                        <option value="Awaiting Target">Awaiting Target</option>
+                        <option value="Cancelled">Cancelled</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="updateStatusConfirm" class="btn btn-default btn-small" href="#">Ok</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block navname %}collations{% endblock %}
+
+{% block javascript %}
+    <script src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+    <script src="{{ STATIC_URL }}js/unicorn.form_common.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.gritter.js"></script>
+    <script>
+    $(document).ready(function() {
+        var changed = false;
+        var anyCheckboxesChecked = false;
+        var allCheckboxesChecked = false;
+        var updateOrders = $('#saveOrders');
+        var deleteOrders = $('#deleteOrders');
+        var downloadOrders = $('#downloadbtn');
+        var useStoreOrderNum = $('#useStoreOrder');
+        var markDoneAndDusted = $('#markDoneAndDusted');
+        var bulkUpdateStatus = $('#bulkUpdateStatus');
+        var bulkUpdateStatusModal = $('#updateStatus');
+        var updateStatusConfirm = $('#updateStatusConfirm');
+
+        $('.status,.hoOrderNumber').on('change', function(e) {
+            changed = true;
+        });
+
+        $('.hoHidden .selected').iCheck('disable');
+
+        $('#orders thead input.toggleAll').on('ifToggled', function(event){
+            if ($(this).is(':checked')) {
+                $('#orders tbody input.selected:visible:enabled').iCheck('check');
+            } else {
+                $('#orders tbody input.selected:visible:enabled').iCheck('uncheck');
+            }
+        });
+
+        $('#orders tbody input.selected').on('ifToggled', function(event){
+            anyCheckboxesChecked = false;
+            allCheckboxesChecked = true;
+            $('#orders tbody input.selected:visible:enabled').each(function(k,el) {
+                if (!$(this).is(':checked')) {
+                    allCheckboxesChecked = false;
+                } else {
+                    anyCheckboxesChecked = true;
+                }
+            });
+            if (anyCheckboxesChecked) {
+                markDoneAndDusted.html('<i class="glyphicon glyphicon-eye-close"></i> Hide<small> selected</small>');
+            } else {
+                markDoneAndDusted.html('<i class="glyphicon glyphicon-eye-close"></i> Show<small>/hide hidden</small>');
+            }
+        });
+
+        var serializeOrders = function() {
+            var orders = [];
+            $('#orders tbody tr').each(function(k,el) {
+                var $el = $(el)
+                var order = {
+                    id: $el.data('id'),
+                    status: $el.find('.status').select2('val'),
+                    hoOrderNumber: $el.find('.hoOrderNumber').val(),
+                    hoHidden: $el.hasClass('hoHidden')
+                };
+                orders.push(order);
+            });
+            return orders;
+        }
+
+        updateOrders.click(function() {
+            updateOrders.button('loading');
+            var url = '{% url 'bulletins:collationOrderForCollation' collation.id %}';
+                var orders = serializeOrders();
+
+                var request = $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: {action: 'CREATE', orders: JSON.stringify(orders)},
+                    dataType: "json",
+                    beforeSend: function(xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", br.getCookie('csrftoken'));
+                    }
+                });
+
+                request.done(function(msg) {
+                    updateOrders.button('reset');
+                    $.gritter.add({
+                        // (string | mandatory) the heading of the notification
+                        title: 'Collation Orders Saved!',
+                        // (string | mandatory) the text inside the notification
+                        text: 'All the orders have been saved.'
+                    });
+                    changed = false;
+                });
+        });
+
+        deleteOrders.click(function() {
+            var orders = [];
+            if (!anyCheckboxesChecked) {
+                alert("No orders selected !")
+                return;
+            }
+            if(!confirm("Are you sure you wish to continue (this action is completely irreversible) ?")) {
+                return;
+            }
+            deleteOrders.button('loading');
+            $('#orders tbody tr').each(function(k, el) {
+                var $el = $(el);
+                if (!$el.find('.selected').is(':checked')){
+                    return
+                }
+                orders.push({id: $el.data('id')});
+            });
+            var url = '{% url 'bulletins:collationOrderForCollation' collation.id %}';
+
+            var request = $.ajax({
+                url: url,
+                type: "POST",
+                data: {action: 'DELETE', orders: JSON.stringify(orders)},
+                dataType: "json",
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", br.getCookie('csrftoken'));
+                }
+            });
+
+            request.done(function(msg) {
+                deleteOrders.button('reset');
+                changed = false;
+                window.location.reload();
+            });
+        });
+
+        downloadOrders.click(function(e) {
+            if (!anyCheckboxesChecked) {
+                return;
+            }
+            var orders = [];
+            $('#orders tbody tr').each(function(k, el) {
+                var $el = $(el);
+                if (!$el.find('.selected').is(':checked')){
+                    return
+                }
+                orders.push($el.data('id'));
+            });
+            var url = $(this).attr('href');
+            url = url + "?" + jQuery.param({orders: JSON.stringify(orders)});
+            e.preventDefault();
+            window.location = url
+        });
+
+        bulkUpdateStatusModal.bind('shown.bs.modal', function() {
+            $(this).find('select.status').select2('open');
+        });
+
+        bulkUpdateStatusModal.keybind('Enter', function() {
+            updateStatusConfirm.click();
+        });
+
+        updateStatusConfirm.click(function() {
+            var newVal = bulkUpdateStatusModal.find('select.status').select2('val');
+            $('#orders tbody tr').each(function(k, el) {
+                var $el = $(el);
+                if (!$el.find('.selected').is(':checked')){
+                    return
+                }
+                $(el).find('select.status').select2('val', newVal);
+            });
+            bulkUpdateStatusModal.modal('hide');
+        });
+
+        bulkUpdateStatus.click(function() {
+            if (!anyCheckboxesChecked) {
+                alert("No orders selected !")
+                return;
+            }
+            bulkUpdateStatusModal.modal('show');
+        });
+
+        useStoreOrderNum.click(function() {
+            var found = false;
+            $('.hoOrderNumber').each(function(k,el) {
+                var $el = $(el);
+                if ($el.closest('tr').find('.selected').is(':checked')) {
+                    $el.val($el.data('ordernum'));
+                    found = true;
+                }
+            });
+            if (!found) {
+                alert("No Orders are selected!");
+            }
+        });
+
+        markDoneAndDusted.click(function() {
+            if (anyCheckboxesChecked) {
+                $('#orders tbody tr').each(function(k,el) {
+                    var $el = $(el);
+                    if (!$el.find('.selected').is(':checked')){
+                        return
+                    }
+                    if($el.find('.status').select2('val')!='Completed') {
+                        var orderNumber = $el.find('.hoOrderNumber').val();
+                        if(!confirm("Are you sure you want to mark order number: " + orderNumber + ", done and dusted ? It's status is not 'completed'")) {
+                            return
+                        }
+                    }
+                    $el.find('.selected').iCheck('uncheck');
+                    $el.find('.selected').iCheck('disable');
+                    $el.addClass('hoHidden');
+                    $el.hide();
+                });
+            } else {
+                $('#orders tbody tr.hoHidden').toggle(200)
+            }
+        });
+
+        window.onbeforeunload = function() {
+            if (changed) {
+                return 'Are you sure you want to leave without saving changes ?'
+            }
+        }
+    });
+    </script>
+{% endblock %}

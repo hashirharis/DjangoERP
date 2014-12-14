@@ -1,0 +1,23 @@
+/*
+	 CSS-Tricks Example
+	 by Chris Coyier
+	 http://css-tricks.com
+*/
+
+* { margin: 0; padding: 0; }
+body { font: 12px Arial, serif; }
+#page-wrap { width: 200px; float:left; }
+
+table { border-collapse: collapse; }
+
+#address { text-align: center; width:100%; }
+#orderType { font-size: 20px; margin-top: 10px;}
+#customer { overflow: hidden; }
+
+#items { clear: both; width: 100%; border:0; }
+#items th { border-bottom: 1px dashed black; text-align: left;}
+#items tr.strong {font-weight: bold;}
+
+.servedBy{text-align: center;}
+
+.delete {display:none;}

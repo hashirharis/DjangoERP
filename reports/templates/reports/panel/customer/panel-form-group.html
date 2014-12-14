@@ -1,0 +1,29 @@
+{% if isAll %}
+    <li>
+        <a href="/reports/export/all/customer/?{{search_string}}">Export</a>
+    </li>
+{% elif isEmail %}
+    <li>
+        <a href="/reports/export/email/customer/?{{search_string}}">Export</a>
+    </li>
+{% elif isBirthdays %}
+    <li>
+        <a href="/reports/export/birthdays/customer/?{{search_string}}">Export</a>
+    </li>
+{% elif isOrders %}
+    <li>
+        <a href="/reports/export/orders/customer/?{{search_string}}">Export</a>
+    </li>
+{% elif isAttendance %}
+    <li>
+        <a href="/reports/export/attendance/customer/?{{search_string}}">Export</a>
+    </li>
+{% elif isNew %}
+    <li>
+        <a href="/reports/export/new/customer/?{{search_string}}">Export</a>
+    </li>
+{% elif isOnlySales %}
+    <li>
+        <a href="/reports/export/onlySales/customer/?{{search_string}}">Export</a>
+    </li>
+{% endif %}

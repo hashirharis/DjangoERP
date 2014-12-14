@@ -1,0 +1,890 @@
+{% extends "base.html" %}
+{% load br %}
+{% block css %}
+    <style type="text/css">
+    #addPayment #paymentAmount {
+        background-color: #FFFFD5;
+    }
+    .stats-plain li.stat-success {
+        color: #468847;
+    }
+    .stats-plain li.stat-success span {
+        color: #468847;
+    }
+    .stats-plain li.stat-warning {
+        color: #c67605;
+    }
+    .stats-plain li.stat-warning span {
+        color: #c67605;
+    }
+    </style>
+{% endblock %}
+{% block title %}{{ customer.firstName }} {{ customer.lastName }}{% endblock %}
+{% block content %}
+
+<div id="content-header">
+    <h1> {{ customer.firstName }} {{ customer.lastName }}<small> View </small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'pos:searchCustomers' %}" class="tip-bottom" data-original-title="Go to Search Customer"><i class="glyphicon glyphicon-search"></i> Search Customers</a>
+    <a href=""><i class="glyphicon glyphicon-user"></i>View Customer</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box widget-plain">
+                <div class="widget-content center">
+                    <ul class="stats-plain">
+                        <li class="stat-success">
+                            <h4>{{ completedSales|length }}</h4>
+                            <span>Completed Sales</span>
+                        </li>
+                        <li class="stat-warning">
+                            <h4>{{ openSales|length }}</h4>
+                            <span>Pending Orders</span>
+                        </li>
+                        <li>
+                            <h4>{{ quotes|length }}</h4>
+                            <span>Open Quotes</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-title">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#details">Details</a></li>
+                        <li><a data-toggle="tab" href="#openSales">Pending Orders</a></li>
+                        <li><a data-toggle="tab" href="#account">Account</a></li>
+                        <li><a data-toggle="tab" href="#accountPayments">Account Payments</a></li>
+                        <li><a data-toggle="tab" href="#purchases">Purchase History</a></li>
+                        <li><a data-toggle="tab" href="#quotes">Quotes</a></li>
+                        <div class="buttons">
+                            <a class="btn" href="{% url 'pos:newSaleFromCustomer' customer.id %}"><i class="glyphicon glyphicon-shopping-cart"></i> New Sale</a>
+                            <a class="btn" href="{% url 'pos:newSaleFromCustomer' customer.id %}"><i class="glyphicon glyphicon-edit"></i> New Quote</a>
+                        </div>
+                    </ul>
+                </div>
+                <div class="widget-content tab-content">
+                    <div id="details" class="tab-pane active">
+                        <h3>{{ customer.title }} {{ customer.firstName }} {{ customer.lastName }} <a class="btn btn-primary btn-mini editEntity supress" data-id="{{ customer.id }}"><i class="glyphicon glyphicon-edit"></i> Edit</a></h3>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="col-4">
+                                    <h5>Address</h5>
+                                    {{ customer.address }}<br />{{ customer.suburb }} {{ customer.cityState }} {{ customer.postcode }}
+                                </div>
+                                {% if customer.paddress != "" %}
+                                <div class="col-4">
+                                    <h5>Postal Address</h5>
+                                    {{ customer.paddress }}<br />{{ customer.psuburb }}<br />{{ customer.pcityState }} {{ customer.ppostcode }}<br />
+                                </div>
+                                {% endif %}
+                                <div class="col-4">
+                                    <h5>Contact Information</h5>
+                                    Home Phone : {{ customer.homePhone }}<br /> Work Phone : {{ customer.workPhone }}<br /> Mobile : {{ customer.mobile }}<br />Email : {{ customer.email }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-actions">
+                                    <div class="pull-right">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="account" class="tab-pane">
+                        <div class="col-12">
+                            <h3>Account <small>Credit Limit: $ {{ customer.account.creditLimit|floatformat:2 }}</small></h3>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Entry</th>
+                                    <th>Reference Type</th>
+                                    <th>Status</th>
+                                    <th>Balance</th>
+                                    <th>Credit</th>
+                                    <th>Debit</th>
+                                </tr>
+                                {% if ledgerAcc.getCurrentEntries %}
+                                    {% for entry in ledgerAcc.getCurrentEntries %}
+                                        <tr class="{% if entry.is_negative %}success{% else %}danger{% endif %}">
+                                            <td>
+                                                <a href="{% if entry.referenceType == 'sale' %}{% url 'pos:openSale' 1 entry.referenceID %}{% endif %}" class="tip-bottom" title="{{ entry.comment }}">{{ entry.referenceNum }}</a>
+                                            </td>
+                                            <td>{{ entry.referenceType|title }}</td>
+                                            <td>{{ entry.status|title }}</td>
+                                            {% if entry.is_negative %}
+                                                <td>$ {{ entry.balance_sign_correct }}</td>
+                                                <td></td>
+                                                <td>$ {{ entry.total_sign_correct }}</td>
+                                            {% else %}
+                                                <td>$ {{ entry.balance }}</td>
+                                                <td>$ {{ entry.total }}</td>
+                                                <td></td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr class="success"><td colspan="6">There are no balances for this customer.</td></tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col-12" style="text-align: right;">
+                                <div class="form-actions">
+                                    <a class="btn btn-primary print" href="{% url "pos:printLedgerAccountSummary" customer.id %}"><i class="glyphicon glyphicon-print"></i> Print Account Summary</a>
+                                    {% if staff.privelegeLevel >= storeSettings.creditLimits %}<a class="btn btn-primary" id="adjustCredit" href="#"><i class="glyphicon glyphicon-resize-vertical"></i> Adjust Credit Limit</a>{% endif %}
+                                    {% if ledgerAcc.getAccountEntries %}<a class="btn btn-primary" href="#payAccount" data-toggle="modal"><i class="glyphicon glyphicon-plus"></i> Pay Account</a>{% endif %}
+                                    {% if ledgerAcc.getCreditEntries %}<a class="btn btn-primary" href="#payCredit" data-toggle="modal"><i class="glyphicon glyphicon-plus"></i> Pay Credit</a>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="accountPayments" class="tab-pane">
+                        <h3>Account Payments
+                            {% if accountPayments %}<a class="btn btn-primary btn-mini" href="{% url 'pos:printLedgerPaymentReceipt' customer.id ledgerAcc.getMostRecentGroupedBy %}"><i class="glyphicon glyphicon-print"></i> Print Recent Receipt</a>{% endif %}</h3>
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Payment Method</th>
+                                <th>Date/Time</th>
+                                <th>Amount</th>
+                                <th>Recieved By</th>
+                                <th>Notes</th>
+                                <th>Print/Delete</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if accountPayments %}
+                                {% for payment in accountPayments %}
+                                    <tr>
+                                        <td>{{ payment.paymentMethod.name }}</td>
+                                        <td>{{ payment.date|date:"d M Y P" }}</td>
+                                        <td>${{ payment.amount|floatformat:2 }}</td>
+                                        <td>{{ payment.receivedBy.name }}</td>
+                                        <td>{{ payment.notes }}</td>
+                                        <td>{% ifchanged payment.groupedBy %}<a class="btn btn-primary print" href="{% url 'pos:printLedgerPaymentReceipt' customer.id payment.groupedBy %}"><i class="glyphicon glyphicon-print"></i> Print</a>{% endifchanged %}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr class="danger">
+                                <td colspan="6">No recent payments to this account.</td>
+                            </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="purchases" class="tab-pane">
+                        <h3>Purchases</h3>
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Customer</th>
+                                <th>Terminal</th>
+                                <th>Sale Total</th>
+                                <th>Status</th>
+                                <th>Modified Date</th>
+                                <th>View</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if completedSales %}
+                                {% for sale in completedSales %}
+                                    <tr>
+                                        <td>{{ sale.code }}</td>
+                                        <td>{{ sale.customer.firstName }} {{ sale.customer.lastName }}</td>
+                                        <td>{{ sale.terminal.name }}</td>
+                                        <td>${{ sale.total|floatformat:2 }}</td>
+                                        <td>{{ sale.status|title }}</td>
+                                        <td>{{ sale.modified }}</td>
+                                        <td><a class="btn btn-primary" href="{% url 'pos:openSale' sale.terminal.id sale.id %}"><i class="glyphicon glyphicon-eye-open"></i> View Sale</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr class="danger">
+                                <td colspan="7">No recent sales to this customer.</td>
+                            </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="quotes" class="tab-pane">
+                        <h3>Quotes</h3>
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Customer</th>
+                                <th>Terminal</th>
+                                <th>Sale Total</th>
+                                <th>Status</th>
+                                <th>Modified Date</th>
+                                <th>View</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if quotes %}
+                                {% for sale in quotes %}
+                                    <tr>
+                                        <td>{{ sale.code }}</td>
+                                        <td>{{ sale.customer.firstName }} {{ sale.customer.lastName }}</td>
+                                        <td>{{ sale.terminal.name }}</td>
+                                        <td>${{ sale.total|floatformat:2 }}</td>
+                                        <td>{{ sale.status|title }}</td>
+                                        <td>{{ sale.modified }}</td>
+                                        <td><a class="btn btn-primary" href="{% url 'pos:openSale' sale.terminal.id sale.id %}"><i class="glyphicon glyphicon-eye-open"></i> View Sale</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr class="danger">
+                                <td colspan="7">No recent quotes to this customer.</td>
+                            </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="openSales" class="tab-pane">
+                        <h3>Pending Orders</h3>
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Customer</th>
+                                <th>Terminal</th>
+                                <th>Sale Total</th>
+                                <th>Status</th>
+                                <th>Modified Date</th>
+                                <th>View</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if openSales %}
+                                {% for sale in openSales %}
+                                    <tr>
+                                        <td>{{ sale.code }}</td>
+                                        <td>{{ sale.customer.firstName }} {{ sale.customer.lastName }}</td>
+                                        <td>{{ sale.terminal.name }}</td>
+                                        <td>${{ sale.total|floatformat:2 }}</td>
+                                        <td>{{ sale.status|title }}</td>
+                                        <td>{{ sale.modified }}</td>
+                                        <td><a class="btn btn-primary" href="{% url 'pos:openSale' sale.terminal.id sale.id %}"><i class="glyphicon glyphicon-eye-open"></i> View Sale</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr class="danger">
+                                <td colspan="7">No recent sales to this customer.</td>
+                            </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if ledgerAcc.getAccountEntries %}
+<div class="modal fade" id="payAccount">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">×</button>
+                <h3 id="createCustomerLabel">Pay Account</h3>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <input class="paymentAmount form-control" type="text" placeholder="Enter Amount being payed by customer">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary manualAllocation">Manual Allocation</button>
+                    </span>
+                </div>
+                <div class="col-12" style="margin-top: 20px;">
+                    <table class="table table-bordered paymentAmountTable">
+                        <thead>
+                            <tr>
+                                <th>Reference</th>
+                                <th>Balance</th>
+                                <th>Total</th>
+                                <th>Payment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for entry in ledgerAcc.getAccountEntries %}
+                        <tr data-total="{{ entry.total }}" data-balance="{{ entry.balance }}" data-id="{{ entry.id }}">
+                            <td>{{ entry.referenceNum }}</td>
+                            <td>$ {{ entry.balance }}</td>
+                            <td>$ {{ entry.total }}</td>
+                            <td><input class="rowPayment" type="text" disabled="true"/></td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-12" style="margin-top: 20px;text-align: right;margin-bottom: 20px;">
+                    Balance to pay to Credit:&nbsp&nbsp<input type="text" class="balancePay" disabled="true" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                <button type="submit" class="btn btn-primary processPayment">Process Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if ledgerAcc.getCreditEntries %}
+<div class="modal fade" id="payCredit">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Pay Credit</h3>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <input class="paymentAmount form-control" type="text" placeholder="Enter Amount being payed by customer">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary manualAllocation">Manual Allocation</button>
+                    </span>
+                </div>
+                <div class="col-12" style="margin-top: 20px;">
+                    <table class="table table-bordered paymentAmountTable">
+                        <thead>
+                            <tr>
+                                <th>Reference</th>
+                                <th>Balance</th>
+                                <th>Total</th>
+                                <th>Payment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for entry in ledgerAcc.getCreditEntries %}
+                        <tr data-total="{{ entry.total_sign_correct }}" data-balance="{{ entry.balance_sign_correct }}" data-id="{{ entry.id }}">
+                            <td>{{ entry.referenceNum }}</td>
+                            <td>$ {{ entry.balance_sign_correct }}</td>
+                            <td>$ {{ entry.total_sign_correct }}</td>
+                            <td><input class="rowPayment" type="text" disabled="true"/></td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-12" style="margin-top: 20px;text-align: right;margin-bottom: 20px;">
+                    Balance to pay to Credit:&nbsp&nbsp<input type="text" class="balancePay" disabled="true" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                <button type="submit" class="btn btn-primary processPayment">Process Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="modal fade" id="addPayment">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Add Payment</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-4">
+                        <table id="paymentMethodsButtonsTable" class="table table-bordered">
+                            <tbody>
+                            {% for paymentMethod in paymentMethods %}
+                                {% if not paymentMethod.parentMethod %}
+                                    <tr>
+                                    <td><button class="btn btn-primary {% if not store|getChildrenForPayment:paymentMethod %}paymentMethodSelect{% else %}parentMethodSelect{% endif %}" value="{{ paymentMethod.id }}">{{ paymentMethod.name }}</button></td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-8">
+                        <div id="paymentInputDiv" style="margin-top:100px;margin:0 auto;text-align: center;display:none;padding-bottom: 20px;">
+                            <h5 id="paymentTypeHeader">Payment Type</h5>
+                            <h3>Amount Tendered</h3>
+                            <input id="paymentAmount" style="text-align: right;font-size: 200%;height:50px;margin-bottom:10px;" value="0.00" type="number" increments="1.00" max="">
+                            <input id="paymentMethodHidden" type="hidden" name="country" value="Norway">
+                            <input id="addPaymentToSale" class="btn btn-primary btn-block" value="Confirm"/>
+                        </div>
+                        <div id="paymentsTableDiv">
+
+                        </div>
+                        <div id="subMethods" style="text-align: center;">
+                        {% for paymentMethod in paymentMethods %}
+                            {% if not paymentMethod.parentMethod %}
+                                {% if store|getChildrenForPayment:paymentMethod %}
+                                    <div class="paymentSubMethods" style="display:none;" id="{{ paymentMethod.id }}">
+                                    <table class="table table-bordered">
+                                    {% for children in store|getChildrenForPayment:paymentMethod %}
+                                        <tr><td><button class="btn paymentMethodSelect" value="{{ children.id }}">{{ children.name }}</button> <br></td></tr>
+                                    {% endfor %}
+                                    </table>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        </div>
+                        {% if creditNotes %}
+                        <div id="creditNotes" style="text-align:center;display:none;">
+                            <table class="table table-bordered">
+                            {% for note in creditNotes %}
+                                <tr><td><button class="btn creditNoteSelect" id="{{ note.id }}" value="{{ note.amount|unsigned }}">${{ note.amount|unsigned }} Credit note for sale: {{ note.sale.code }}</button> <br></td></tr>
+                            {% endfor %}
+                            </table>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+                <button type="submit" id="completePayment" class="btn btn-primary">Complete Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<iframe style="display:none;" id="printWindow" frameborder="0"></iframe>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.linestable.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.customeraccount.js"></script>
+    <script type="text/templating" id="createForm">
+        <div class="row">
+            <div class="col-12">
+                <form method="post" id="createEntityForm" action="{% url 'pos:updateCustomer' customer.id %}" class="form-horizontal">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12">
+                                {% load crispy_forms_tags %}
+                                {% crispy form %}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </script>
+    <script type="text/template" id="PaymentRowTemplate">
+        <tr class="item">
+            <td><%= values.method_name %></td>
+            <td><%= values.dateToString %></td>
+            <td><%= values.amount %></td>
+            <td><a class="delete btn tip-bottom" title="Remove Payment"><i class="glyphicon glyphicon-remove"></i></a></td>
+        </tr>
+    </script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var customerAccountModel = br.customerAccount();
+
+        var payCreditModal = $('#payCredit');
+        var payAccountModal = $('#payAccount');
+
+        var paymentsTable = br.lineTableWidget({
+            totals: [
+                {title: 'Total',key :"total",value: 0.00}
+            ],
+            headers: [
+                {title: "Payment Method",key: 'method_name'},
+                {title: "Date/Time",key: 'dateToString'},
+                {title: "Amount",key: 'amount'},
+                {title: "Delete",key: 'delete'}
+            ],
+            emptyText: "Add Payments on the left",
+            rowTemplate: _.template($('#PaymentRowTemplate').html()),
+            rowBindingFunction: function(row) {
+                var line = row.data('line');
+                row.find('.delete').bind('click',function(e) {
+                    e.preventDefault();
+                    customerAccountModel.removePayment(line);
+                });
+                row.find('.tip-bottom').tooltip({ placement: 'bottom' });
+                return row;
+            },
+            rowUnBindingFunction: function(row) {
+                row.find('.delete').unbind('click');
+                return row;
+            }
+        });
+
+        $('#paymentsTableDiv').append(paymentsTable.tableElement);
+        customerAccountModel.bindCollectionToTable(paymentsTable,"paymentLines"); //just for CRUD operations, totals have to be updated manually
+        customerAccountModel.bindEvent("paymentsTotal","update",function(newVal) {
+            paymentsTable.changeTotal('total',newVal);
+        });
+
+        var validateInput = function(input) {
+            if(_.isNumber(input)&& !_.isNaN(input)) {
+                return true;
+            }
+            return false;
+        }
+
+        var validateTotals = function(modal) {
+            var total = parseFloat(modal.find('.paymentAmount').val());
+            var totalCount = 0;
+            var isAssigned = false;
+            modal.find('.paymentAmountTable tbody tr').each(function() {
+                var inputBalance = parseFloat($(this).find('input.rowPayment').val());
+                if (inputBalance<0) {return false;}
+                if (inputBalance>0) {isAssigned = true;}
+                totalCount = totalCount + inputBalance;
+            });
+            var inputBalance = parseFloat(modal.find('.balancePay').val());
+            if (inputBalance<0) {return false;}
+            var totalCount = totalCount + inputBalance
+            if (total!=totalCount) {
+                return false;
+            }
+            if (!isAssigned) {
+                return false;
+            }
+            return true;
+        }
+
+        payCreditModal.find('.manualAllocation').click(function() {
+            initManualAllocate(payCreditModal);
+        });
+
+        payAccountModal.find('.manualAllocation').click(function() {
+            initManualAllocate(payAccountModal);
+        });
+
+        payCreditModal.find('.paymentAmount').keyup(function(e){
+            var entered = parseFloat($(this).val());
+            if(validateInput(entered)) {
+                automaticAllocate(payCreditModal);
+            }
+        });
+
+        payAccountModal.find('.paymentAmount').keyup(function(e){
+            var entered = parseFloat($(this).val());
+            if(validateInput(entered)) {
+                automaticAllocate(payAccountModal);
+            }
+        });
+
+        var automaticAllocate = function(modal) {
+            modal.find('input.rowPayment').unbind('keyup');
+            modal.find('input.rowPayment').attr('disabled','true');
+            modal.find('.balancePay').attr('disabled','true');
+            var total = parseFloat(modal.find('.paymentAmount').val());
+            modal.find('.paymentAmountTable tbody tr').each(function() {
+                var lineTotal = parseFloat($(this).data('total'));
+                var lineBalance = parseFloat($(this).data('balance'));
+                var inputText = $(this).find('input.rowPayment')
+                if (total>=lineBalance) {
+                    total = total - lineBalance;
+                    inputText.val(lineBalance);
+                }
+                else{
+                    inputText.val(total);
+                    total=0;
+                }
+            });
+            modal.find('.balancePay').val(total);
+        }
+
+        var initManualAllocate = function(modal) {
+            var total = parseFloat(modal.find('.paymentAmount').val());
+            modal.find('input.rowPayment').val(0);
+            modal.find('.balancePay').val(total);
+            modal.find('input.rowPayment').unbind('keyup');
+            modal.find('input.rowPayment').keyup(function(e){
+                var entered = parseFloat($(this).val());
+                if (validateInput(entered)) {
+                    var parentRow = $(this).parents('tr');
+                    var maxAmount = parentRow.data('balance');
+                    //the max amount that can be put in is the balance
+                    if(entered>maxAmount) {
+                        $(this).val(maxAmount);
+                    }
+                    updateManualAllocation(modal);
+                }
+            });
+            modal.find('input.rowPayment').removeAttr('disabled');
+            modal.find('.balancePay').removeAttr('disabled');
+        }
+
+        var updateManualAllocation = function(modal) {
+            var total = parseFloat(modal.find('.paymentAmount').val());
+            modal.find('.paymentAmountTable tbody tr').each(function() {
+                var inputBalance = parseFloat($(this).find('input.rowPayment').val());
+                total = total - inputBalance;
+            });
+            modal.find('.balancePay').val(total);
+        }
+
+        //balances completion. payment processing.
+        payCreditModal.find('.processPayment').click(function(){
+            if (!validateTotals(payCreditModal)) {
+                alert("The total must match all the assigned values.");
+                return
+            }
+            var ledgerArray = [];
+            payCreditModal.find('.paymentAmountTable tbody tr').each(function() {
+                var tableRow = $(this);
+                var inputBalance = parseFloat(tableRow.find('input.rowPayment').val());
+                var lineBalance = parseFloat(tableRow.data('balance'));
+                var lineID = parseFloat(tableRow.data('id'));
+                var entryRef = tableRow.find('td').first().text();
+                if (inputBalance<=0) {
+                    return true;
+                }
+                var ledgerEntry = {
+                    status: inputBalance==lineBalance ? "FINALISED" : "CURRENT",
+                    referenceID: lineID,
+                    referenceNum: entryRef,
+                    referenceType: 'entry',
+                    total: inputBalance,
+                    balance: 0,
+                    comment: 'payment for initial ledger entry: '+entryRef
+                };
+                ledgerArray.push(ledgerEntry);
+            });
+            //need to add an entry for balance paid forward
+            var balancePaidForward = parseFloat(payCreditModal.find('.balancePay').val());
+            if (balancePaidForward >0) {
+                var ledgerEntry = {
+                    status: "CURRENT",
+                    referenceID: 0,
+                    referenceNum: 'Balance Paid forward',
+                    referenceType: 'invoice',
+                    total: balancePaidForward,
+                    balance: balancePaidForward,
+                    comment: 'New balance from overpayment'
+                };
+                ledgerArray.push(ledgerEntry)
+            }
+            customerAccountModel.addLedgerEntries(ledgerArray)
+            customerAccountModel.updateTotal(parseFloat(payCreditModal.find('.paymentAmount').val())*-1)
+            payCreditModal.modal('hide');
+            $('#addPayment').modal('show');
+        });
+
+        payAccountModal.find('.processPayment').click(function(){
+            if (!validateTotals(payAccountModal)) {
+                alert("The total must match all the assigned values.");
+                return
+            }
+            var ledgerArray = [];
+            payAccountModal.find('.paymentAmountTable tbody tr').each(function() {
+                var tableRow = $(this);
+                var inputBalance = parseFloat(tableRow.find('input.rowPayment').val());
+                var lineBalance = parseFloat(tableRow.data('balance'));
+                var lineID = parseFloat(tableRow.data('id'));
+                var entryRef = tableRow.find('td').first().text();
+                if (inputBalance<=0) {
+                    return true;
+                }
+                var ledgerEntry = {
+                    status: inputBalance==lineBalance ? "FINALISED" : "CURRENT",
+                    referenceID: lineID,
+                    referenceNum: entryRef,
+                    referenceType: 'entry',
+                    total: inputBalance*-1,
+                    balance: 0,
+                    comment: 'payment for initial ledger entry: '+entryRef
+                };
+                ledgerArray.push(ledgerEntry);
+            });
+            //need to add an entry for balance paid forward
+            var balancePaidForward = parseFloat(payAccountModal.find('.balancePay').val());
+            if (balancePaidForward >0) {
+                var ledgerEntry = {
+                    status: "CURRENT",
+                    referenceID: 0,
+                    referenceNum: 'Balance Paid forward',
+                    referenceType: 'invoice',
+                    total: balancePaidForward*-1,
+                    balance: balancePaidForward*-1,
+                    comment: 'New balance from overpayment'
+                };
+                ledgerArray.push(ledgerEntry)
+            }
+            customerAccountModel.addLedgerEntries(ledgerArray)
+            customerAccountModel.updateTotal(parseFloat(payAccountModal.find('.paymentAmount').val()))
+            payAccountModal.modal('hide');
+            $('#addPayment').modal('show');
+        });
+
+        //payments
+        var PaymentsModalWindow = $('#addPayment');
+        var AddPaymentButton = PaymentsModalWindow.find("#addPaymentToSale");
+        var PaymentTypeHiddenInput = PaymentsModalWindow.find("#paymentMethodHidden");
+        var PaymentSubMethodSelectDiv = PaymentsModalWindow.find("#subMethods");
+        var PaymentParentSelectButton = PaymentsModalWindow.find(".parentMethodSelect")
+        var PaymentMethodSelectButton = PaymentsModalWindow.find(".paymentMethodSelect");
+        var CreditPaymentMethodTableCell = PaymentsModalWindow.find('.paymentMethodSelect[value='+ br.creditPaymentID +']').closest('td');
+        var AccountParentMethodTableCell = PaymentsModalWindow.find('.parentMethodSelect[value='+ br.accountParentID +']').closest('td');
+        var PaymentAmountInput = PaymentsModalWindow.find("#paymentAmount");
+        var PaymentAmountDiv = PaymentsModalWindow.find("#paymentInputDiv");
+        var PaymentProcessButton = PaymentsModalWindow.find('#completePayment');
+        var CreditNotePayment = PaymentsModalWindow.find('.creditNoteSelect');
+
+        AccountParentMethodTableCell.hide();
+        if (!CreditNotePayment.length) {
+            CreditPaymentMethodTableCell.hide();
+        }
+
+        customerAccountModel.bindEvent("totalOwing","update",function(newVal){
+            PaymentAmountInput.attr("value",newVal);
+        });
+
+        PaymentsModalWindow.bind('hide', function() {
+            customerAccountModel.removeAllPayments();
+            CreditNotePayment.show(); //make the credit notes visible again.
+        });
+
+        PaymentParentSelectButton.click(function() {
+            PaymentsModalWindow.find('#creditNotes').hide();
+            PaymentSubMethodSelectDiv.find('.paymentSubMethods').hide();
+            PaymentAmountDiv.hide();
+            var parentMethod = $(this).val();
+            PaymentSubMethodSelectDiv.find('#'+parentMethod).show();
+        });
+
+        PaymentMethodSelectButton.click(function() {
+            var paymentMethodID = $(this).val();
+            var paymentMethod = $(this).text();
+            if (paymentMethod == 'Credit') {
+                PaymentsModalWindow.find('#creditNotes').show();
+                PaymentAmountDiv.hide();
+            }
+            else {
+                PaymentsModalWindow.find('#paymentTypeHeader').text(paymentMethod);
+                PaymentTypeHiddenInput.attr("name",paymentMethod);
+                PaymentTypeHiddenInput.val(paymentMethodID);
+                PaymentsModalWindow.find('#creditNotes').hide();
+                PaymentAmountDiv.show();
+            }
+            PaymentSubMethodSelectDiv.find('.paymentSubMethods').hide();
+        });
+
+        PaymentProcessButton.click(function() {
+            customerAccountModel.savePayments('{% url 'pos:customerAccountPayment' customer.id %}');
+        });
+
+        CreditNotePayment.click(function() {
+            var button = $(this);
+            var paymentMethodID = br.creditPaymentID;
+            var paymentMethod = "Credit";
+            var paymentAmount = parseFloat(button.val());
+            var paymentDate = new Date();
+            var paymentNote = CreditNotePayment.text();
+            var payment = {
+                method_id : paymentMethodID,
+                method_name : paymentMethod,
+                amount : paymentAmount,
+                note : paymentNote,
+                note_id : button.attr('id'),
+                paymentDate : paymentDate,
+                dateToString : paymentDate.toLocaleString()
+            }
+            $(this).hide();
+            customerAccountModel.addPaymentFromModal(payment);
+            PaymentsModalWindow.find('#creditNotes').hide();
+        });
+
+        AddPaymentButton.click(function() {
+            var paymentMethodID = parseInt(PaymentTypeHiddenInput.val());
+            var paymentMethod = PaymentTypeHiddenInput.attr("name");
+            var paymentAmount = parseFloat(PaymentAmountInput.val());
+            var paymentDate = new Date();
+            var payment = {
+                method_id : paymentMethodID,
+                method_name : paymentMethod,
+                amount : paymentAmount,
+                paymentDate : paymentDate,
+                dateToString : paymentDate.toLocaleString()
+            }
+            customerAccountModel.addPaymentFromModal(payment);
+            PaymentAmountDiv.hide();
+            PaymentSubMethodSelectDiv.find('.paymentSubMethods').hide();
+        });
+
+        //printing
+        var printingFunction = function(e) {
+            e.preventDefault();
+           $('#printWindow').attr('src',$(this).attr("href"));
+        };
+
+        $('.print').bind('click',printingFunction);
+
+        //credit Limits
+        $('#adjustCredit').click(function(e){
+            e.preventDefault();
+            var newLimit = parseFloat(window.prompt("Please enter a new credit value", "{{ customer.account.creditLimit }}"));
+            if (isNaN(parseFloat(newLimit))) {
+                alert("Invalid Credit Value Entered!");
+                return;
+            }
+            adjustCredit({limit:newLimit});
+        });
+
+        var adjustCredit = function(params) {
+            // The rest of this code assumes you are not using a library.
+            // It can be made less wordy if you use one.
+            var form = $('<form></form>');
+            form.attr("method", 'post');
+            form.attr("action", '{% url 'pos:adjustCreditLimit' customer.id %}');
+
+            form.append($("{% csrf_token %}"));
+
+            for(var key in params) {
+                if(params.hasOwnProperty(key)) {
+                    var hiddenField = $('<input></input>')
+                    hiddenField.attr("type", "hidden");
+                    hiddenField.attr("name", key);
+                    hiddenField.attr("value", params[key]);
+                    form.append(hiddenField);
+                }
+            }
+
+            $('body').append(form);
+            form.submit();
+        };
+        //edit Customer Modal
+
+        var search = br.search({
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            csrfToken:"{% csrf_token %}"
+        });
+
+        search.addEntity("Entities",{
+            prepend: "",
+            html: "Customer",
+            human: "Customer"
+        });
+
+        search.addUpdate("Entities",{
+            url : '{% url 'pos:updateCustomer' 1 %}',
+            button: $('.editEntity')
+        });
+
+    });
+    </script>
+{% endblock %}

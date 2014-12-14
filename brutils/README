@@ -1,0 +1,10 @@
+This README describes generic views, querysets and middleware in the system
+
+=Custom Middleware And Context Processors=
+The Custom Middleware is designed to add parameters to the requests going in and out so that the logged in staff member is available using request.staff
+and the logged in store is available using request.store instead of having to query for each everytime a request is made. The Custom Context Processor is the same
+and will make store and staff available within a template when it is rendered.
+
+=Decorators=
+The Decorators available are used in views to make sure the staff member has access to certain modules as defined in their permissions. This whole system is based
+around the existing SPAN system. See the Staff model and permissions field.

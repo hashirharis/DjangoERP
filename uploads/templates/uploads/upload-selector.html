@@ -1,0 +1,27 @@
+<div class="col-lg-5">
+    <div class="widget-box collapsible">
+        <div class="widget-title">
+            <a href="#collapseTwo" data-toggle="collapse">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-upload"></i>
+                </span>
+                <h5>Upload a file</h5>
+            </a>
+        </div>
+        <div class="collapse" id="collapseTwo">
+            <div class="widget-content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <form method="post" enctype="multipart/form-data">{% csrf_token%}
+                           {{form}}
+                           <input type="submit" value="Submit">
+                        </form>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Update Product - {{ product.model }}{% endblock %}
+
+{% block content %}
+
+<div id="content-header">
+    <h1>Product <small> Update</small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'core:searchProducts' %}" class="tip-bottom" data-original-title="Search for Products"><i class="glyphicon glyphicon-barcode"></i>Pricebook</a>
+    <a href="{% url 'core:viewProduct' product.id %}" class="tip-bottom" data-original-title="View {{ product.model }}"><i class="glyphicon glyphicon-gift"></i>{{ product.model }}</a>
+    <a href="" class="current">Update</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-title">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-gift"></i>
+                </span>
+                    <h5>Update Product</h5>
+                </div>
+                <div class="widget-content">
+                    <form method="POST" class="form-horizontal">
+                        <div class="row">
+                            <div class="col-12">
+                                {% load crispy_forms_tags %}
+                                {% crispy form %}
+                                <div class="form-actions" style="text-align: right">
+                                  <button type="submit" class="btn btn-primary btn-large">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+{% load br %}
+    <script type="text/template" id="menu">
+        <a class="supress btn btn-primary" id="selectCategories">Select Category</a>
+        <ul id="menu" style="display:none;width:100%;display:in-line;z-index:10000;">
+          {% for child in parentCategories %}
+            <li><a class="{% if not store|getChildren:child|length %}select{% endif %} supress" data-id="{{ child.id }}" href="#">{{ child.name }}</a>
+                {% for child in store|getChildren:child %}
+                    {% if forloop.first %}<ul>{% endif %}
+                    <li><a class="{% if not store|getChildren:child|length %}select{% endif %} supress" data-id="{{ child.id }}" href="#">{{ child.name }}</a>
+                        {% for child in store|getChildren:child %}
+                            {% if forloop.first %}<ul>{% endif %}
+                            <li><a class="{% if not store|getChildren:child|length %}select{% endif %} supress" data-id="{{ child.id }}" href="#">{{ child.name }}</a>
+                                {% for child in store|getChildren:child %}
+                                    {% if forloop.first %}<ul>{% endif %}
+                                    <li><a class="{% if not store|getChildren:child|length %}select{% endif %} supress" data-id="{{ child.id }}" href="#">{{ child.name }}</a></li>
+                                    {% if forloop.last %}</ul>{% endif %}
+                                {% endfor %}
+                            </li>
+                            {% if forloop.last %}</ul>{% endif %}
+                        {% endfor %}
+                    </li>
+                    {% if forloop.last %}</ul>{% endif %}
+                {% endfor %}
+            </li>
+          {% endfor %}
+        </ul>
+    </script>
+    <script>
+        $(function() {
+             //init
+            var selectBox = $('#id_category');
+            var selectBoxContainer = $('#div_id_category').find('.controls');
+            var menuTemplate = $('#menu');
+            var menuTemplateSelector = 'ul#menu';
+
+            //form
+            $('select').not(selectBox).select2();
+            $('input[type=checkbox],input[type=radio]').iCheck({
+                checkboxClass: 'icheckbox_flat-blue',
+                radioClass: 'iradio_flat-blue'
+            });
+            //custom component
+            selectBox.hide();
+            var selectedText = selectBox.find('option:selected').text();
+            selectBoxContainer.append(menuTemplate.html());
+            var selectCategoryButton = selectBoxContainer.find('#selectCategories');
+            selectCategoryButton.text(selectedText);
+
+            //runtime
+            var ulMenu = selectBoxContainer.find(menuTemplateSelector);
+            ulMenu.menu();
+            selectCategoryButton.click(function() {
+                ulMenu.toggle();
+            });
+            $('.supress').click(function(e){
+                e.preventDefault();
+            });
+            ulMenu.find('.select').click(function(e) {
+                selectBox.val($(this).data('id'));
+                selectCategoryButton.text($(this).text());
+                selectCategoryButton.trigger('click');
+            });
+
+            //if the EAN is left blank then prefill to be modelNum
+            $('#productForm').submit(function(e) {
+                if ($("#id_EAN").val().length<=0) {
+                    if(confirm("EAN has been left blank and will be prefilled with model number, press OK to confirm or CANCEL to enter EAN.")) {
+                        $('#id_EAN').val($('#id_model').val());
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

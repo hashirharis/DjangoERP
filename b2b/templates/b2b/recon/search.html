@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Recon Archive{% endblock %}
+
+{% block content %}
+    {% load humanize %}
+    <div id="content-header">
+        <h1>Recon <small> Archive </small></h1>
+    </div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="{% url 'b2b:HOInvoicingHome' %}"><i class="glyphicon glyphicon-list-alt"></i><strong>Invoicing</strong></a>
+        <a href="{% url 'b2b:reconHome' %}"><i class="glyphicon glyphicon-list-alt"></i>Recons</a>
+        <a href="#" class="supress"><i class="glyphicon glyphicon-th-list"></i><strong>Search Recons</strong></a>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                        <h5>Reconciliations</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div id="resultsDiv">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Distributor</th>
+                                        <th>Dates</th>
+                                        <th>Created by</th>
+                                        <th>Statement Total</th>
+                                        <th>Selected Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for recon in entities %}
+                                    <tr>
+                                        <td>{{ recon.distributor.distributor }}</td>
+                                        <td> Recon for {{ recon.endDate|date:'d M Y' }}</td>
+                                        <td>{{ recon.createdBy.name }} <small>{{ recon.created|naturaltime }}</small></td>
+                                        <td>{{ recon.statementTotal }}</td>
+                                        <td>{{ recon.totalInvoices }}</td>
+                                        <td>
+                                            <a class="btn btn-primary" onclick="return confirm('Are you sure you wish to reverse this recon?')" href="{% url 'b2b:reverseRecon' recon.id %}"><i class="glyphicon glyphicon-refresh"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <ul class="pagination alternate pull-right">
+                                {% for x in entities.paginator.page_range %}
+                                    <li{% if entities.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var search = br.search({
+                ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+                csrfToken:"{% csrf_token %}"
+            });
+
+            search.addEntity("Entities",{
+                prepend: "",
+                html: "Entity",
+                human: "{{ entityName }}"
+            });
+
+            search.addQuerySet("Entities",{
+                name:'All',
+                prepend:"",
+                parameters: {
+                    q: '{{ q }}',
+                    page: '{{ page }}'
+                }
+            });
+
+            search.addPagination("Entities","All",'page',$('#resultsDiv'));
+
+        });
+    </script>
+{% endblock %}

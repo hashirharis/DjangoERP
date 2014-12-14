@@ -1,0 +1,143 @@
+{% extends "pos/sales/base.html" %}
+
+{% block title %}New Sale{% endblock %}
+
+{% block content %}
+
+{% load br %}
+{{ block.super }}
+
+<div id="content-header">
+    {% if sale %}
+        <h1>Quote - Terminal {{ terminal.name }} - <small> Ref : {{ sale.code }} (Quote Expires: {{ storeSettings.quotationsExpiry|daysFrom:sale.created }}) </small></h1>
+    {% else %}
+        <h1>New Sale/Order - <small>Terminal {{ terminal.name }} </small></h1>
+    {% endif %}
+    <div class="btn-group">
+        <a id="saveQuoteButton" class="btn btn-large tip-bottom" title="Save as Quote"><i class="glyphicon glyphicon-list-alt"></i></a>
+        {% if sale %}
+        <a id="deleteSaleButton" href="{% url 'pos:deleteSale' sale.id %}" class="btn btn-large tip-bottom" title="Delete Sale"><i class="glyphicon glyphicon-remove"></i></a>
+        {% endif %}
+    </div>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'pos:home' %}" class="tip-bottom" data-original-title="POS Home"><i class="glyphicon glyphicon-list-alt"></i>Dashboard</a>
+    <a href="#" class="supress"><i class="glyphicon glyphicon-th-list"></i>New Sale/Order</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-heading">
+                    <div class="widget-title">
+                        <a data-parent="#collapse-group" href="#collapseGTwo" data-toggle="collapse">
+                            <span class="icon"><i class="glyphicon glyphicon-user"></i></span>
+                            <h5><span class="customernameblue">Customer</span></h5>
+                            <!-- <span class="customernameblue label label-info">Customer : None</span>-->
+                            <div id="addCustomerControls" class="buttons">
+                                <a id="changeDeliveryAddress" role="button" class="btn btn-mini" style="display:none;"> <i class="glyphicon glyphicon-home"></i> Change Delivery Address</a>
+                                <a id="saveDeliveryAddress" role="button" class="btn btn-mini" style="display:none;"> <i class="glyphicon glyphicon-share"></i> Save Delivery Address</a>
+                                <a id="searchCustomerButton" role="button" class="btn btn-mini"> <i class="glyphicon glyphicon-plus"></i> Add / <i class="glyphicon glyphicon-search"></i> Search Customer</a>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="collapse in" id="collapseGTwo">
+                    <div class="widget-content">
+                        <div id="customerInformation">
+                            <div class="alert">
+                                <button class="close" data-dismiss="alert">×</button>
+                                <strong>No Customer Attached</strong> Attach an existing customer or create a new customer to attach to this sale using the menu above.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-box">
+                <div class="widget-heading">
+                    <div class="widget-title">
+                        <a data-parent="#collapse-group" href="#collapseGOne" data-toggle="collapse">
+                            <span class="icon"><i class="glyphicon glyphicon-shopping-cart"></i></span>
+                            <h5>Products <span class="totalgreen">Total : $0.00</span></h5>
+                            <div class="buttons">
+                                <a id="addProductButton" role="button" class="btn btn-mini"><i class="glyphicon glyphicon-plus"></i> Add Product</a>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="collapse in" id="collapseGOne">
+                    <div class="widget-content ProductsTableWidget">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="col-6">
+                <div class="widget-box collapsible">
+                    <div class="widget-title">
+                        <a href="#collapseOne" data-toggle="collapse">
+                            <span class="icon">
+                                <i class="glyphicon glyphicon-file"></i>
+                            </span>
+                            <h5>Invoice Notes (will appear on Invoice)</h5>
+                        </a>
+                    </div>
+                    <div class="collapse in" id="collapseOne">
+                        <div class="widget-content">
+                            <div class="row">
+                                <div class="col-12">
+                                    <textarea id="saleNote" rows="5" style="width:100%"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="widget-box collapsible">
+                    <div class="widget-title">
+                        <a href="#collapseTwo" data-toggle="collapse">
+                            <span class="icon">
+                                <i class="glyphicon glyphicon-file"></i>
+                            </span>
+                            <h5>Stores Notes (will not appear on invoice)</h5>
+                        </a>
+                    </div>
+                    <div class="collapse in" id="collapseTwo">
+                        <div class="widget-content">
+                            <div class="row">
+                                <div class="col-12">
+                                    <textarea id="storeNote" rows="5" style="width:100%"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-content">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-actions" style="text-align: right">
+                                <a id="addPaymentButton" class="btn btn-primary btn-large disabled">Take Payments</a>
+                                <a id="viewPaymentButton" class="btn btn-primary btn-large disabled hidden">View Payments</a>
+                                <button id="completeSaleOrder" data-loading-text="Saving..." class="btn btn-large btn-success hidden">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<iframe style="display:none;" id="printWindow" frameborder="0"></iframe>
+
+{% endblock %}

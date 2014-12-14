@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% block javascript %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.maskedinput.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/underscore.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.modalsearch.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.profitmargincalculator.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.linestable.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.hoinvoice.js"></script>
+<script type="text/template" id="InvoiceRowTemplate">
+    <tr class="item">
+        <td><button class="btn btn-mini changeQuantity"><%= values.quantity %></button></td>
+        <td><%= values.description %></td>
+        <td><button class="netBreakDown btn btn-mini tip-bottom" data-original-title="View Net Price Breakdown"><i class="glyphicon glyphicon-list-alt"></i></button></td>
+        <td><button class="btn btn-mini changeUnitPrice">$<%= values.unitPriceExGST.toFixed(2) %></button></td>
+        <td>$<%= values.linePriceInGST.toFixed(2) %></td>
+        <td>$<%= values.totalTax.toFixed(2) %></td>
+        <td>$<%= values.lineSpanNet.toFixed(2) %></td>
+    </tr>
+</script>
+<script type="text/javascript">
+    var invoiceModel = br.hoInvoiceModel();
+
+    {% if request.GET.viewable %}
+        invoiceModel.viewOnly = true;
+    {% elif invoice.reconciledBy or invoice.chargedBy %}
+        invoiceModel.viewOnly = true;
+    {% endif %}
+
+    $(document).ready(function() {
+        $('select').select2();
+
+        var viewNetBreakDown = function(id) {
+            var ajaxLoader = "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>";
+            var netBreakDownModal = $('#netBreakDown');
+            br.viewNetBreakDown(id,'{% url 'core:getProductCalcSummary' %}',ajaxLoader,netBreakDownModal);
+        }
+
+        var invoicesTable = br.lineTableWidget({
+            totals: [
+                {title: 'Freight Ex GST',key :"freight",value: 0.00},
+                {title: 'Freight GST',key :"freightGST",value: 0.00},
+                {title: 'Total Invoice Ex',key :"invTotalExGST",value: 0.00},
+                {title: 'Total GST',key :"GSTTotal",value: 0.00},
+                {title: 'Total Invoice In',key :"invTotal",value: 0.00},
+                {title: 'Total Store Net Ex',key :"netTotal",value: 0.00},
+            ],
+            headers: [
+                {title: "#",key: 'quantity'},
+                {title: "Description",key: 'description'},
+                {title: "Net Breakdown",key: 'netBreakDown'},
+                {title: "Unit Invoice",key: 'unitPriceExGST'},
+                {title: "Total Invoice (Inc)",key: 'linePriceInGST'},
+                {title: "Tax",key: 'totalTax'},
+                {title: "Net",key: 'lineSpanNet'}
+            ],
+            emptyText: "Please add Invoice Items using the option above!",
+            rowTemplate: _.template($('#InvoiceRowTemplate').html()),
+            rowBindingFunction: function(row) {
+                var line = row.data('line');
+                var that = this;
+                if(invoiceModel.viewOnly==false) {
+                     row.find('.changeQuantity').click(function() {
+                        var salesLine = invoiceModel.getInvoiceLine(line);
+                        var initValue = salesLine.quantity;
+                        var quantity = prompt("Please enter new Quantity",initValue);
+                        invoiceModel.changeLineQuantity(line,quantity);
+                    });
+                    row.find('.changeUnitPrice').click(function() {
+                        var salesLine = invoiceModel.getInvoiceLine(line);
+                        var initValue = salesLine.unitPriceExGST;
+                        var newVal = prompt("Please enter new price",initValue);
+                        invoiceModel.changeLineUnitPrice(line,newVal);
+                    });
+                }
+                row.find('.netBreakDown').click(function() {
+                    var salesLine = invoiceModel.getInvoiceLine(line);
+                    var productID = salesLine.productID
+                    viewNetBreakDown(productID);
+                });
+                return row
+            },
+            rowUnBindingFunction: function(row) {
+                row.find('.changeQuantity').unbind('click');
+                row.find('.netBreakDown').unbind('click');
+                return row;
+            }
+        });
+
+        $('.InvoiceTableDiv').append(invoicesTable.tableElement);
+
+        // set the distributort before init of generic modal search
+        invoiceModel.set('distributor', $('#selectDistributor').select2('val'));
+
+        var genericProductSearchObject = br.genericModalSearch({
+            entity: "Product",
+            placeholder: "Please search for Products here",
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            url:"{% url 'core:searchProductsAjax' %}",
+            postData: {format: "invoice", distributor: function() {  return invoiceModel['distributor']; }},
+            callback: function(obj) {
+                invoiceModel.addProductFromModal(obj);
+            }
+        });
+        var ProductSearchModal = genericProductSearchObject.element;
+
+        var B2BInvoiceSearchModal = br.genericModalSearch({
+            entity: "Invoice",
+            placeholder: "Search using store/invoice/model number in invoice",
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            url: '{% url 'b2b:searchB2bInvoiceAjax' %}',
+            callback: function(obj) {
+                invoiceModel.set('invoiceType', 'Purchase of stock');
+                if(!confirm('Do you want to automatically populate all the fields in this invoice ?')) {
+                    return
+                }
+                var url = '{% url 'b2b:b2bInvoiceToInvoice' 0 %}';
+                url = url.substring(0, url.length-2) + obj.id + '/';
+                invoiceModel.populateFromB2B(url);
+            }
+        }).element;
+
+        //bind Table
+        invoiceModel.bindEvent('invoiceLines','added',function(newVal){
+           if (invoiceModel.invoiceLines.length>0) {
+               $('#completeHOInvoice').removeClass("disabled");
+           }
+        });
+        invoiceModel.bindCollectionToTable(invoicesTable,"invoiceLines"); //just for CRUD operations, totals have to be updated manualy
+        //TODO: string format floats for totals.
+        invoiceModel.bindEvent('invTotal','update',function(newValue) {
+            invoicesTable.changeTotal('invTotal','$' + newValue.toFixed(2));
+        });
+        invoiceModel.bindEvent('freight','update',function(newValue) {
+            invoicesTable.changeTotal('freight','$' + newValue.toFixed(2));
+        });
+        invoiceModel.bindEvent('netTotal','update',function(newValue) {
+            invoicesTable.changeTotal('netTotal','$' + newValue.toFixed(2));
+            $('.totalgreen').text("Total Store Net : $" + newValue.toFixed(2));
+        });
+        invoiceModel.bindEvent('GSTTotal','update',function(newValue) {
+            invoicesTable.changeTotal('GSTTotal','$' + newValue.toFixed(2));
+        });
+        invoiceModel.bindEvent('invTotalExGST','update',function(newValue) {
+            invoicesTable.changeTotal('invTotalExGST','$' + newValue.toFixed(2));
+        });
+        invoiceModel.bindEvent('freightGST','update',function(newValue) {
+            invoicesTable.changeTotal('freightGST','$' + newValue.toFixed(2));
+        });
+        //custom bind extended Credit checkbox
+        invoiceModel.bindEvent('extendedCredit','update',function(newValue) {
+            var dueDate_control = $("#dueDate");
+            if(newValue===true) {
+                dueDate_control.removeAttr('disabled');
+            } else {
+                dueDate_control.prop('disabled', true);
+                dueDate_control.datepicker('setDate', null);
+                dueDate_control.val("");
+            }
+            $('#extendedCredit').prop('checked', newValue);
+        });
+        $('#extendedCredit').change(function() {
+            invoiceModel.set("extendedCredit", this.checked);
+        });
+        //end custom bind
+        //custom bind model values
+        $('#selectDistributor').on('change', function(e) {
+            if(invoiceModel['invoiceLines'].length>0) {
+                if (confirm("Are you sure you want to change the distributor, This will remove all your existing lines!")) {
+                    invoiceModel.set('distributor', e.val);
+                    invoiceModel.removeAllInvoiceLines();
+                    genericProductSearchObject.ajaxSearchAndReturn();
+                }
+                else {
+                    e.preventDefault();
+                }
+            } else {
+                invoiceModel.set('distributor', e.val);
+            }
+        });
+        invoiceModel.bindEvent('distributor','update',function(newValue) {
+            $('#selectDistributor').select2("val", newValue);
+        });
+        //end custom
+        //bind select2 controls
+        invoiceModel.completeControlBind($('#invoiceType'),'type',true);
+        invoiceModel.completeControlBind($('#selectStore'),'store',true);
+        //end bind select2
+        //bind regular
+        invoiceModel.completeControlBind($('#invoiceNumber'),'invoiceNumber');
+        invoiceModel.completeControlBind($('#orderReference'),'orderReference');
+        invoiceModel.completeControlBind($('#otherInvoiceReference'),'otherInvoiceReference');
+        invoiceModel.completeControlBind($('#hoComments'),'hoComments');
+        invoiceModel.completeControlBind($('#storeComments'),'storeInformation');
+        //end bind regular
+        //bind dates
+        invoiceModel.completeDatePickerControlBind($("#invoiceDate"),"invoiceDate");
+        invoiceModel.completeDatePickerControlBind($("#dueDate"),"dueDate");
+        //end bind dates
+
+        //other view events functions
+        $('#addProductButton').click(function() {
+            ProductSearchModal.modal('show');
+        });
+        $('#changeFreight').click(function(){
+            var oldFreight = invoiceModel.freight;
+            var newFreight = window.prompt("Please Enter New Value for freight",oldFreight);
+            invoiceModel.changeFreight(newFreight);
+        });
+
+        {% block completeInvoiceClickFunction %} <!--VW needs to extend this block-->
+
+        $('#completeHOInvoice').click(function() {
+            if($(this).hasClass("disabled")||invoiceModel.invoiceLines.length==0) { return; }
+            invoiceModel.completeInvoice('{% url 'b2b:saveHOInvoice' %}');
+        });
+
+        {% endblock %}
+
+        $('#linkB2B').click(function(){
+            B2BInvoiceSearchModal.modal('show');
+        });
+        //end other view events
+
+        {% if invoiceData %}
+            invoiceModel.loadInvoice({{ invoiceData|safe }});
+        {% endif %}
+
+    });
+</script>
+
+{% endblock %}

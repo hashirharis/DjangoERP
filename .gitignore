@@ -1,0 +1,13 @@
+*.pyc
+workspace.xml
+br.iml
+*.psd
+Thumbs.db
+*.db
+*.DB
+.DS_Store
+/whoosh_index
+/.idea
+/database*.CSV
+*.json
+csv

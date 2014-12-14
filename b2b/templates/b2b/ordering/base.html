@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+{% block javascript %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.maskedinput.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/unicorn.form_common.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.modalsearch.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.profitmargincalculator.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.linestable.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.order.js"></script>
+<script type="text/template" id="orderRowTemplate">
+    <tr class="item">
+        <td><button class="btn btn-primary btn-mini changeQuantity"><%= values.quantity %></button></td>
+        <td><%= values.description %></td>
+        <td><%= values.originalInvoiceExGST.toFixed(2) %></td>
+        <td><button class="btn btn-primary btn-mini changeUnitPrice">$<%= values.invoiceExGST.toFixed(2) %></button></td>
+        <td>$<%= values.unitNetIncGST.toFixed(2) %></td>
+        <td>$<%= values.lineNetIncGST.toFixed(2) %></td>
+        <td><button class="netBreakDown btn btn-primary btn-mini tip-bottom" data-original-title="View Net Price Breakdown"><i class="glyphicon glyphicon-list-alt"></i></button></td>
+    </tr>
+</script>
+<script type="text/template" id="instructionRowTemplate">
+    <tr class="item">
+        <td><%= values.type %></td>
+        <td><%= values.line1 %></td>
+        <td><button class="btn btn-mini delete"><i class="glyphicon glyphicon-remove"></i></button></td>
+    </tr>
+</script>
+<script type="text/javascript">
+    var orderModel = br.orderModel({% if jsonStores %}{{ jsonStores|safe }}{% else %}[]{% endif %},{
+        currentStore:{{ store.id }},
+        currentStoreCode:"{{ store.code }}",
+        currentStaffCode:"{{ staffMember.initials }}",
+        currentStaffOrder:{{ staffCount }},
+        orderingStore: parseInt($('#selectOrderingStore').select2('val')),
+        openToBuy: {{ store.openToBuy }}
+    });
+    $(document).ready(function() {
+        var viewNetBreakDown = function(id) {
+            var ajaxLoader = "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>";
+            var netBreakDownModal = $('#netBreakDown');
+            br.viewNetBreakDown(id,'{% url 'core:getProductCalcSummary' %}',ajaxLoader,netBreakDownModal);
+        };
+
+        var orderTable = br.lineTableWidget({
+            totals: [
+                {title: 'Total Invoice (Ex GST)',key :"totalInvoiceExGST",value: 0.00},
+                {title: 'Total GST',key :"totalGST",value: 0.00},
+                {title: 'Total Invoice (Inc GST)',key :"totalInvoiceInGST",value: 0.00},
+                {title: 'Total Store Net (Inc GST)',key :"storeNetInGST",value: 0.00},
+            ],
+            headers: [
+                {title: "#",key: 'quantity'},
+                {title: "Description",key: 'description'},
+                {title: "Inv(List)",key: 'originalInvoiceExGST'},
+                {title: "Inv(Actual)",key: 'invoiceExGST'},
+                {title: "Unit Net(Inc)",key: 'unitNetIncGST'},
+                {title: "Line Net(Inc)",key: 'lineNetIncGST'},
+                {title: "Totals/Summary",key: 'netBreakDown'}
+            ],
+            emptyText: "Please add Order Items using the option above!",
+            rowTemplate: _.template($('#orderRowTemplate').html()),
+            rowBindingFunction: function(row) {
+                var line = row.data('line');
+                var that = this;
+                if (orderModel.status=="SAVED"||orderModel.status=="NEW") {
+                    row.find('.changeQuantity').click(function() {
+                        var orderLine = orderModel.getOrderLine(line);
+                        var initValue = orderLine.quantity;
+                        var quantity = prompt("Please enter new Quantity",initValue);
+                        orderModel.changeLineQuantity(line,quantity);
+                    });
+                    row.find('.changeUnitPrice').click(function() {
+                        var orderLine = orderModel.getOrderLine(line);
+                        var initValue = orderLine.invoiceExGST;
+                        var newValue = prompt("Please enter new Invoice Price",initValue);
+                        orderModel.changeLineInvoicePrice(line,newValue,"{% url 'b2b:calcNetGivenInvoice' %}");
+                    });
+                }
+                row.find('.netBreakDown').click(function() {
+                    var orderLine = orderModel.getOrderLine(line);
+                    var productID = orderLine.productID
+                    viewNetBreakDown(productID);
+                });
+                return row
+            },
+            rowUnBindingFunction: function(row) {
+                row.find('.changeQuantity').unbind('click');
+                row.find('.netBreakDown').unbind('click');
+                return row;
+            }
+        });
+
+        $('.orderLinesDiv').append(orderTable.tableElement);
+
+        var ProductSearchModal = br.genericModalSearch({
+            entity: "Product",
+            placeholder: "Please search for Products here",
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            url:"{% url 'core:searchProductsAjax' %}",
+            postData: {format: "order"},
+            callback: function(obj) {
+                orderModel.addOrderLineFromModal(obj);
+            }
+        }).element;
+        //Table Bindings
+        orderModel.bindCollectionToTable(orderTable,"orderLines"); //just for CRUD operations, totals have to be updated manually
+        orderModel.bindEvent('totalInvoiceExGST','update',function(newValue) {
+            orderTable.changeTotal('totalInvoiceExGST',"$" + newValue.toFixed(2));
+        });
+        orderModel.bindEvent('totalGST','update',function(newValue) {
+            orderTable.changeTotal('totalGST',"$" + newValue.toFixed(2));
+        });
+        orderModel.bindEvent('totalInvoiceInGST','update',function(newValue) {
+            orderTable.changeTotal('totalInvoiceInGST',"$" + newValue.toFixed(2));
+        });
+        orderModel.bindEvent('storeNetInGST','update',function(newValue) {
+            orderTable.changeTotal('storeNetInGST',"$" + newValue.toFixed(2));
+            $('.totalgreen').text("Total Store Net : $"+ newValue.toFixed(2));
+        });
+        //Control Bindings
+
+        orderModel.completeControlBind($('#inputOrderReference'),"orderReference");
+        orderModel.completeControlBind($('#packingSlipNumber'),"packingSlipNumber");
+        orderModel.completeControlBind($('#orderNotes'),"comment");
+        orderModel.completeControlBind($('#selectOrderingStore'),"orderingStore",true);
+        orderModel.completeControlBind($('#selectPurchaserStore'),"purchaser",true);
+        //View Bindings
+        orderModel.bindEvent('orderLines','added',function(newVal){
+            if (orderModel.orderLines.length>0) {
+                $('#postStockOrder').removeClass("disabled");
+                $('#saveStockOrder').removeClass("disabled");
+            }
+        });
+        orderModel.bindEvent("is_et","update",function(newVal){
+            if(newVal) { // if et is true
+                $('#EDIDetails').modal('show');
+            }
+        });
+        //Other view events
+        $('#addProductButton').click(function() {
+            if($(this).hasClass("disabled")){return;}
+            ProductSearchModal.modal("show");
+        });
+        $('#refreshOrderReference').click(function() {
+            if($(this).hasClass("disabled")){return;}
+            orderModel.regenerateOrderReference();
+        });
+        $('#saveStockOrder').click(function(){
+            if($(this).hasClass("disabled")||orderModel.orderLines.length==0) { return; }
+            orderModel.set('status', 'SAVED');
+            orderModel.saveToServer('{% url 'b2b:saveOrder' %}', true);
+        });
+        $('#postStockOrder').click(function(){
+            if($(this).hasClass("disabled")||orderModel.orderLines.length==0) { return; }
+            orderModel.set('status', 'PENDING');
+            orderModel.saveToServer('{% url 'b2b:saveOrder' %}');
+        });
+        $('#markAsComplete').click(function() {
+            if(confirm('Are you sure you wish to complete this order?')) {
+                orderModel.set('status', 'ACCEPTED');
+                orderModel.saveToServer('{% url 'b2b:saveOrder' %}', true);
+            }
+        });
+        //electronicOrder modal functions
+        var ElectronicTradingModal = $('#EDIDetails');
+        var addInstructionsModal = $('#addInstructionsModal');
+        var openingInstructions = false;
+
+        ElectronicTradingModal.on('hidden.bs.modal', function () {
+            if(!openingInstructions) { //so we don't change it back unless specifically exiting from this modal.
+                orderModel.set("is_et",false);
+            }
+        });
+        //
+        br.dateInputBinding($('#datetime-expected'));
+        br.dateInputBinding($('#cancel-not-after'));
+        br.dateInputBinding($('#deliver-not-before'));
+        br.dateInputBinding($('#deliver-not-after'));
+
+        $('#sendETOrder').click(function() { //attach et to model
+            var encodedOrder = {
+                "et_type" :$("input:radio[name='et_type']:checked").val(),
+                "tpflag" : "T",
+                "quote-ref": $('#quote-ref').val(),
+                "bo-ref": $('#bo-ref').val(),
+                "promo-ref": $('#promo-ref').val(),
+                "radioDD": $('input:checkbox[name="radioDD"]').is(':checked'),
+                "dd-name": $('#dd-name').val(),
+                "dd-street-address-1": $('dd-street-address-1').val(),
+                "dd-street-address-2": $('dd-street-address-2').val(),
+                "dd-suburb": $('dd-suburb').val(),
+                "dd-state": $('dd-state').val(),
+                "dd-post-code": $('dd-post-code').val(),
+                "dd-country": $('dd-country').val(),
+                "dd-contact-name": $('dd-contact-name').val(),
+                "dd-email": $('dd-email').val(),
+                "dd-phone": $('dd-phone').val(),
+                "datetime-expected" : new Date($('#datetime-expected').val()).toISOString(),
+                "cancel-not-after" : new Date($('#cancel-not-after').val()).toISOString(),
+                "deliver-not-before": new Date($('#deliver-not-before').val()).toISOString(),
+                "deliver-not-after": new Date($('#deliver-not-after').val()).toISOString()
+            };
+            orderModel.setAndSaveElectronicOrder(encodedOrder,'{% url 'b2b:saveOrder' %}');
+        });
+        $('#addInstructions').click(function() {
+            openingInstructions = true;
+            ElectronicTradingModal.modal("hide");
+            addInstructionsModal.modal("show");
+        });
+        ElectronicTradingModal.find('input:checkbox[name="radioDD"]').on('ifChecked', function(event){
+                $('.directDelivery').show('slow');
+        });
+        ElectronicTradingModal.find('input:checkbox[name="radioDD"]').on('ifUnchecked', function(event){
+                 $('.directDelivery').hide('slow');
+        });
+
+        addInstructionsModal.on('hidden.bs.modal', function() {
+            openingInstructions = false;
+            ElectronicTradingModal.modal('show');
+        });
+        $('#completeAddInstructions').click(function() {
+            if(orderModel.addETInstructionFromModal({
+                "type" : $('input[name=inst_type]:checked').val(),
+                "line1" : $('#instructionsL1').val(),
+                "line2" : $('#instructionsL2').val(),
+                "line3" : $('#instructionsL3').val(),
+                "line4" : $('#instructionsL4').val(),
+                "line5" : $('#instructionsL5').val()
+            }))
+            {
+                $('#instructionsL1').val("");$('#instructionsL2').val("");
+                $('#instructionsL3').val("");$('#instructionsL4').val("");
+                $('#instructionsL5').val("");
+                addInstructionsModal.modal('hide');
+            }
+        });
+        var instructionsTable = br.lineTableWidget({
+            totals: [
+                {title: 'Total Instructions',key :"total",value: 0}
+            ],
+            headers: [
+                {title: "Payment Method",key: 'type'},
+                {title: "Instruction",key: 'line1'},
+                {title: "Delete",key: 'delete'}
+            ],
+            rowTemplate: _.template($('#instructionRowTemplate').html()),
+            emptyText: "Add Instructions above below.",
+            rowBindingFunction: function(row) {
+                var line = row.data('line');
+                var that = this;
+                row.find('.delete').click(function() {
+                    if(confirm("Are you sure you want to remove this instruction?")){orderModel.removeETInstruction(line);}
+                });
+                return row;
+            },
+            rowUnBindingFunction: function(row) {
+                row.find('.delete').unbind('click');
+                return row;
+            }
+        });
+        orderModel.bindCollectionToTable(instructionsTable,"etInstructions"); //just for CRUD operations, totals have to be updated manually
+        $('#orderInstructionsTableDiv').append(instructionsTable.tableElement);
+        orderModel.bindEvent('etInstructions','added',function(newVal){
+            $('.orderInstructionsDiv').show();
+            instructionsTable.changeTotal("total",orderModel.etInstructions.length);
+        });
+        orderModel.bindEvent('etInstructions','deleted',function(newVal){
+            if (orderModel.etInstructions.length==0) {
+                $('.orderInstructionsDiv').hide();
+            }
+            instructionsTable.changeTotal("total",orderModel.etInstructions.length);
+        });
+        {% if order %}
+            orderModel.loadOrderFromServer({{ orderData|safe }});
+        {% endif %}
+
+        /* booking in stock after order is complete. */
+        {% if order %}
+        $("#bookStockInOut").click(function(e) {
+            var anyleft = false;
+            $('#bookingForm').find('input.quantity').each(function(k, el) {
+                if($(el).val()!=0) {
+                    anyleft = true;
+                    return false;
+                }
+            });
+            anyleft ? $('#bookingFormModal').modal('show'): "";
+        });
+
+        $('#processBookIn').click(function(e) {
+            //process the table.
+            var table = $('#bookingForm').find('table');
+            var bookings = [];
+            //book-in quantities
+            table.find('input.quantity').each(function(k, el) {
+                var $el = $(el);
+                var booking = {
+                    id: $el.data('orderlineid'),
+                    quantity: $el.val(),
+                    originalQuantity: $el.data('originalquantity')
+                };
+                bookings.push(booking);
+            });
+
+            if(_.some(bookings, function(v) {return v.quantity!= v.originalQuantity})&&!confirm("You are not booking all the stock, proceed ?")) {
+                return;
+            }
+
+            var request = $.ajax({
+                url: '{% url "b2b:bookingStockOrder" order.id %}',
+                type: "POST",
+                data: {bookings: JSON.stringify(bookings)},
+                dataType: "json",
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", br.getCookie('csrftoken'));
+                }
+            });
+
+            request.done(function(msg) {
+                window.location = msg.openOrder;
+            });
+        });
+        {% endif %}
+    });
+</script>
+{% endblock %}

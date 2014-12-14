@@ -1,0 +1,4 @@
+#!/bin/bash
+source ~/ENV/bin/activate
+cd ~/pybr
+gunicorn_django -w 3 --log-level=debug --log-file=/home/ubuntu/server.log

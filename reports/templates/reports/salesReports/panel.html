@@ -1,0 +1,8 @@
+<div class="widget-content">
+    {% if isSalesAnalysis %}
+        {% include "reports/salesReports/panel-sales-analysiss" %}
+    {% elif isItemisedSalesReport %}
+        {% include "reports/salesReports/panel-itemised-sales-reports" %}
+    {% else %}
+    {% endif %}
+</div>

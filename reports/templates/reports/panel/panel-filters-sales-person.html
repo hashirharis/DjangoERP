@@ -1,0 +1,10 @@
+<div class="col-lg-2">
+    Sales Person:
+    <label>
+        <select placeholder="Filter by Sales Person" multiple="multiple" id="searchsalesPeople" class="selectmultiple" name="salesPerson">
+            {% for person in salesPeople %}
+                <option value="{{ person.id }}">{{ person.name }}</option>
+            {% endfor %}
+        </select>
+    </label>
+</div>

@@ -1,0 +1,41 @@
+{% ifequal uploadType "writeups"%}
+    <table class="table table-bordered">
+        <tr>
+            <th>
+                Model
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Short Description
+            </th>
+            <th>
+                Web Description
+            </th>
+            <th>
+                Product Specifications
+            </th>
+            <th>
+                Man Warranty
+            </th>
+            <th>
+                Web Price
+            </th>
+        </tr>
+        {% for i in rowsFromUpload%}
+        <tr>
+            <td>
+                {{ i.model }}
+            </td>
+            <td>{{i.name}}</td>
+            <td>{{i.short_description}}</td>
+            <td>{{i.web_description}}</td>
+            <td>{{i.product_specifications}}</td>
+            <td>{{i.man_warranty}}</td>
+            <td>{{i.web_price}}</td>
+        </tr>
+        {% endfor%}
+    </table>
+{%endifequal%}
+

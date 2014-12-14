@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+
+    <title>Sale {{ sale.code }} - Delivery Docket</title>
+
+    <link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/invoice-A4style.css' />
+    <style type="text/css" media="print">
+        #hiderow,
+        .delete {
+          display: none;
+        }
+        tr.large-item {
+            font-size: 30px;
+        }
+        #items td.item-name {
+            width: 175px;
+        }
+    </style>
+
+</head>
+
+<body onload="window.print()">
+
+<div id="page-wrap">
+
+    <div id="header">DELIVERY DOCKET</div>
+
+    <div id="identity">
+
+        <div id="address"><strong>Store Details</strong>:<br />{{ sale.terminal.store.franchise }}<br /> {{ sale.terminal.store.name }} <br />{{ sale.terminal.store.htmlFormattedAddress|safe }}</div>
+
+        <div id="logo">
+            <img id="image" style="max-width: 540px; max-height: 100px;" src="{{ STATIC_URL }}img/logo.jpg" alt="logo" />
+        </div>
+
+    </div>
+
+    <div style="clear:both"></div>
+
+    <div id="customer">
+
+        <div id="customer-title"><strong>Deliver To:</strong>:<br />{{ sale.customer.firstName }} {{ sale.customer.lastName }}<br />{{ sale.deliveryAddress|safe }}</div>
+
+        <table id="meta">
+            <tr>
+                <td class="meta-head">Our Sale Reference #</td>
+                <td><textarea>{{ sale.code }}</textarea></td>
+            </tr>
+            <tr>
+                <td class="meta-head">Delivery Date</td>
+                <td><textarea id="date">{% now "d F, Y" %}</textarea></td>
+            </tr>
+        </table>
+
+    </div>
+
+    <table id="items" style="border: 0;">
+
+        <tr>
+            <th>Quantity</th>
+            <th>Item</th>
+        </tr>
+
+        {% for saleLine in saleLines %}
+
+        <tr class="item-row large-item">
+            <td width="50">{{ saleLine.quantity }}</td>
+            <td width="500">{{ saleLine.modelNum }}</td>
+        </tr>
+
+            <tr class="item-row">
+                <td colspan="2">{{ saleLine.description }}</td>
+            </tr>
+
+        {% endfor %}
+
+    </table>
+
+    {% if sale.note|length %}
+    <div id="terms" style="margin-top:100px;">
+        <h5>Notes</h5>
+        {{ sale.note }}
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {% block css %} {% endblock %}
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico">
+    <link rel="apple-touch-glyphicon glyphicon-precomposed" sizes="144x144" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-glyphicon glyphicon-144-precomposed.png">
+    <link rel="apple-touch-glyphicon glyphicon-precomposed" sizes="114x114" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-glyphicon glyphicon-114-precomposed.png">
+    <link rel="apple-touch-glyphicon glyphicon-precomposed" sizes="72x72" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-glyphicon glyphicon-72-precomposed.png">
+    <link rel="apple-touch-glyphicon glyphicon-precomposed" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-glyphicon glyphicon-57-precomposed.png">
+    <script type="text/javascript">
+        var timerStart = Date.now();
+    </script>
+    <style>
+        <!-- temporary logo overwrite for testing -->
+        #header h1 {
+            background: url("http://dummyimage.com/215x31/333136/fcdf00&text=KNAPS") no-repeat scroll 0 0 transparent;
+        }
+    </style>
+</head>
+<body>
+
+{% block topnav %}
+{% include "nav.html" %}
+{% endblock %}
+
+<!-- content -->
+<div id="content">
+{% block content %}{% endblock %}
+</div>
+<!-- /content -->
+
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+{% block javascript %}
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,5 @@
+<h3>{{ targetStaff.firstName }} {{ targetStaff.lastName }} <small>{{ targetStaff.store.name }}</small></h3>
+<p><strong>Username</strong><small> {{ targetStaff.username }}</small></p>
+<p><strong>Email</strong><small> {{ targetStaff.email }}</small></p>
+<p><strong>Position</strong><small> {{ targetStaff.position }}</small></p>
+<p>{% if not targetStaff.enabled %}This Staff Member is disabled{% endif %}</p>

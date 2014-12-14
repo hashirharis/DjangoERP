@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}View Brand{% endblock %}
+
+{% block content %}
+
+<div id="content-header">
+    <h1>Brand <small>View</small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-barcode"></i> Pricebook</a>
+    <a href="{% url 'core:searchBrands' %}" class="tip-bottom" data-original-title="Search for Brands"><i class="glyphicon glyphicon-search"></i>Brand</a>
+    <a href="" class="current">View</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+            <div class="col-4">
+                <div class="widget-box">
+                    <div class="widget-title">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-gift"></i>
+                        </span>
+                        <h5>View Brand</h5>
+                    </div>
+                    <div class="widget-content">
+                        <h3>{{ brand.brand }}</h3><br />
+                        <table class="table table-bordered">
+                            <tbody>
+                            <tr>
+                                <td>Address</td>
+                                <td>{{ brand.address }} <br />
+                                    {{ brand.suburb }} {{ brand.cityState }} {{ brand.postcode }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Postal Address</td>
+                                <td>{{ brand.paddress }} <br />
+                                    {{ brand.psuburb }} {{ brand.pcityState }} {{ brand.ppostcode }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Phone</td>
+                                <td>{{ brand.phone }}</td>
+                            </tr>
+                            <tr>
+                                <td>Fax</td>
+                                <td>{{ brand.fax }}</td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td>{{ brand.email }}</td>
+                            </tr>
+                            <tr>
+                                <td>Account Manager</td>
+                                <td>{{ brand.repName }}{% if brand.repPhone != "" %}(p:{{ brand.repPhone }}){% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Head Office Comments</td>
+                                <td>{{ brand.comments }}</td>
+                            </tr>
+                            <tr>
+                                <td>ABN</td>
+                                <td>{{ brand.ABN }}</td>
+                            </tr>
+                            <tr>
+                                <td>GLN</td>
+                                <td>{{ brand.GLN }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="widget-box">
+                    <div class="widget-title">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-star"></i>
+                        </span>
+                        <h5>Vendor Bonus'</h5>
+                    </div>
+                    <div class="widget-content">
+                        <h3>Vendor Bonus' <span class="badge badge-success">{{ currentCount }} Current</span> <span class="badge badge-info">{{ pendingCount }} Pending</span>
+                            {% load br %}
+                            {% if store|canEdit:brand %}
+                                <a href="{% url 'core:createVendorBonus' brand.id %}" class="btn btn-mini"><i class="glyphicon glyphicon-plus"></i> Add</a>
+                                <a href="{% url 'core:searchVendorBonus' brand.id %}" class="btn btn-mini"><i class="glyphicon glyphicon-folder-open"></i> Archives</a>
+                            {% endif %}
+                        </h3>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Comments</th>
+                                <th>Start-End Date</th>
+                                {% if store|canEdit:brand %}
+                                <th>Actions</th>
+                                {% endif %}
+                            </tr>
+                            {% if deals %}
+                            {% for bonus in deals %}
+                                <tr class="{% if bonus.active %}success{% else %}info{% endif %}">
+                                    <td>{{ bonus.type.name }}</td>
+                                    <td>{{ bonus.amount }} %</td>
+                                    <td>{{ bonus.comments }}</td>
+                                    <td>{{ bonus.startDate|date:'d/m/y' }} - {{ bonus.endDate|date:'d/m/y' }}</td>
+                                    {% if store|canEdit:brand %}
+                                    <td>
+                                        <a class="btn btn-mini" href="{% url 'core:updateVendorBonus' bonus.id %}"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
+                                        <a class="btn btn-mini deleteDeal" data-id="{{ bonus.id }}"><i class="glyphicon glyphicon-remove"></i> Delete</a>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            {% else %}
+                                <tr class="error" align="center">
+                                    <td colspan="5">There are no bonus' currently being offered with this brand..</td>
+                                </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+</form>
+
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+       var search = br.search({
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            csrfToken:"{% csrf_token %}"
+        });
+
+        search.submitPage = function() {
+            window.location.reload();
+        };
+
+        search.addEntity("Deal",{
+            prepend: "",
+            html: "Deal",
+            human: "Deal"
+        });
+
+        search.addDelete("Deal",{
+            button: $('.deleteDeal'),
+            url:'{% url 'core:deleteVendorBonus' 1 %}'
+        });
+    });
+    </script>
+{% endblock %}

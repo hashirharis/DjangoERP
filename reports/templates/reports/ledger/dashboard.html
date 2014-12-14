@@ -1,0 +1,20 @@
+<ul class="quick-actions">
+    <li>
+        <a href="{% url 'reports:ledgerReportsView' report_type="statements" report_class="ledger" %}" class="tip-bottom" data-original-title="">
+            <i class="icon-graph"></i>
+            Statements
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'reports:ledgerReportsView' report_type="aged" report_class="ledger" %}" class="tip-bottom" data-original-title="">
+            <i class="icon-graph"></i>
+            Aged account report
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'reports:ledgerReportsView' report_type="selected" report_class="ledger" %}" class="tip-bottom" data-original-title="">
+            <i class="icon-graph"></i>
+            Selected account type
+        </a>
+    </li>
+</ul>

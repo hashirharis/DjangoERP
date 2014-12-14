@@ -1,0 +1,100 @@
+{% extends "stock/claim/base.html" %}
+{% block title %}New Claim{% endblock %}
+{% block content %}
+{% load br %}
+{{ block.super }}
+<div id="content-header">
+    <h1>New Claim</h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'stock:dashboard' %}"><i class="glyphicon glyphicon-gift"></i>Stock</a>
+    <a href="{% url 'stock:claimHome' %}"><i class="glyphicon glyphicon-list-alt"></i>Claims Dashboard</a>
+    <a href="#" class="supress"><i class="glyphicon glyphicon-th-list"></i><strong>New Claim</strong></a>
+</div>
+
+<div class="row">
+    <div id="claimTypeSelectDiv" class="col-6">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-list"></i>
+                </span>
+                <h5>Information</h5>
+            </div>
+            <div class="widget-content">
+                <div class="form form-horizontal">
+                     <div class="control-group">
+                        <label class="control-label" for="selectClaimType">Claim Type</label>
+                        <div class="controls">
+                            <select name="selectClaimType" id="selectClaimType">
+                                <option value="PP">Price Protection</option>
+                                <option value="MD">Mark Down</option>
+                                <option value="ICIS">Incorrectly Charged Invoice (Supplier)</option>
+                                <option value="ICIHO">Incorrectly Charged Invoice (Head Office)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-file"></i>
+                </span>
+                <h5>Additional Comments</h5>
+            </div>
+            <div class="widget-content">
+                <div class="row">
+                    <div class="col-12">
+                        <textarea id="storeNote" rows="5" style="width:100%"></textarea>
+                        <br/>
+                        <small style="color:darkgray;">* These notes will appear for head office if lodging an incorrectly charged invoice claim against Head Office</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="widget-box">
+            <div class="widget-heading">
+                <div class="widget-title">
+                    <a data-parent="#collapse-group" href="#collapseGOne" data-toggle="collapse">
+                        <span class="icon"><i class="glyphicon glyphicon-shopping-cart"></i></span>
+                        <h5>Products</h5>
+                        <div class="buttons">
+                            <a role="button" class="btn btn-mini disabled"><i class="glyphicon glyphicon-plus"></i> Add Product</a>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="collapse in" id="collapseGOne">
+                <div class="widget-content claimLinesDiv">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if claim.status == "PENDING" %}
+    <div class="col-12">
+        <div class="widget-box">
+            <div class="widget-content">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-actions" style="text-align: right">
+                            <button class="btn btn-large btn-info disabled">Awaiting Head Office Invoice...</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% if product %}
+{% load br %}
+<table class="table table-bordered table-hover">
+    <thead>
+    <th></th>
+    <th>GST Exc</th>
+    <th>GST Inc</th>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Normal Invoice</td>
+        <td>${{ product.tradePrice|floatformat:2 }}</td>
+        <td>${{ product.tradePrice|incGST }}</td>
+    </tr>
+    <tr>
+        <td>Model Discount</td>
+        <td>${{ product.getCurrentModelDiscount }}</td>
+        <td>${{ product.getCurrentModelDiscount|incGST }}</td>
+    </tr>
+    <tr>
+        <td>Invoice</td>
+        <td>${{ product.costPrice|floatformat:2 }}</td>
+        <td>${{ product.costPrice|incGST}}</td>
+    </tr>
+    <tr>
+        <td>Vendor/Type Bonus</td>
+        <td>{{ product.getCurrentClassVendorBonus }}%</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Dollar Bonus</td>
+        <td>${{ product.getCurrentDollarBonus|floatformat:2 }}</td>
+        <td>${{ product.getCurrentDollarBonus|incGST }}</td>
+    </tr>
+    <tr>
+        <td>Percent Bonus</td>
+        <td>{{ product.getCurrentPercentBonus }}%</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Rebate</td>
+        <td>{{ product.brand.rebate }}%</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Net</td>
+        <td>${{ product.spanNet|floatformat:2 }}</td>
+        <td>${{ product.spanNet|incGST }}</td>
+    </tr>
+    </tbody>
+</table>
+{% endif %}

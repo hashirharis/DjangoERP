@@ -1,0 +1,90 @@
+<div id="header">
+    <h1><a href="{% url 'core:home' %}">Bi Rite Electrical</a></h1>
+</div>
+
+<div id="user-nav">
+    <ul class="btn-group">
+        <li class="btn"><a title="" href="#"><i class="glyphicon glyphglyphicon glyphicon-user"></i> <span class="text"> {{ staffMember.name }}</span></a></li>
+        {% if staffMember %}
+            <li class="btn"><a title="" href="{% url 'admin:clearSession' %}"><i class="glyphicon glyphglyphicon glyphicon-share-alt"></i> <span class="text">Logout</span></a></li>
+        {% endif %}
+    </ul>
+</div>
+
+<div id="sidebar">
+    <ul>
+        {% if store.code != 'VW' %}
+        <li><a href="{% url 'core_stock:stock_range' %}"><i class="glyphicon glyphicon-book"></i> <span>Ranging</span></a></li>
+            <li class="submenu">
+                <a href=""><i class="glyphicon glyphicon-bullhorn"></i> <span>Bulletin Board</span> <span class="label">3</span></a>
+                <ul>
+                    <li><a href="{% url 'bulletins:collations' %}" data-module="Sale">Collations</a></li>
+                    <li><a href="{% url 'bulletins:promotions' 'customer' %}" data-module="Sale">Customer Promotions</a></li>
+                    <li><a href="{% url 'bulletins:promotions' 'store' %}" data-module="Sale">Sale Promotions</a></li>
+                </ul>
+            </li>
+            <li><a href="{% url 'core:priceLookup' %}"  data-module="Sale"><i class="glyphicon glyphicon-search"></i> <span>Search Products</span></a></li>
+            <li><a href="{% url 'pos:searchCustomers' %}"  data-module="Sale"><i class="glyphicon glyphicon-user"></i> <span>Search Customers</span></a></li>
+            <li class="submenu">
+                <a href=""><i class="glyphicon glyphicon-th-list"></i> <span>Sales</span> <span class="label">4</span></a>
+                <ul>
+                    <li><a href="{% url 'pos:home' %}" data-module="Sale">Dashboard</a></li>
+                    <li><a href="{% url 'pos:newSaleDefaultTerminal' %}" data-module="Sale">New Sale/Order</a></li>
+                    <li><a href="{% url 'pos:searchSales' 'PENDING' %}" data-module="Sale">Open Existing Sale/Order</a></li>
+                    <li><a href="{% url 'pos:searchSales' 'QUOTE' %}" data-module="Sale">Open Quotation</a></li>
+                </ul>
+            </li>
+            <li class="submenu">
+                <a href=""><i class="glyphicon glyphicon-barcode"></i> <span>Price Book</span> <span class="label">4</span></a>
+                <ul>
+                    <li><a href="{% url 'core:searchProducts' %}" data-module="PriceBook">Product</a></li>
+                    <li><a href="{% url 'core:searchProductCategory' %}" data-module="PriceBook">Categories</a></li>
+                    <li><a href="{% url 'core:searchBrands' %}" data-module="PriceBook">Brands</a></li>
+                    <li><a href="{% url 'core:searchProductTags' %}" data-module="PriceBook">Tags</a></li>
+                </ul>
+            </li>
+            <li class="submenu">
+                <a href=""><i class="glyphicon glyphicon-gift"></i> <span>Stock / Invoicing</span> <span class="label">5</span></a>
+                <ul>
+                    <li><a href="{% url 'stock:dashboard' %}" data-module="Stock">Dashboard</a></li>
+                    <li><a href="{% url 'stock:stockTakeHome' %}" data-module="Stock">Stocktake</a></li>
+                    <li><a href="{% url 'b2b:stockOrderHome' %}" data-module="Stock">Stock Order</a></li>
+                    <li><a href="{% url 'stock:dashboard' %}" data-module="Stock">Stock Management</a></li>
+                    <li><a href="{% url 'stock:merchandiser' %}" data-module="Stock">Merchandiser</a></li>
+                    <li><a href="{% url 'stock:claimHome' %}" data-module="Stock">Claims</a></li>
+                </ul>
+            </li>
+            {% if store.displayHOMenu %}
+            <li class="submenu">
+                <a href=""><i class="glyphicon glyphicon-book"></i> <span>Head Office IRP</span> <span class="label">5</span></a>
+                <ul>
+                    <li><a href="{% url 'b2b:HOInvoicingHome' %}" data-module="Sale">Home</a></li>
+                    <li><a href="{% url 'b2b:HOInvoicingHome' %}" data-module="Sale">Search Invoices</a></li>
+                    <li><a href="{% url 'b2b:newHOInvoice' %}" data-module="Sale">New Invoice</a></li>
+                    <li><a href="{% url 'b2b:chargesHome' %}" data-module="Sale">Charges</a></li>
+                    <li><a href="{% url 'b2b:reconHome' %}" data-module="Sale">Reconciliation</a></li>
+                </ul>
+            </li>
+            <li><a href="{% url 'uploads:home' %}" data-module="Admin"><i class="glyphicon glyphicon-book"></i> <span>Uploads</span></a></li>
+            <li><a href="{% url 'b2b:nteSim' %}"><i class="glyphicon glyphicon-random"></i> <span>NTE Sim</span></a></li>
+            {% endif %}
+            <li><a href="{% url 'reports:home' %}" data-module="Admin"><i class="glyphicon glyphicon-signal"></i> <span>Reports</span></a></li>
+            <li><a href="{% url 'admin:listStaff' %}" data-module="Admin"><i class="glyphicon glyphicon-cog"></i> <span>Administration</span></a></li>
+            <li><a href="{% url 'tele:home' %}"><i class="glyphicon glyphicon-book"></i> <span>Contacts</span></a></li>
+        {% else %} <!--for Virtual Warehouse only-->
+            <li class="submenu open">
+                <a href=""><i class="glyphicon glyphicon-home"></i> <span>Virtual Warehouse</span> <span class="label">6</span></a>
+                <ul>
+                    <li><a href="{% url 'vw:home' %}" data-module="Stock">Dashboard</a></li>
+                    <li><a href="{% url 'vw:newVWInvoiceIN' %}" data-module="Stock">Add stock</a></li>
+                    <li><a href="{% url 'vw:newVWInvoiceOUT' %}" data-module="Stock">Release stock</a></li>
+                    <li><a href="{% url 'vw:moveVWStockNoInvoice' %}" data-module="Stock">Move w/o invoice</a></li>
+                    <li><a href="{% url 'stock:merchandiser' %}" data-module="Stock">Check stock levels</a></li>
+                    <li><a href="{% url 'b2b:HOInvoicingHome' %}" data-module="Stock">Invoicing</a></li>
+                    <li><a href="{% url 'admin:listStaff' %}" data-module="Admin"> <span>Administration</span></a></li>
+
+                </ul>
+            </li>
+        {% endif %}
+    </ul>
+</div>

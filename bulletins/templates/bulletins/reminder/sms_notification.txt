@@ -1,0 +1,1 @@
+NEW Bulletin Message "{{ bulletin.subject|truncatechars:92 }}" please check intranet for full details.

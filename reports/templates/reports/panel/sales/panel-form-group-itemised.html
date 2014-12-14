@@ -1,0 +1,24 @@
+<li>
+    {% if isItemisedViewAllStores %}
+        <a href="/reports/export-itemised/itemised/1/?{{search_string}}">Export</a>
+    {% else %}
+        <a href="/reports/export-itemised/itemised/0/?{{search_string}}">Export</a>
+    {% endif %}
+</li>
+<li>
+    <a href="{% url 'reports:salesReportsView' report_type="itemisedsummary" second_style=0 %}">Summarise by Category</a>
+</li>
+<li>
+    {% if store.isHead %}
+        {% if isItemisedViewAllStores %}
+            <a href="{% url 'reports:salesReportsView' report_type="itemised" second_style=0 %}" >Show HO only</a>
+        {% else %}
+            <a href="{% url 'reports:salesReportsView' report_type="itemised" second_style=1 %}" >Show all Stores</a>
+        {% endif %}
+    {% else %}
+    {% endif %}
+</li>
+
+
+
+

@@ -1,0 +1,11 @@
+<div class="col-lg-3">
+    Sort:
+    <label>
+        <select id="sortTypes" name="sortTypes">
+            <option value="" disabled selected>Sort by here</option>
+            {% for type in sortTypes %}
+                <option value="{{ type.id }}">{{ type.name }}</option>
+            {% endfor %}
+        </select>
+    </label>
+</div>

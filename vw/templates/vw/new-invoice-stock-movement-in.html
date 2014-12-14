@@ -1,0 +1,85 @@
+{% extends "b2b/invoicing/new.html" %}
+
+    {% block heading %}
+
+        <div id="content-header">
+            {% if invoice %}
+                <h1> Virtual Warehouse | Edit | <small>  Invoice: {{ invoice.invoiceNumber }}</small> | Stock IN</h1>
+            {% else %}
+                <h1> Add <small>Stock to Virtual Warehouse</small> </h1>
+            {% endif %}
+        </div>
+
+    {% endblock %}
+
+    {% block invoiceType %}
+
+    <select id="invoiceType" disabled>
+
+        <option value="Purchase of stock">Purchase of stock</option>
+
+    </select>
+
+    {% endblock %}
+
+    {% block selectStore %}
+
+        <select id="selectStore" disabled>
+
+        <option value="112">Virtual Warehouse</option>
+
+        </select>
+
+    {% endblock %}
+
+    {% block linkB2B %}  <!--Removes the original element-->
+
+    {% endblock %}
+
+    {% block freight %}  <!--Removes the original element-->
+
+    {% endblock %}
+
+    {% block breadcrumb %}
+
+        <a href="{% url 'vw:home' %}"><i class="glyphicon glyphicon-book"></i>Virtual Warehouse</a>
+        <a><i class="glyphicon glyphicon-plus-sign"></i><strong>{% if invoice %}Edit{% else %}New{% endif %}</strong></a>
+
+    {% endblock %}
+
+    {% block invoiceNumber %}
+
+        {% if invoice %}
+            <input type="text" id="invoiceNumber" placeholder="Invoice Number" value="{{ invoice.invoiceNumber }}" disabled>
+        {% else %}
+            <input type="text" id="invoiceNumber" placeholder="Invoice Number">
+        {% endif %}
+
+    {% endblock %}
+
+    {% block completeHOInvoice %}
+
+    {% if invoice %}
+        <a id="completeHOInvoice" class="btn btn-large btn-info isMovementIN">Confirm Invoice</a>
+    {% else %}
+        <a id="completeHOInvoice" class="btn btn-large btn-info isMovementIN">Create Invoice</a>
+    {% endif %}
+
+    {% endblock %}
+
+    {% block completeInvoiceClickFunction %} <!--point the url to VW module urls-->
+
+        $('#completeHOInvoice').click(function() {
+            if($(this).hasClass("disabled")||invoiceModel.invoiceLines.length==0) { return; }
+            var isMovementIN = $('#completeHOInvoice').hasClass('isMovementIN');
+            console.log(isMovementIN);
+
+            if (isMovementIN){
+                invoiceModel.completeInvoice('{% url 'vw:saveVWInvoice' type="stockIN" %}');
+            }
+            else{
+                invoiceModel.completeInvoice('{% url 'vw:saveVWInvoice' type="stockOUT" %}');
+            }
+        });
+
+    {% endblock %}

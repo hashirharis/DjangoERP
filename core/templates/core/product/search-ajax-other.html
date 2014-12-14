@@ -1,0 +1,110 @@
+{% load br %}
+{% if products %}
+    {% if format == "sale" %}
+        <table class="table table-bordered table-hover">
+            <thead>
+            <th class="hidden">id</th>
+            <th>Model Num</th>
+            <th>Brand</th>
+            <th class="hidden">Description</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Go Price</th>
+            <th>Actions</th>
+            <th class="hidden">Cost Price</th>
+            </thead>
+            <tbody>
+            {% for product in products %}
+                <tr>
+                    <td class="hidden id">{{ product.id }}</td>
+                    <td class="hidden isWarranty">{% if product.warranty %}1{% else %}0{% endif %}</td>
+                    <td class="hidden warrantyRef">{{ warrantyRefId.model }}</td>
+                    <td class="hidden availableStock">{{ store|getAvailable:product }}</td>
+                    <td class="modelNum">{{ product.model }}</td>
+                    <td class="brandName">{{ product.brand.brand|title }}</td>
+                    <td class="description hidden">{{ product.model }} {{ product.description }}</td>
+                    <td>{{ product.category.parentCategory|truncatechars:12 }}</td>
+                    <td>{{ product.status }}</td>
+                    <td class="goPrice">{{ product.goPrice }}</td>
+                    <td>
+                        <a class="addProduct btn btn-primary"><i class="glyphicon glyphicon-plus"></i></a>
+                    </td>
+                    <td class="hidden SpanNetPlusGST">{{ product.spanNetPlusGST }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% elif format == "order" %}
+        <table class="table table-bordered table-hover">
+        <thead>
+        <th class="hidden">id</th>
+        <th>Model Num</th>
+        <th>Brand</th>
+        <th>Supplier</th>
+        <th class="hidden">Supplier ID</th>
+        <th class="hidden">Description</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Invoice Price</th>
+        <th>Actions</th>
+        <th class="hidden">Cost Price</th>
+        </thead>
+        <tbody>
+        {% for product in products %}
+            <tr>
+                <td class="hidden id">{{ product.id }}</td>
+                <td class="hidden EAN">{{ product.EAN }}</td>
+                <td class="modelNum">{{ product.model }}</td>
+                <td class="brandName">{{ product.brand.brand|title }}</td>
+                <td class="supplierName">{{ product.brand.distributor|title }}</td>
+                <td class="supplierID hidden">{{ product.brand.id }}</td>
+                <td class="supplierHasET hidden">{{ product.brand.hasElectronicTrading }}</td>
+                <td class="description hidden">{{ product.model }} {{ product.brand.brand|title }} {{ product.category.parentCategory }} </td>
+                <td>{{ product.category.parentCategory|truncatechars:12 }}</td>
+                <td>{{ product.status }}</td>
+                <td class="offInvoicePrice">{{ product.costPrice }}</td>
+                <td>
+                    <a class="addProduct btn btn-primary"><i class="glyphicon glyphicon-plus"></i></a>
+                </td>
+                <td class="hidden SpanNetPlusGST">{{ product.spanNetPlusGST }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    {% elif format == "invoice" %}
+        <table class="table table-bordered table-hover">
+        <thead>
+        <th class="hidden">id</th>
+        <th>Model Num</th>
+        <th>Brand</th>
+        <th class="hidden">Description</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Actions</th>
+        <th class="hidden">Invoice Price</th>
+        <th class="hidden">Store Net</th>
+        </thead>
+        <tbody>
+        {% for product in products %}
+            <tr>
+                <td class="hidden id">{{ product.id }}</td>
+                <td class="modelNum">{{ product.model }}</td>
+                <td class="brandName">{{ product.brand.brand|title }}</td>
+                <td class="description hidden">{{ product.model }} {{ product.description }}</td>
+                <td>{{ product.category.name }}</td>
+                <td>{{ product.status }}</td>
+                <td>
+                    <a class="addProduct btn btn-primary"><i class="glyphicon glyphicon-plus"></i></a>
+                </td>
+                <td style="display:none;" class="invActual">{{ product.costPrice }}</td>
+                <td style="display:none;" class="spanNet">{{ product.spanNet }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    {% endif %}
+{% else %}
+    {% if warrantyRefId %}
+        <p>No Cust Care Plans Found !</p>
+    {% else %}
+        <p>No Products Found !</p>
+    {% endif %}
+{% endif %}

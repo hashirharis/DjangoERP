@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Update Local Contact - {{ object.name }}{% endblock %}
+
+{% block content %}
+
+<div id="content-header">
+    {% if object.isContact %}
+        {% if object.isShared %}
+            <h1>Head Office Contact <small> Update</small></h1>
+        {% else %}
+            <h1>Local Contact <small> Update</small></h1>
+        {% endif %}
+    {% endif %}
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'tele:home' %}" class="tip-bottom" data-original-title="Go to Contacts Home"><i class="glyphicon glyphicon-book"></i> Contacts</a>
+    {% if object.isContact %}
+        {% if object.isShared %}
+            <a href="{% url 'tele:headOfficeContactLookup' %}" class="tip-bottom" data-original-title="Go to Head Office Contact search"><i class="glyphicon glyphicon-book"></i> Head Office Contacts</a>
+        {% else %}
+            <a href="{% url 'tele:localContactLookup' %}" class="tip-bottom" data-original-title="Go to Local Contact search"><i class="glyphicon glyphicon-book"></i> Local Contacts</a>
+        {% endif %}
+        <a href="{% url 'tele:viewLocalContact' object.id %}" class="tip-bottom" data-original-title="View"><i class="glyphicon glyphicon-eye-open"></i> {{ object.name }}</a>
+        <a href="">Update Contact</a>
+    {% endif %}
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-title">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-user"></i>
+                </span>
+                    <h5>Update Contact</h5>
+                </div>
+                <div class="widget-content">
+                    <form method="POST" class="form-horizontal">
+                        <div class="row">
+                            <div class="col-12">
+                                {% load crispy_forms_tags %}
+                                {% crispy form %}
+                                <div class="form-actions" style="text-align: right">
+                                  <button type="submit" class="btn btn-primary btn-large">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ STATIC_URL }}js/unicorn.form_common.js"></script>
+{% endblock %}

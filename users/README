@@ -1,0 +1,26 @@
+This README describes ownerships, groupings and user Permissions in the system
+
+'models' are all the Django models that inherit from the abstract Django Model : StoreLevelObject.
+
+=Ownerships=
+- Bi-Rite Head Office is the root store that can edit/update and delete all the models, but based on the privelege levels of the staff only some can fully do so.
+    - All stores under the Bi-Rite StoreGroup can view the products if they are marked as shared
+- All other stores fall under Bi-Rite Head Office and can also have their own models which can only be edited and deleted by the store that created it.
+    - Only this store can view the model unless more stores appear under this Stores StoreGroup and the product is marked as shared
+
+==In Summary A Model can only be viewed by a store if it==
+- Created it
+- Falls Under the StoreGroup of the store that created it AND it is a shared Model
+
+==In Summary A Model can only be deleted/edited by a store if it==
+- Created it
+- Only Staff with a privelege level of 2 or up can delete/edit a model.
+
+=Users and Permissions=
+- The Django user is the Bi-Rite store and a custom user has been created to represent a Staff Member.
+- Store Profile (Django User Profile) has been created for each store so the store admin settings are stored in that profile.
+- Staff members are represented by the Staff model
+
+==Staff Permissions==
+- Staff Permissions follow the same pattern as SPAN and can be seen in the Staff Model privelegeLevel
+- Access is restricted to each module and SOME modules can only be access if the staff member is signed in.

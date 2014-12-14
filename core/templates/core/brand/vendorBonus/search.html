@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Search a Vendor Bonus{% endblock %}
+
+{% block content %}
+
+<div id="content-header">
+    <h1>Vendor Bonus <small>Search</small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'core:searchBrands' %}" class="tip-bottom" data-original-title="Search for Brands"><i class="glyphicon glyphicon-barcode"></i>Brands</a>
+    <a href="{% url 'core:viewBrand' brand.id %}" class="tip-bottom" data-original-title="View {{ brand.brand }}"><i class="glyphicon glyphicon-globe"></i>{{ brand.brand }}</a>
+    <a href="" class="current"><i class="glyphicon glyphicon-star"></i> Vendor Bonus</a>
+    <a href="" class="current">Search</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box widget-plain">
+                <div class="widget-content center">
+                    <ul class="stats-plain">
+                        <li>
+                            <h4><a class="btn supress startDate" href="#">{{ startDate|date:"m/d/Y" }}</a></h4>
+                        </li>
+                        <li>
+                            <h4>-</h4>
+                        </li>
+                        <li>
+                            <h4><a class="btn supress endDate" href="#">{{ endDate|date:"m/d/Y" }}</a></h4>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                    <h5>Results</h5>
+                </div>
+                <div class="widget-content">
+                    <div id="resultsDiv">
+                        {% if deals %}
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                 <tr>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Comments</th>
+                                    <th>Start-End Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for bonus in deals %}
+                                    <tr class="{% if bonus.active %}success{% else %}info{% endif %}">
+                                        <td>{{ bonus.type.name }}</td>
+                                        <td>{{ bonus.amount }} %</td>
+                                        <td>{{ bonus.comments }}</td>
+                                        <td>{{ bonus.startDate|date:'d/m/y' }} - {{ bonus.endDate|date:'d/m/y' }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <ul class="pagination alternate pull-right">
+                                {% for x in paginator.page_range %}
+                                    <li{% if page_obj.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>Failed to return results.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            $('select').select2();
+            $('input[type=checkbox],input[type=radio],input[type=file]').uniform();
+            $('.datetimeinput').datepicker();
+
+            var search = br.search({
+                ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+                csrfToken:"{% csrf_token %}"
+            });
+
+            search.addEntity("Entities",{
+                prepend: "",
+                html: "Entity",
+                human: "Deals"
+            });
+
+            search.addQuerySet("Entities",{
+                name:'All',
+                prepend:"",
+                parameters: {
+                    startDate: "{{ startDate|date:"m/d/Y" }}",
+                    endDate: "{{ endDate|date:"m/d/Y" }}",
+                    page: "{{ page_obj.number }}"
+                }
+            });
+
+            search.addPagination("Entities","All",'page',$('#resultsDiv'));
+
+            $('.startDate').click(function() {
+            var returnDate = prompt("Please enter a date (mm/dd/yyy) to Search Until",$(this).text());
+            if(returnDate==""||returnDate==null) {
+                return
+            }
+            if(isNaN(new Date(returnDate))){
+                alert("Invalid Date Entered!");
+                return
+            }
+            search.changeParameter("Entities","All","startDate",returnDate);
+        });
+
+        $('.endDate').click(function() {
+            var returnDate = prompt("Please enter a date (mm/dd/yyy) to Search Until",$(this).text());
+            if(returnDate==""||returnDate==null) {
+                return
+            }
+            if(isNaN(new Date(returnDate))){
+                alert("Invalid Date Entered!");
+                return
+            }
+            search.changeParameter("Entities","All","endDate",returnDate);
+        });
+
+        });
+    </script>
+{% endblock %}

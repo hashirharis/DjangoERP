@@ -1,0 +1,140 @@
+
+{%extends "stock_ranges_main.html"%}
+
+{%block upper_area%}
+        {% if success%}
+	<div class="alert alert-success">
+		<button class="close" data-dismiss="alert">×</button>
+		<strong>Success!</strong> New Ranged Item is added
+	</div>
+{%endif%}
+{% if fail%}
+	<div class="alert alert-danger">
+	    <button class="close" data-dismiss="alert">×</button>
+	    <strong>Error!</strong> Failed To Add new Item, Item Already Exists
+	</div>
+{%endif%}
+{% if bad%}
+	<div class="alert alert-danger">
+        <button class="close" data-dismiss="alert">×</button>
+        <strong>Error!</strong> Failed To Add new Item, Bad Entry
+    </div>
+{%endif%}
+
+	<h1>Product Ranges</h1>
+    <div class="row">
+       <div class="col-md-6 col-sm-6 col-xs-6 col-lg-3" style="float: right; margin-right: 75px; margin-top: -66px;">
+            <div class="widget-box">
+
+                <div class="input-group form-control">
+                    <input type="text" id="productMonthPicker"class="form-control" placeholder="Filter by month"/>
+                </div>
+            </div>
+        </div>
+	<div class="btn-group">
+	<a href="#addEntity"class="addEntity btn btn-large tip-bottom supress" data-toggle="modal" title="Add Product "
+       data-original-title="Add Product"><i class="glyphicon glyphicon-plus"></i></a>
+    </div>
+    </div>
+
+	<div id="addEntity" class="modal fade" aria-hidden="false" style="display: none;">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button data-dismiss="modal" class="close" type="button">×</button>
+					<h3>Add Product to Range</h3>
+				</div>
+				<div class="modal-body">
+					{%if form.errors%}
+						{{form.errors}}
+						{{form.non_field_errors}}
+							{{form.store.errors}}
+							{{form.rangeType.errors}}
+							{{form.store.errors}}
+					{%endif%}
+	                <form method="post" class="form-horizontal" role="form">{% csrf_token %}
+                        <div class="control-group">
+                           <label class="control-label" for="id_{{form.product.name}}">
+                            {{ form.product.label }} :
+                            </label>
+                            <div class="controls">
+                                {{form.product}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="control-group">
+                            <label class="control-label" for="id_{{form.month.name}}">
+                            {{form.month.label}} :
+                            </label>
+                            <div class="controls">
+                              {{form.month}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="control-group">
+                            <label class="control-label" for="id_{{form.guaranteed.name}}">
+                            {{form.guaranteed.label}} :
+                            </label>
+                            <div class="controls">
+                              {{form.guaranteed}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="control-group">
+                            <label class="control-label" for="id_{{form.rangeType_gold.name}}">
+                                Gold $:
+                                </label>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                {{form.rangeType_gold}}
+                                            </span>
+                                                {{form.gold_bonus}}
+                                        </div><!-- /input-group -->
+                                    </div><!-- /.col-lg-6 -->
+                                </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="id_{{form.rangeType_silver.name}}">
+                                Silver $:
+                                </label>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                {{form.rangeType_silver}}
+                                            </span>
+                                                {{form.silver_bonus}}
+                                        </div><!-- /input-group -->
+                                    </div><!-- /.col-lg-6 -->
+                                </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="id_{{form.rangeType_Bronze.name}}">
+                                Bronze $:
+                                </label>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                {{form.rangeType_bronz}}
+                                            </span>
+                                                {{form.bronze_bonus}}
+                                        </div><!-- /input-group -->
+                                    </div><!-- /.col-lg-6 -->
+                                </div>
+                        </div>
+                        <br>
+                        <input id="add_product_submit" type="submit" value="Submit" class="form-control btn btn-primary" disabled>
+                    </form>
+	            </div>
+            </div>
+        </div>
+    </div>
+	{%endblock%}
+{% block table_area%}
+{%include "product_ranges.html"%}
+
+{%endblock%}
+

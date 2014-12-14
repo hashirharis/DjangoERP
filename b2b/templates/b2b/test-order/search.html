@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}NTE Orders Search{% endblock %}
+
+{% block content %}
+
+    <div id="content-header">
+        <h1>NTE Orders <small> Search </small></h1>
+    </div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="#"><i class="glyphicon glyphicon-search"></i>NTE Sim</a>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </span>
+                        <h5>Search</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="row">
+                            <div class="col-12">
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="q" placeholder="Search the Order Number Here." value="{{ q }}">
+                                        <span class="input-group-btn">
+                                            <button class="btn">Search!</button>
+                                        </span>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                        <h5>Results</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div id="resultsDiv">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Reference</th>
+                                    <th>Supplier</th>
+                                    <th>Net Total</th>
+                                    <th>Invoice Total</th>
+                                    <th>Ordered by</th>
+                                    <th>Created</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for order in entities %}
+                                    <tr>
+                                        <td>{{ order.reference }}</td>
+                                        <td>{{ order.supplier|title }}</td>
+                                        <td>${{ order.orderTotalStoreNetInGST|floatformat:2 }}</td>
+                                        <td>${{ order.orderTotalInvoiceInGST|floatformat:2 }}</td>
+                                        <td>{{ order.orderedBy.firstName }}</td>
+                                        <td>{{ order.created }}</td>
+                                        <td>{{ order.status }}</td>
+                                        <td>
+                                            <a class="btn tip-bottom" data-original-title="Reject" href="{% url "b2b:rejectETOrder" order.id %}"><i class="glyphicon glyphicon-remove"></i></a>
+                                            <a class="btn tip-bottom" data-original-title="Accept with Amendments" href="{% url "b2b:partialAcceptETOrder" order.id %}"><i class="glyphicon glyphicon-check"></i></a>
+                                            <a class="btn tip-bottom" data-original-title="Accept" href="{% url "b2b:acceptETOrder" order.id %}"><i class="glyphicon glyphicon-ok"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <ul class="pagination alternate pull-right">
+                                {% for x in entities.paginator.page_range %}
+                                    <li{% if entities.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var search = br.search({
+                ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+                csrfToken:"{% csrf_token %}"
+            });
+
+            search.addEntity("Entities",{
+                prepend: "",
+                html: "Entity",
+                human: "{{ entityName }}"
+            });
+
+            search.addQuerySet("Entities",{
+                name:'All',
+                prepend:"",
+                parameters: {
+                    q: '{{ q }}',
+                    page: '{{ page }}'
+                }
+            });
+
+            search.addPagination("Entities","All",'page',$('#resultsDiv'));
+
+        });
+    </script>
+{% endblock %}

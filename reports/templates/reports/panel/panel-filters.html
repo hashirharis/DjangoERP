@@ -1,0 +1,21 @@
+{% if isSales %}
+    {% include "reports/panel/sales/panel-filters.html" %}
+{% elif isIRP %}
+    {% include "reports/panel/IRP/panel-filters.html" %}
+{% elif isBanking %}
+    {% include "reports/panel/banking/panel-filters.html" %}
+{% elif isCustomer %}
+    {% include "reports/panel/customer/panel-filters.html" %}
+{% elif isInward %}
+    {% include "reports/panel/inward/panel-filters.html" %}
+{% elif isLedger %}
+    {% include "reports/panel/ledger/panel-filters.html" %}
+{% elif isJsb %}
+    {% include "reports/panel/jsb/panel-filters.html" %}
+{% elif isTax %}
+    {% include "reports/panel/tax/panel-filters.html" %}
+{% elif isWarranties %}
+    {% include "reports/panel/warranties/panel-filters.html" %}
+{% else %}
+{% endif%}
+

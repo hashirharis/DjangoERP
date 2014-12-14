@@ -1,0 +1,139 @@
+{% extends "base-crud.html" %}
+
+{% block title %}Store Customers - Search{% endblock %}
+
+{% block css %}
+    <style type="text/css">
+    @media screen and (min-width: 768px) {
+          #addEntity .modal-dialog {
+            right: auto;
+            left: 10%;
+            width: 80%;
+            padding-top: 30px;
+            padding-bottom: 30px;
+            margin-left: 0px;
+        }
+        #editEntity .modal-dialog {
+            right: auto;
+            left: 10%;
+            width: 80%;
+            padding-top: 30px;
+            padding-bottom: 30px;
+            margin-left: 0px;
+        }
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div id="content-header">
+    <h1> Customers <small> Search </small></h1>
+        <div class="btn-group">
+            <a class="addEntity btn btn-large tip-bottom supress" data-toggle="modal" title="Add Customer"><i class="glyphicon glyphicon-plus"></i></a>
+        </div>
+    </div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href=""><i class="glyphicon glyphicon-user"></i>Search Customers</a>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </span>
+                        <h5>Search</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="row">
+                            <div class="col-12">
+                                <form method="GET">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="q" placeholder="Search the Customer Name, Phone Number, Address etc." value="{{ q }}">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary">Search!</button>
+                                        </span>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                        <h5>Results</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div id="resultsDiv">
+                        {% if entities %}
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Address</th>
+                                    <th class="visible-md visible-lg">Contact</th>
+                                    <th class="visible-lg">View</th>
+                                    <th class="visible-lg">Edit</th>
+                                    <th>Delete</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for customer in entities %}
+                                    <tr>
+                                        <!-- name -->
+                                        <td class="hidden-lg"><a class="btn btn-primary" href="{% url 'pos:viewCustomer' customer.id %}"><i class="glyphicon glyphicon-eye-open"></i> {{ customer.firstName }} {{ customer.lastName }}</a></td>
+                                        <td class="visible-lg">
+                                            {{ customer.firstName }} {{ customer.lastName }}
+                                        </td>
+                                        <!-- /name -->
+
+                                        <!-- address -->
+                                        <td class="hidden-lg">{{ customer.address }}, {{ customer.suburb }} {{ customer.postcode }}</td>
+                                        <td class="visible-lg"><a class="tip-bottom supress" data-original-title="Postal Address : {% if customer.paddress|default_if_none:"" != "" %}{{ customer.paddress }}, {{ customer.psuburb }} {{ customer.ppostcode }}{% else %}The Same{% endif %}" href="#">{{ customer.address }}, {{ customer.suburb }} {{ customer.postcode }}</a></td>
+                                        <!-- /address -->
+
+                                        <td class="visible-md visible-lg">{{ customer.firstContactPoint }}</td>
+                                        <td class="visible-lg">
+                                            <a class="btn btn-primary tip-bottom" data-original-title="View" href="{% url 'pos:viewCustomer' customer.id %}"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        </td>
+                                        {% load br %}
+                                        {% if store|canEdit:customer %}
+                                            <td class="visible-lg">
+                                                <a class="btn btn-primary editEntityItem tip-bottom" data-id="{{ customer.id }}" data-original-title="Edit" class="tip-bottom supress"><i class="glyphicon glyphicon-pencil"></i></a>
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-primary deleteEntityItem tip-bottom" data-original-title="Delete" data-id="{{ customer.id }}"><i class="glyphicon glyphicon-trash"></i></a>
+                                            </td>
+                                        {% else %}
+                                            <td colspan="2">
+                                                <i class="glyphicon glyphicon-ban-circle"></i> Not Enough Permissions
+                                            </td>
+                                        {% endif %}
+
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <ul class="pagination alternate pull-right">
+                                {% for x in paginator.page_range %}
+                                    <li{% if page_obj.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>Failed to return results.</p>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

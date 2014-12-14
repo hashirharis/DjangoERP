@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block javascript %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.maskedinput.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.modalsearch.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.profitmargincalculator.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.linestable.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.stocktake.js"></script>
+<script type="text/template" id="StockTakeLineRowTemplate">
+    <tr class="item">
+        <td><%= values.description %></td>
+        <td><button class="btn btn-primary btn-mini changeQuantity"><%= values.quantity %> <i class="glyphicon glyphicon-edit"></i></button></td>
+        <td><%= values.systemQuantity %></td>
+        <td><%= values.variance %></td>
+        <td class="actions">
+            <button class="btn btn-primary btn-mini removeLine"><i class="glyphicon glyphicon-remove"></i></button>
+        </td>
+    </tr>
+</script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#productSelect').select2({
+            placeholder: "Search for a product",
+            minimumInputLength: 2,
+            ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+                url: "{% url 'core:searchProductsAjax' %}",
+                dataType: 'json',
+                data: function (term, page) {
+                    return {
+                        q: term,
+                        format: 'stocktake'
+                    };
+                },
+                results: function (data, page) { // parse the results into the format expected by Select2.
+                    // since we are using custom formatting functions we do not need to alter remote JSON data
+                    return {results: data};
+                }
+            }
+        });
+
+        var stockTakeModel = br.stockTakeModel();
+        stockTakeModel.saveURL = "{% url 'stock:saveStockTake' %}";
+
+        var stockTakeLinesTable = br.lineTableWidget({
+            totals: [
+                {title: 'x',key :"x",value: 0.00}
+            ],
+            headers: [
+                {title: "Model",key: 'description'},
+                {title: "Quantity", key: 'quantity'},
+                {title: "System Quantity", key: 'systemQuantity'},
+                {title: "Variance", key: 'variance'},
+                {title: "Actions", key: 'actions'}
+            ],
+            emptyText: "Please add Stock Take Lines using the option above!",
+            rowTemplate: _.template($('#StockTakeLineRowTemplate').html()),
+            rowBindingFunction: function(row) {
+                var line = row.data('line');
+                var that = this;
+                if (stockTakeModel.status=="SAVED"||stockTakeModel.status=="NEW") {
+                    row.find('.changeQuantity').click(function() {
+                        var orderLine = stockTakeModel.getStockTakeLine(line);
+                        var initValue = orderLine.quantity;
+                        var quantity = prompt("Please enter new Quantity",initValue);
+                        stockTakeModel.changeLineQuantity(line,quantity);
+                    });
+                    row.find('.removeLine').click(function() {
+                        if(confirm("Are you sure you want to remove this line from the stocktake ?")) {
+                            var orderLine = stockTakeModel.removeStockTakeLine(line);
+                        };
+                    });
+                }else {
+                    row.find('.btn').attr('disabled', 'true');
+                    row.find('td.actions').hide();
+                }
+                return row
+            },
+            rowUnBindingFunction: function(row) {
+                row.find('.changeQuantity').unbind('click');
+                return row;
+            }
+        });
+
+        $('.stockTakeLinesDiv').append(stockTakeLinesTable.tableElement);
+        stockTakeLinesTable.tableElement.find('tr.success').hide();
+
+        //Table Bindings
+        stockTakeModel.bindCollectionToTable(stockTakeLinesTable,"stockTakeLines"); //just for CRUD operations, totals have to be updated manually
+        var addStockTakeLine = function() {
+            var form = $('#addLineForm');
+            var obj = {
+                'productID': form.find('#productSelect').select2('val'),
+                'quantity': form.find('#quantity').val(),
+                'systemQuantity': form.find('#productSelect').select2('data').systemQuantity,
+                'nsbiQuantity': form.find('#productSelect').select2('data').nsbiQuantity,
+                'description': form.find('#productSelect').select2('data').text
+            };
+            stockTakeModel.addStockTakeLineFromForm(obj);
+        }
+        //Control Bindings
+        $('#addStockTakeLine').click(function(e) {
+            e.preventDefault();
+            addStockTakeLine();
+        });
+        $('#addLineForm').keybind('Enter',function() {
+            $('#addLineForm').find('#productSelect').select2('open');
+            addStockTakeLine();
+        });
+        $('#saveStockTake').click(function(){
+            var prevText = $(this).text();
+            var button = $(this);
+            $(this).attr('disabled', 'true');
+            $(this).text($(this).data('loading-text'));
+            window.setTimeout(function() {
+                button.text(prevText);
+                button.removeAttr('disabled');
+            }, 1000);
+            stockTakeModel.saveStockTake();
+        });
+        $('#processStockTake').click(function(){
+            if(!confirm('Are you sure you wish to process the stocktake ?')) {
+                return;
+            }
+{#            if(stockTakeModel.hasNSBI()){#}
+{#                stockTakeModel.set('clearNSBI', confirm('Do you wish to clear the NSBI Log for the products in this stocktake ?'));#}
+{#            }#}
+            var prevText = $(this).text();
+            var button = $(this);
+            $(this).attr('disabled', 'true');
+            $(this).text($(this).data('loading-text'));
+            window.setTimeout(function() {
+                button.text(prevText);
+                button.removeAttr('disabled');
+            }, 1000);
+            stockTakeModel.processStockTake();
+        });
+        {% if stockTakeData %}
+            stockTakeModel.loadStockTake({{ stockTakeData|safe }});
+            console.log(stockTakeModel);
+            if (stockTakeModel.status=="COMPLETED") {
+                stockTakeLinesTable.tableElement.find('th:last').hide();
+            }
+        {% endif %}
+        //end of sale loading
+        //after sale has been loaded bind change event.
+        stockTakeModel.bindEvent("all", "update", function(newVal) {
+            //if anything changes
+            window.onbeforeunload = function() {
+               return "Are you sure you want to leave, all unsaved changes will be lost as a result.";
+            };
+        });
+    });
+</script>
+{% endblock %}

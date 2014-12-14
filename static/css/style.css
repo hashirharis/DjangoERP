@@ -1,0 +1,156 @@
+.login-box {
+	background: rgb(255,255,255); /* Old browsers */
+	background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(47%,rgba(246,246,246,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+	min-height: 150px;
+	-webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+.login-box-content {
+	padding:40px;
+}
+
+/** cancel default unicorn style **/
+.btn {
+    margin:0;
+}
+#content-header .btn-group .btn {
+    padding: 14px 16px;
+}
+.control-group.error input,.control-group.error textarea
+{
+    border-color: #b94a48;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+.control-group.error span[id^=error] {
+    color: #b94a48;
+    font-weight: bold;
+    display: inline-block;
+}
+/** cancel default unicorn style **/
+
+/* Other
+-------------------------------------------------- */
+
+.hidden {
+    display:none;
+}
+
+tbody tr.bold {
+    font-weight: bold;
+}
+
+@media screen and (min-width: 768px) {
+      [id$=Customer] .modal-dialog {
+        right: auto;
+        left: 10%;
+        width: 80%;
+        padding-top: 30px;
+        padding-bottom: 30px;
+        margin-left: 0px;
+    }
+    [id$=Customer] .modal-body {
+        overflow-x:auto;
+    }
+    [id$=Message] .modal-dialog {
+        right: auto;
+        left: 10%;
+        width: 80%;
+        padding-top: 30px;
+        padding-bottom: 30px;
+        margin-left: 0px;
+    }
+    [id$=Message] .modal-dialog  {
+        overflow-x:auto;
+    }
+}
+
+/* Bulletin Board css */
+#sidebar span.label.warn {
+    background-color: #d9534f;
+}
+span.label-yellow {
+    background: rgb(248, 219, 6);
+}
+span.label-muave {
+    background: rgb(183, 132, 167);
+}
+span.label-salmon {
+    background: rgb(250, 128, 114);
+}
+.new-update.unread {
+    font-weight: bold;
+    background-color: #f2dede;
+}
+.new-update.unread .update-day{
+    color: #636363;
+}
+.new-update.unread:hover {
+    background-color: #eed3d7;
+}
+.new-update.read {
+    background-color: #dff0d8;
+}
+.new-update.read:hover {
+    background-color: #d6e9c6;
+}
+.bulletin.archived, .new-update.archived {
+    background-color: #fbeed5;
+    display:none;
+}
+.bulletin.archived:hover, .new-update.archived:hover {
+    background-color: #fcf8e3;
+    display:none;
+}
+.bulletin.outstanding {
+    background-color: #f2dede;
+}
+.bulletin.outstanding:hover {
+    background-color: #eed3d7;
+}
+.bulletin {
+    cursor: pointer;
+    cursor: hand;
+    background-color: #d9edf7;
+}
+.bulletin:hover {
+    background-color: #c4e3f3;
+}
+.recent-posts li {
+    padding: 10px 8px 4px 8px;
+}
+.new-update {
+    cursor: pointer;
+    cursor: hand;
+    padding: 8px 4px 4px 8px;
+}
+.new-update .update-date {
+    width: 70px;
+    margin: 0px;
+}
+.new-update .update-date .update-day {
+    margin: 0px;
+}
+.btn.enabled {
+    background-color: #fdfdfd;
+	background-image: -webkit-gradient(linear, 0 0%, 0 100%, from(#fdfdfd), to(#f3f3f3));
+	background-image: -webkit-linear-gradient(#fdfdfd, #f3f3f3);
+	background-image: -moz-linear-gradient(#fdfdfd, #f3f3f3);
+	background-image: -ms-linear-gradient(#fdfdfd, #f3f3f3);
+	background-image: -o-linear-gradient(#fdfdfd, #f3f3f3);
+	background-image: linear-gradient(#fdfdfd, #f3f3f3);
+	border-width: 0 1px;
+	border-color: transparent transparent transparent #dddddd;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.ui-dialog .ui-dialog-content {
+    overflow: visible;
+}
+/* end bulletin board css */

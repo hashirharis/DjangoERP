@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-glyphicons.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/icheck/flat/blue.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.gritter.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/unicorn.main.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/unicorn.grey.css" class="skin-color" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css" />
+    <!-- temporary logo overwrite for testing -->
+    <style>
+    #header h1 {
+        background: url("http://dummyimage.com/215x31/333136/fcdf00&text=KNAPS") no-repeat scroll 0 0 transparent;
+    }
+    </style>
+
+    <!-- temp fix for small screen size until we suport tablets -->
+    <style>
+    .widget-content {
+        overflow-x: auto;
+    }
+    .modal-body {
+        overflow-x: auto;
+    }
+    </style>
+
+
+
+
+    {% block css %} {% endblock %}
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico">
+    <link rel="apple-touch-glyphicon glyphicon-precomposed" sizes="144x144" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-glyphicon glyphicon-144-precomposed.png">
+    <link rel="apple-touch-glyphicon glyphicon-precomposed" sizes="114x114" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-glyphicon glyphicon-114-precomposed.png">
+    <link rel="apple-touch-glyphicon glyphicon-precomposed" sizes="72x72" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-glyphicon glyphicon-72-precomposed.png">
+    <link rel="apple-touch-glyphicon glyphicon-precomposed" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-glyphicon glyphicon-57-precomposed.png">
+    <script type="text/javascript">
+        var timerStart = Date.now();
+    </script>
+</head>
+<body>
+
+{% block topnav %}
+{% include "nav.html" %}
+{% endblock %}
+
+<!-- content -->
+<div id="content">
+{% block content %}{% endblock %}
+</div>
+<!-- /content -->
+
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="{{ STATIC_URL }}js/excanvas.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.custom.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/fullcalendar.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jpanelmenu.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/unicorn.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.icheck.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/underscore.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.ajaxdjangosetup.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.loginprompt.js"></script>
+{#<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.js"></script>#}
+<script type="text/javascript" src="{{ STATIC_URL }}js/maskedinput.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/MonthPicker.2.1.js">
+
+<script type="text/javascript">
+    $(window).load(function() {
+        console.log("Time until everything loaded: " + (Date.now()-timerStart) + "ms");
+    });
+</script>
+{% if not staffMember %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var loginPrompt = br.initLoginPrompt({{ staffPerms|safe }});
+            $('#sidebar a, .quick-actions a').click(function(e) {
+                var redirectTo = $(this).attr('href');
+                var moduleTo = $(this).data('module');
+                if (moduleTo==""||moduleTo==undefined) {
+                    return true
+                }
+                e.preventDefault();
+                if (redirectTo!="") {
+                    var response = loginPrompt.prompt(moduleTo, function(trueOrFalse, user){
+                       if(trueOrFalse) {
+                           $.ajax({
+                                type: "POST",
+                                url: "{% url 'admin:sessionConnect' %}",
+                                data: {name:user.name},
+                                beforeSend: function(xhr, settings) {
+                                    xhr.setRequestHeader("X-CSRFToken", br.getCookie('csrftoken'));
+                                }
+                            }).done(function( msg ) {
+                                window.location = redirectTo;
+                            });
+                       }
+                       else {
+                            alert("Either you don't have permission to access this module or your username/password was incorrect!")
+                       }
+                    });
+                }
+            });
+        });
+    </script>
+{% endif %}
+{% block javascript %}
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,22 @@
+<form action="
+
+    {% block formaction %}
+
+        {% if isStorePurchases %}
+        {% elif isExtended %}
+        {% elif isInvoiceByDate %}
+            {% url 'reports:IRPReportsView' report_type="invoiceByDate" report_class="irp" %}
+        {% elif isStoreListing %}
+        {% elif isWholesale %}
+        {% elif isRebates %}
+        {% elif isIAS %}
+        {% elif isB2B %}
+        {% endif %}
+
+    {% endblock %}"
+
+method="GET">
+    {% include "reports/panel/panel.html" %}
+</form>
+
+

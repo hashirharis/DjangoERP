@@ -1,0 +1,15 @@
+{% load br %}
+
+<thead>
+    <tr>
+        {% include "reports/customer/table/tablerow.html" %}
+    </tr>
+</thead>
+<tfoot>
+    <tr>
+        {% include "reports/customer/table/tablerow.html" %}
+    </tr>
+</tfoot>
+<tbody>
+        {% include "reports/customer/table/tablebody.html" %}
+</tbody>

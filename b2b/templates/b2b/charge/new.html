@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}New Reconciliation{% endblock %}
+{% block content %}
+{% load br %}
+<div id="content-header">
+    <h1>New Charge</h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+     <a href="{% url 'b2b:HOInvoicingHome' %}"><i class="glyphicon glyphicon-list-alt"></i><strong>Invoicing</strong></a>
+    <a href="{% url 'b2b:chargesHome' %}"><i class="glyphicon glyphicon-list-alt"></i><strong>Charges</strong></a>
+    <a href="#" class="supress"><i class="glyphicon glyphicon-th-list"></i><strong>New</strong></a>
+</div>
+
+<div class="row">
+   <div class="col-12">
+       {% block form %}
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#collapseOne" data-toggle="collapse">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-book"></i>
+                </span>
+                    <h5>Charge Parameters</h5>
+                </a>
+            </div>
+            <div class="collapse in" id="collapseOne">
+                <div class="widget-content">
+                    <form class="form-horizontal" method="post" id="form_searchInvoices">
+                        {% csrf_token %}
+                        <div class="control-group">
+                            <label class="control-label" for="invoiceDate">End Date</label>
+                            <div class="controls">
+                                <input type="text" id="endDate" placeholder="dd/mm/yyyy" value="{{ endDate|date:"d/m/Y" }}">
+                                <input type="hidden" id="endDate_hidden" name="endDate" value="{{ endDate|date:"c" }}"/>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row">
+                        <div class="col-10">
+                            <div class="form-actions" style="text-align: right">
+                                <button id="btn_searchInvoices" data-loading-text="Searching..." class="btn btn-large btn-info">Search Invoices</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       {% endblock %}
+    </div>
+
+    <div class="col-12" style="text-align: center;">
+        <ul class="stat-boxes">
+            <li>
+                <span id="txt_statementTotal"><strong>{% block total %}{% endblock %}</strong></span>
+                Total Invoices
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-12">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-barcode"></i>
+                </span>
+                <h5>Invoices</h5>
+            </div>
+             <div class="widget-content invoicesDiv nopadding">
+                {% block results %}
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <th>Store</th>
+                            <th>Invoice Number</th>
+                            <th>Distributor</th>
+                            <th>Invoice Date</th>
+                            <th>Order Reference</th>
+                            <th>Type</th>
+                            <th>Net (Inc)</th>
+                            <th>Extended Credit</th>
+                        </thead>
+                    {% if stores %}
+                        {% for store in stores %}
+                            {% for invoice in store.storeInvoices %}
+                                <tr>
+                                    <td class="hidden">{{ invoice.id }}</td>
+                                    <td>{% ifchanged invoice.store.name %}{{ invoice.store.name }}{% endifchanged %}</td>
+                                    <td>{{ invoice.invoiceNum }}</td>
+                                    <td>{{ invoice.distributor }}</td>
+                                    <td>{{ invoice.invoiceDate }}</td>
+                                    <td>{{ invoice.orderReference }}</td>
+                                    <td>{{ invoice.type }}</td>
+                                    <td>{{ invoice.netInc }}</td>
+                                    <td>{{ invoice.extCredit }}</td>
+                                </tr>
+                            {% endfor %}
+                            <tr class="success">
+                                <td colspan="5"></td>
+                                <td>Store Total</td>
+                                <td>{{ store.storeTotal }}</td>
+                                <td></td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr class="danger">
+                            {% if request.POST %}
+                                <td class="error" colspan="8">No invoices found</td>
+                            {% else %}
+                                <td class="error" colspan="8">Search for invoices using above options</td>
+                            {% endif %}
+                        </tr>
+                    {% endif %}
+                    </table>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="http://cdn.datatables.net/1.10.0/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.maskedinput.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#distributor').select2();
+
+        function switchButtonPending(element) {
+            var button = $(element);
+            var prevText = button.text();
+            button.attr('disabled', 'true');
+            button.text($(element).data('loading-text'));
+            window.setTimeout(function() {
+                button.text(prevText);
+                button.removeAttr('disabled');
+            }, 1000);
+        }
+
+        $('#btn_searchInvoices').click(function(){
+            switchButtonPending(this);
+            $('#form_searchInvoices').submit();
+        });
+
+        $("#endDate").datepicker({
+            dateFormat: 'dd/mm/yy',
+            onSelect: function(dateText) {
+                var date = $(this).datepicker('getDate');
+                $("#endDate_hidden").val(date.toISOString());
+            }
+        });
+
+    });
+</script>
+{% endblock %}

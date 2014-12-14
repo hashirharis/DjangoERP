@@ -1,0 +1,12 @@
+<tr class="{% if order.status == 'Completed' %}success{% elif order.status == "Cancelled" %}danger{% else %}warning{% endif %}" style="text-align: center;">
+    <td> {{ order.collation.subject }}
+    </td>
+    <td>{{ order.status }}</td>
+    <td>{{ order.deliveryMonth.month }}</td>
+    <td>
+        <a class="btn btn-xs viewCollationOrder" href="#" data-id="{{ order.id }}"><i class="glyphicon glyphicon-list-alt"></i> View</a>
+        {% if order.status == 'Open' %}
+            <a class="btn btn-xs updateCollationOrder" href="#" data-id="{{ order.id }}"><i class="glyphicon glyphicon-pencil"></i> Change</a>
+        {% endif %}
+    </td>
+</tr>

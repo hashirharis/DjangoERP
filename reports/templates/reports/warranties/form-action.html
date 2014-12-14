@@ -1,0 +1,14 @@
+<form action="
+
+    {% block formaction %}
+
+        {% if isWarranty %}
+            {% url 'reports:warrantyReportsView' report_type="warranty" report_class="warranties" %}
+        {% endif %}
+
+    {% endblock %}
+
+" method="GET">
+    {% include "reports/panel/panel.html" %}
+
+</form>

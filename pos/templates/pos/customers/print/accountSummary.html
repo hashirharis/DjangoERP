@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+
+    <title>Statement of Account {{ customer.firstName }} {{ customer.lastName }}</title>
+
+    <link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/invoice-A4style.css' />
+    <style type="text/css" media="print">
+        #hiderow,
+        .delete {
+          display: none;
+        }
+    </style>
+
+</head>
+
+<body onload="window.print()">
+
+<div id="page-wrap">
+
+    <div id="header">ACCOUNT SUMMARY</div>
+
+    <div id="identity">
+
+        <div id="address"><strong>Store Details</strong>:<br />{{ store.franchise }}<br /> {{ store.name }} <br />{{ store.htmlFormattedAddress|safe }}</div>
+
+        <div id="logo">
+            <img id="image" style="max-width: 540px; max-height: 100px;" src="{{ STATIC_URL }}img/logo.jpg" alt="logo" />
+        </div>
+
+    </div>
+
+    <div style="clear:both"></div>
+
+    <div id="customer">
+
+        <div id="customer-title"><strong>Customer Information</strong>:<br />{{ customer.firstName }} {{ customer.lastName }}<br />{{ customer.htmlFormattedAddress|safe }}</div>
+
+        <table id="meta">
+            <tr>
+                <td class="meta-head">Date of Issue</td>
+                <td>{% now "d/m/Y" %}</td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div>
+		<table id="items">
+			<tr>
+				<th>Date</th>
+				<th>Invoice</th>
+				<th>Our Reference</th>
+				<th>Description</th>
+				<th>Balance</th>
+				<th>Credit</th>
+				<th>Debit</th>
+			</tr>
+			{% for entry in lines %}
+			<tr class="item-row">
+				<td>{{ entry.created|date:"d/m/Y" }}</td>
+				<td>{{ entry.invoice }}</td>
+                <td>{{ entry.referenceNum }}</td>
+                <td>{{ entry.description }}</td>
+                {% if entry.is_negative %}
+                    <td>$ {{ entry.balance_sign_correct }}</td>
+                    <td></td>
+                    <td>$ {{ entry.total_sign_correct }}</td>
+                {% else %}
+                    <td>$ {{ entry.balance }}</td>
+                    <td>$ {{ entry.total }}</td>
+                    <td></td>
+                {% endif %}
+			</tr>
+			{% endfor %}
+		</table>
+    </div>
+</div>
+
+</body>
+
+</html>

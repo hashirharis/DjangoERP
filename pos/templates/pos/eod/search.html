@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}EOD Search{% endblock %}
+
+{% block content %}
+
+<div id="content-header">
+    <h1>EOD <small> Search </small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'pos:home' %}" class="tip-bottom" data-original-title="POS Home"><i class="glyphicon glyphicon-gift"></i>Dashboard</a>
+    <a href="#"><i class="glyphicon glyphicon-search"></i>EOD</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box widget-plain">
+                <div class="widget-content center">
+                    <ul class="stats-plain">
+                        <li>
+                            <h4><a class="btn btn-primary supress startDate" href="#">{{ startDate|date:"m/d/Y" }}</a></h4>
+                        </li>
+                        <li>
+                            <h4>-</h4>
+                        </li>
+                        <li>
+                            <h4><a class="btn btn-primary supress endDate" href="#">{{ endDate|date:"m/d/Y" }}</a></h4>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-title">
+            <span class="icon">
+                <i class="glyphicon glyphicon-list-alt"></i>
+            </span>
+                    <h5>Results</h5>
+                </div>
+                <div class="widget-content">
+                    <div id="resultsDiv">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Terminal</th>
+                                <th>Computer Total</th>
+                                <th>Total Count</th>
+                                <th>Difference</th>
+                                <th>Balanced By</th>
+                                <th>View</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for closure in entities %}
+                                <tr class="{% if closure.status == "BALANCED" %}success{% else %}error{% endif %}">
+                                    <td>{{ closure.terminal.name }}</td>
+                                    <td>${{ closure.total|floatformat:2 }}</td>
+                                    <td>${{ closure.count|floatformat:2 }}</td>
+                                    <td>${{ closure.difference|floatformat:2 }}</td>
+                                    <td>{{ closure.closedBy.name }}</td>
+                                    <td><a class="btn btn-primary" href="{% url 'pos:openEOD' closure.id %}"><i class="glyphicon glyphicon-eye-open"></i> Open EOD</a></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <ul class="pagination alternate pull-right">
+                            {% for x in entities.paginator.page_range %}
+                                <li{% if entities.number == x %} class="disabled"{% endif %}><a class="supress" page="{{ x }}" href="#">{{ x }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var search = br.search({
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            csrfToken:"{% csrf_token %}",
+            format:'POST'
+        });
+
+        search.addEntity("Entities",{
+            prepend: "",
+            html: "Entity",
+            human: "{{ entityName }}"
+        });
+
+        search.addQuerySet("Entities",{
+            name:'all',
+            prepend:"",
+            parameters: {
+                startDate: "{{ startDate|date:"m/d/Y" }}",
+                endDate: "{{ endDate|date:"m/d/Y" }}",
+                page: "{{ page }}"
+            }
+        });
+
+        $('.startDate').click(function() {
+            var returnDate = prompt("Please enter a date (mm/dd/yyy) to Search Until",$(this).text());
+            if(returnDate==""||returnDate==null) {
+                return
+            }
+            if(isNaN(new Date(returnDate))){
+                alert("Invalid Date Entered!");
+                return
+            }
+            search.changeParameter("Entities","all","startDate",returnDate);
+        });
+
+        $('.endDate').click(function() {
+            var returnDate = prompt("Please enter a date (mm/dd/yyy) to Search Until",$(this).text());
+            if(returnDate==""||returnDate==null) {
+                return
+            }
+            if(isNaN(new Date(returnDate))){
+                alert("Invalid Date Entered!");
+                return
+            }
+            search.changeParameter("Entities","all","endDate",returnDate);
+        });
+    });
+</script>
+{% endblock %}

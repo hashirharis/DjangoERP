@@ -1,0 +1,371 @@
+{% load br %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-glyphicons.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/icheck/flat/blue.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.gritter.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/unicorn.main.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/unicorn.grey.css" class="skin-color" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/dataTables.bootstrap.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/style-merchandiser.css" />
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico">
+    <link rel="apple-touch-glyphicon glyphicon-precomposed" sizes="144x144" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-glyphicon glyphicon-144-precomposed.png">
+    <link rel="apple-touch-glyphicon glyphicon-precomposed" sizes="114x114" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-glyphicon glyphicon-114-precomposed.png">
+    <link rel="apple-touch-glyphicon glyphicon-precomposed" sizes="72x72" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-glyphicon glyphicon-72-precomposed.png">
+    <link rel="apple-touch-glyphicon glyphicon-precomposed" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-glyphicon glyphicon-57-precomposed.png">
+
+    <style type="text/css">
+    </style>
+
+</head>
+{% block topnav %}
+    <div id="header">
+        <h1><a href="{% url 'core:home' %}">Bi Rite Electrical</a></h1>
+    </div>
+
+    <div id="user-nav">
+        <ul class="btn-group">
+            <li class="btn"><a title="" href="#"><i class="glyphicon glyphglyphicon glyphicon-user"></i> <span class="text"> {{ staffMember.name }}</span></a></li>
+            {% if staffMember %}
+                <li class="btn"><a title="" href="{% url 'admin:clearSession' %}"><i class="glyphicon glyphglyphicon glyphicon-share-alt"></i> <span class="text">Logout</span></a></li>
+            {% endif %}
+        </ul>
+    </div>
+    {% if store.code != 'VW' %}
+        <div id="sidebar">
+            <ul>
+                <li class="tip-bottom" data-original-title="Dashboard"><a href="{% url 'core:home' %}">
+                    <i class="tip-bottom glyphicon glyphicon-home" ></i> <span>Dashboard</span></a>
+                </li>
+                <li class="tip-bottom" data-original-title="Search Products"><a href="{% url 'core:priceLookup' %}"  data-module="Sale">
+                    <i class="glyphicon glyphicon-search"></i> <span>Search Products</span></a>
+                </li>
+                <li class="tip-bottom" data-original-title="Search Customers"><a href="{% url 'pos:searchCustomers' %}"  data-module="Sale">
+                    <i class="glyphicon glyphicon-user"></i> <span>Search Customers</span></a>
+                </li>
+                <li class="tip-bottom" data-original-title="Sales"><a href="{% url 'pos:home' %}"  data-module="Sale">
+                    <i class="glyphicon glyphicon-th-list"></i> <span>Sales</span></a>
+                </li>
+                <li class="tip-bottom" data-original-title="Price Book"><a href="{% url 'core:searchProducts' %}"  data-module="PriceBook">
+                    <i class="glyphicon glyphicon-barcode"></i> <span>Price Book</span></a>
+                </li>
+                <li class="active tip-bottom" data-original-title="Stock / Invoicing"><a href="{% url 'stock:dashboard' %}"  data-module="Stock">
+                    <i class="glyphicon glyphicon-gift"></i> <span>Stock / Invoicing</span></a>
+                </li>
+                {% if store.displayHOMenu %}
+                    <li class="tip-bottom" data-original-title="Head Office IRP"><a href="{% url 'b2b:HOInvoicingHome' %}">
+                        <i class="glyphicon glyphicon-book"></i> <span>Head Office IRP</span></a>
+                    </li>
+                    <li class="tip-bottom" data-original-title="NTE Sim"><a href="{% url 'b2b:nteSim' %}">
+                        <i class="glyphicon glyphicon-random"></i> <span>NTE Sim</span></a>
+                    </li>
+                {% endif %}
+                <li class="tip-bottom" data-original-title="Reports"><a href="{% url 'admin:listStaff' %}" data-module="Reports">
+                    <i class="glyphicon glyphicon-signal"></i> <span>Reports</span></a>
+                </li>
+                <li class="tip-bottom" data-original-title="Administration"><a href="{% url 'admin:listStaff' %}" data-module="Admin">
+                    <i class="glyphicon glyphicon-cog"></i> <span>Administration</span></a>
+                </li>
+                <li class="tip-bottom" data-original-title="Contacts"><a href="{% url 'tele:home' %}" data-module="Contacts">
+                    <i class="glyphicon glyphicon-book"></i> <span>Contacts</span></a>
+                </li>
+            </ul>
+        </div>
+    {% else %}
+    {% endif %}
+{% endblock %}
+<body>
+
+<div id="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-content">
+                        {% if params.removePricingTable and params.removeHistoryTable %} <!--show both history and pricing-->
+                            {% include "stock/merchandiser/table-without-pricing-history.html" %}
+                        {% elif params.removeHistoryTable %}
+                            {% include "stock/merchandiser/table-pricing.html" %}
+                        {% elif params.removePricingTable %}
+                            {% include "stock/merchandiser/table-history.html" %}
+                        {% else %}
+                            {% include "stock/merchandiser/table-default.html" %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box widget-box2">
+                    <div class="widget-content">
+                        <form action="{% block formaction %}{% url 'stock:merchandiser' %}{% endblock %}" method="GET">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="col-lg-1 col-12 checkBoxTextSizer">
+                                        <input type="checkbox" value="superceded" name="chkSuperceeded"/> Include Superseded
+                                    </div>
+                                    <div class="col-lg-1 col-12 checkBoxTextSizer">
+                                        <input type="checkbox" value="obsolete" name="chkObsolete"/> Include Obsolete
+                                    </div>
+                                    <div class="col-lg-1 col-12 checkBoxTextSizer">
+                                        <input type="checkbox" value="SOH" name="chkSOH"/> SOH only
+                                    </div>
+                                    <div class="col-lg-1 col-12 checkBoxTextSizer">
+                                        <input type="checkbox" value="removePricing" name="chkRemovePricing"/> Remove Pricing
+                                    </div>
+                                    <div class="col-lg-1 col-12 checkBoxTextSizer">
+                                        <input type="checkbox" value="removeHistory" name="chkRemoveHistory"/> Remove History
+                                    </div>
+                                    <div class="col-lg-1 col-12 checkBoxTextSizer">
+                                        <input type="checkbox" value="reverseSort" name="chkReverseSort"/> Reverse Sort
+                                    </div>
+                                    <div class="col-lg-4 col-12">
+                                    <div class="widget-content">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-12">
+                                                <ul class="site-stats">
+                                                    <li><div class="cc"><i class="fa fa-user"></i> <strong>{{ params.count }}</strong> <small>Total Items Returned</small></div></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <div class="col-lg-2 col-12">
+                                        <div class="input-group" style="position:absolute;right:0px;">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-success" style="position:absolute;right:0px;">Go</button>
+                                                <a type="button" href="{% url 'stock:merchandiser' %}" class="btn btn-primary" style="position:absolute;left:-10px;">Reset</a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                <div class="col-12 hidden-lg" style="height:20px;"></div>
+                                <div class="col-12 hidden-lg" style="height:20px;"></div>
+
+                            <div class="row" style="margin-top: 10px;">
+                                <div class="col-lg-3 col-12">
+                                    <select placeholder="Filter by Categories" multiple="multiple" id="searchCategory" class="selectmultiple" style="width:100%" name="category">
+                                        {% for category in categories %}
+                                            <option value="{{ category.id }}">{{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-12 hidden-lg" style="height:20px;"></div>
+                                <div class="col-lg-3 col-12">
+                                    <select placeholder="Filter by Brands" multiple="multiple" id="searchBrand" class="selectmultiple" style="width:100%" name="brand">
+                                        {% for brand in brands %}
+                                            <option value="{{ brand.id }}">{{ brand.brand|title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% if store.isHead and store.code != 'VW'%}
+                                    <div class="col-12 hidden-lg" style="height:20px;"></div>
+                                    <div class="col-lg-3 col-12">
+                                        <select placeholder="Filter by Stores" multiple="multiple" id="stores"
+                                                class="selectmultiple" style="width:100%" name="stores">
+                                            {% for store in stores %}
+                                                <option value="{{ store.id }}">{{ store.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% else %}
+                                {% endif %}
+                                <div class="col-12 hidden-lg" style="height:20px;"></div>
+                                <div class="col-lg-3 col-12">
+                                    <select id="sortTypes" style="width:100%" name="sortTypes">
+                                        <option value="" disabled selected>Sort by here</option>
+                                        {% for type in sortTypes %}
+                                            <option value="{{ type.id }}">{{ type.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="{{ STATIC_URL }}js/jqueryForDataTables.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/FixedColumns.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/dataTables.bootstrap.js"></script>
+
+
+<script type="text/javascript" src="{{ STATIC_URL }}js/excanvas.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.custom.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/fullcalendar.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jpanelmenu.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/unicorn.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.icheck.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/underscore.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.ajaxdjangosetup.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.loginprompt.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/unicorn.form_common.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+
+{% block javascript %}
+
+    <script type="text/javascript">
+
+{#        function my(){#}
+{#            #}
+{#        }#}
+
+        $(document).ready(function() {
+            var calcDataTableHeight = function() {
+                return $(window).height()*45/100;
+            };
+
+            $(window).resize(function () {
+                var oSettings = oTable.fnSettings();
+                oSettings.oScroll.sY = calcDataTableHeight();
+                oTable.fnDraw();
+                });
+
+            var windowHeight = $(window).height();
+            var windowWidth = $(window).width();
+            var intWindowHeight = parseInt(windowHeight);
+            var intWindowWidth = parseInt(windowWidth);
+
+            var sScrollX; //set x-scroll width
+            {% if params.removePricingTable and params.removeHistoryTable %}
+                sScrollX = "100%";
+            {% elif params.removeHistoryTable %}
+                sScrollX = 2222;
+            {% elif params.removePricingTable %}
+                sScrollX = 2222;
+            {% else %}
+                sScrollX = 3000;
+            {% endif %}
+
+            if(intWindowHeight>993){  //set y-scroll height
+                sScrollY = "710px"
+            }
+            else{
+                if(intWindowHeight>923 && intWindowHeight < 994){
+                    sScrollY = "640px"
+                }
+                else{
+                    if(intWindowHeight>641 && intWindowHeight < 924){
+                        sScrollY = "360px"
+                    }
+                    else{
+                        sScrollY = calcDataTableHeight()
+                    }
+                }
+            }
+
+            //alert(window.screen.width+"x"+window.screen.height + "BROWSER-height:" + windowHeight + "wid:" + windowWidth);
+
+            var oTable = $('#example').dataTable(
+            {
+{#                "sScrollX": '2222px',#}
+                "sScrollX": sScrollX,
+{#                "sScrollXInner": '2222px',#}
+                "sScrollXInner": sScrollX,
+                "bScrollCollapse": true,
+                "bPaginate": false,
+                "bFilter": false,
+                "bSort": false,
+                "sScrollY": sScrollY
+
+            } );
+
+            new FixedColumns( oTable,
+            {
+                "sHeightMatch": "none"
+            } );
+            var search = br.search({
+                ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>"
+            });
+            search.addEntity("Entities",{
+                prepend: "",
+                html: "Entity",
+                human: "Products"
+            });
+            search.addQuerySet("Entities",{
+                name:'All',
+                prepend:"",
+                parameters: {
+                    page: '{{ page_obj.number }}',
+                    category:'{{ params.category }}',
+                    brand: '{{ params.brand }}',
+                    stores: '{{ params.stores }}',
+                    current: '{{ params.current }}',
+                    chkSOH: '{{ params.chkSOH }}',
+                    chkRemovePricing: '{{ params.chkRemovePricing }}',
+                    chkRemoveHistory: '{{ params.chkRemoveHistory }}',
+                    chkReverseSort: '{{ params.chkReverseSort }}',
+                    chkSuperceeded: '{{ params.chkSuperceeded }}',
+                    chkObsolete: '{{ params.chkObsolete }}',
+                    sortTypes:'{{ params.sortTypes }}'
+                }
+            });
+            search.addPagination("Entities","All",'page',$('#resultsDiv'));
+            var chkSOH = search.getParameter("Entities","All","chkSOH").split(",");
+            if (_.contains(chkSOH,'SOH')) {
+                $('input[value=SOH]').iCheck('check');
+            }
+            var chkRemovePricing = search.getParameter("Entities","All","chkRemovePricing").split(",");
+            if (_.contains(chkRemovePricing,'removePricing')) {
+                $('input[value=removePricing]').iCheck('check');
+            }
+            var chkRemoveHistory = search.getParameter("Entities","All","chkRemoveHistory").split(",");
+            if (_.contains(chkRemoveHistory,'removeHistory')) {
+                $('input[value=removeHistory]').iCheck('check');
+            }
+            var chkReverseSort = search.getParameter("Entities","All","chkReverseSort").split(",");
+            if (_.contains(chkReverseSort,'reverseSort')) {
+                $('input[value=reverseSort]').iCheck('check');
+            }
+            //set the selected sort type
+            var sortTypes = search.getParameter("Entities","All","sortTypes").split(",");
+            $('#sortTypes').select2('val',sortTypes);
+            //set the selected brand
+            var brands = search.getParameter("Entities","All","brand").split(",");
+            $('#searchBrand').select2('val',brands);
+            //set the selected category
+            var categories = search.getParameter("Entities","All","category").split(",");
+            $('#searchCategory').select2('val',categories);
+            //set the selected store
+            var stores = search.getParameter("Entities","All","stores").split(",");
+            $('#stores').select2('val',stores);
+            //check the check boxes according to which status was set
+            var current = search.getParameter("Entities","All","current").split(",");
+            //check the check boxes according to which status was set
+            var chkSuperceeded = search.getParameter("Entities","All","chkSuperceeded").split(",");
+            if (_.contains(chkSuperceeded,'superceded')) {
+                $('input[value=superceded]').iCheck('check');
+            }
+            //check the check boxes according to which status was set
+            var chkObsolete = search.getParameter("Entities","All","chkObsolete").split(",");
+            if (_.contains(chkObsolete,'obsolete')) {
+                $('input[value=obsolete]').iCheck('check');
+            }
+        });
+    </script>
+{% endblock %}
+
+</body>
+</html>

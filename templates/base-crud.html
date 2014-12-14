@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.maskedinput.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/templating" id="createForm">
+        <div class="row">
+            <div class="col-12">
+                <form method="post" id="createEntityForm" action="{{ createURL }}" class="form-horizontal">
+                    {% csrf_token %}
+                    {% load crispy_forms_tags %}
+                    {% crispy form %}
+                </form>
+            </div>
+        </div>
+    </script>
+    <script type="text/javascript">
+        var search = br.search({
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>"
+        });
+        $(document).ready(function() {
+
+            search.addEntity("Entities",{
+                prepend: "",
+                html: "Entity",
+                human: "{{ entityName }}"
+            });
+
+            search.addQuerySet("Entities",{
+                name:'All',
+                prepend:"",
+                parameters: {
+                    q: '{{ q }}',
+                    page: '{{ page_obj.number }}'
+                }
+            });
+
+            search.addCreate("Entities",{
+                form: $('#createForm').html(),
+                button: $('.addEntity')
+            });
+
+            search.addDelete("Entities",{
+                button: $('.deleteEntityItem'),
+                url:'{{ deleteURL }}'
+            });
+
+            search.addUpdate("Entities",{
+                button: $('.editEntityItem'),
+                url:'{{ updateURL }}'
+            });
+
+            search.addRead("Entities",{
+                button: $('.viewEntityItem'),
+                url:'{{ viewURL }}'
+            });
+
+            search.addPagination("Entities","All",'page',$('#resultsDiv'));
+
+        });
+    </script>
+{% endblock %}

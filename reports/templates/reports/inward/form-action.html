@@ -1,0 +1,13 @@
+<form action="
+
+    {% block formaction %}
+
+        {% if isGoodsInward %}
+            {% url 'reports:inwardReportsView' report_type="goodsInward" report_class="inward" %}
+        {% endif %}
+
+    {% endblock %}
+
+method="GET">
+    {% include "reports/panel/panel.html" %}
+</form>

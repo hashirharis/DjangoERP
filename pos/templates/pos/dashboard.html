@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Store/Franchise Products{% endblock %}
+
+{% block content %}
+
+<div id="content-header">
+    <h1> POS <small> Dashboard </small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'pos:home' %}" class="tip-bottom" data-original-title="Search for Products"><i class="glyphicon glyphicon-shopping-cart"></i>Sales</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 center" style="text-align: center;">
+            <ul class="quick-actions">
+                <li>
+                    <a href="{% url 'pos:searchSales' 'PENDING' %}" class="tip-bottom" data-original-title="Open a lay-by/on-account sale">
+                        <i class="icon-wallet"></i>
+                        Existing Order
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'pos:searchSales' 'QUOTE' %}" class="tip-bottom" data-original-title="Open a Quote.">
+                        <i class="icon-database"></i>
+                        Quotes
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'pos:searchEOD' %}" class="tip-bottom" data-original-title="View Previous End of Day Reports">
+                        <i class="icon-calendar"></i>
+                        EOD Reports
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'pos:searchSales' 'COMPLETED' %}" class="tip-bottom" data-original-title="Search through all completed sales">
+                        <i class="icon-search"></i>
+                        Sales
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        {%  for terminal in terminals %}
+        <div class="col-{{ spanSize }}">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"><i class="glyphicon glyphicon-signal"></i></span><h5>Terminal {% if terminal.name == "1" %}(Main){% endif %} Activity</h5>
+                    <div class="buttons">
+                        <a href="{% url 'pos:newSale' terminal.id %}" class="btn btn-mini"><i class="glyphicon glyphicon-shopping-cart"></i> New Sale </a>
+                        <a href="{% url 'pos:newEOD' terminal.id %}" class="btn btn-mini"><i class="glyphicon glyphicon-th-list"></i> Balance the till </a>
+                    </div>
+                </div>
+                <div class="widget-content">
+                    <ul class="activity-list">
+                        {% for activity in terminal.recentActivitySet %}
+                            <li>
+                                <a href="{% if activity.closure %}{% url 'pos:openEOD' activity.closure.id %}
+                                {% elif activity.sale %}{% url 'pos:openSale' activity.terminal.id activity.sale.id %}{% endif %}">
+                                {{ activity.text|safe }}
+                                {% load humanize %}
+                                <span>(modified: {{ activity.modified|naturaltime }})</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

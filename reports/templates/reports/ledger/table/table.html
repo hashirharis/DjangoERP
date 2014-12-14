@@ -1,0 +1,15 @@
+{% load br %}
+
+<thead>
+    <tr>
+        {% include "reports/ledger/table/tablerow.html" %}
+    </tr>
+</thead>
+<tfoot>
+    <tr>
+        {% include "reports/ledger/table/tablerow.html" %}
+    </tr>
+</tfoot>
+<tbody>
+        {% include "reports/ledger/table/tablebody.html" %}
+</tbody>

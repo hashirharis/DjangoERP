@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block title %}Store Employees{% endblock %}
+
+{% block content %}
+<div id="content-header">
+    <h1>Store Settings <small></small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'admin:listStaff' %}" class="tip-bottom" data-original-title="Admin Home"><i class="glyphicon glyphicon-user"></i> Employees</a>
+    <a href="{% url 'admin:adminSettings' %}" class="tip-bottom" data-original-title="Store Settings"><i class="glyphicon glyphicon-cog"></i> Admin</a>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-title">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#tab1">General Information</a></li>
+                        <li><a data-toggle="tab" href="#tab2">Sales Settings</a></li>
+                        <li><a data-toggle="tab" href="#tab3">Payment Methods</a></li>
+                        <li><a data-toggle="tab" href="#tab4">Privilege Levels</a></li>
+                    </ul>
+                </div>
+                <div class="widget-content tab-content">
+                    <div id="tab1" class="tab-pane active">
+                        <h3>Store Information <a class="btn btn-mini changeStoreDetails supress" data-id="{{ store.id }}"><i class="glyphicon glyphicon-edit"></i> Edit</a></h3>
+                        <div class="row">
+                            <div class="col-4">
+                                <h4>General Information</h4>
+                                <div class="row">
+                                    <div class="span5"><b>Name:</b></div>
+                                    <div class="span7">{{ store.name }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>Company Name:</b></div>
+                                    <div class="span7">{{ store.companyName }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>ABN:</b></div>
+                                    <div class="span7">{{ store.ABN }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>ACN:</b></div>
+                                    <div class="span7">{{ store.ACN }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>GLN:</b></div>
+                                    <div class="span7">{{ store.GLN }}</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <h4>Contact Information</h4>
+                                <div class="row">
+                                    <div class="span5"><b>Contact Name:</b></div>
+                                    <div class="span7">{{ store.contact }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>Email:</b></div>
+                                    <div class="span7">{{ store.email }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>Phone:</b></div>
+                                    <div class="span7">{{ store.phone }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>Fax:</b></div>
+                                    <div class="span7">{{ store.fax }}</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <h4>Address</h4>
+                                <div class="row">
+                                    {{ store.address }} <br>
+                                    {{ store.suburb }} {{ store.postcode }} <br>
+                                    {{ store.city }} {{ store.state}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab2" class="tab-pane">
+                        <h3>Sale Settings <a class="btn btn-mini changeSalesSettings supress" data-id="{{ store.id }}"><i class="glyphicon glyphicon-edit"></i> Edit</a></h3>
+                        <div class="row">
+                            <div class="col-4">
+                                <h4>POS Settings</h4>
+                                <div class="row">
+                                    <div class="span5"><b>No Stock Warning:</b></div>
+                                    <div class="span7">
+                                        {% if storeSettings.noStockWarning %}<i class="glyphicon glyphicon-ok"></i>{% else %}<i class="glyphicon glyphicon-remove"></i>{% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>Cust Care Plan Option:</b></div>
+                                    <div class="span7">
+                                        {% if storeSettings.warrantyOffer %}<i class="glyphicon glyphicon-ok"></i>{% else %}<i class="glyphicon glyphicon-remove"></i>{% endif %}
+                                    </div>
+                                </div>
+                                <div class="row"privelege
+                                    <div class="span5"><b>Use Go Price:</b> <br><small>When adding product to sale</small>
+                                    </div>
+                                    <div class="span7">
+                                        {% if storeSettings.useGoPrice %}<i class="glyphicon glyphicon-ok"></i>{% else %}<i class="glyphicon glyphicon-remove"></i>{% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>Use Catalog Price:</b><br><small>When adding product to sale</small></div>
+                                    <div class="span7">
+                                        {% if storeSettings.useCatalogPrice %}<i class="glyphicon glyphicon-ok"></i>{% else %}<i class="glyphicon glyphicon-remove"></i>{% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>Sale Price Warnings:</b><br><small>When sale price too high or too low</small></div>
+                                    <div class="span7">
+                                        {% if storeSettings.salePriceWarnings %}<i class="glyphicon glyphicon-ok"></i>{% else %}<i class="glyphicon glyphicon-remove"></i>{% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>Customer Not Attached Warnings:</b><br><small>When no customer is attached to sale</small></div>
+                                    <div class="span7">
+                                        {% if storeSettings.customerNotAttached %}<i class="glyphicon glyphicon-ok"></i>{% else %}<i class="glyphicon glyphicon-remove"></i>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <h4>Invoice Settings</h4>
+                                <div class="row">
+                                    <div class="span5"><b>Sales Template:</b><br></div>
+                                    <div class="span7">
+                                        Default Template
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>Show Payment Details on Invoice:</b></div>
+                                    <div class="span7">
+                                        {% if storeSettings.paymentDetailsOnInvoice %}<i class="glyphicon glyphicon-ok"></i>{% else %}<i class="glyphicon glyphicon-remove"></i>{% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>Print Delivery Details on Invoice:</b></div>
+                                    <div class="span7">
+                                        {% if storeSettings.printDeliveryDetails %}<i class="glyphicon glyphicon-ok"></i>{% else %}<i class="glyphicon glyphicon-remove"></i>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <h4>Other Settings</h4>
+                                <div class="row">
+                                    <div class="span5"><b>Show Sell Through:</b><br><small>In Price Breakdown</small></div>
+                                    <div class="span7">
+                                        {% if storeSettings.showSellThrough %}<i class="glyphicon glyphicon-ok"></i>{% else %}<i class="glyphicon glyphicon-remove"></i>{% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>Float:</b></div>
+                                    <div class="span7">${{ storeSettings.floatValue|floatformat:2 }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="span5"><b>Quotes Expire after:</b></div>
+                                    <div class="span7">{{ storeSettings.quotationsExpiry }} days</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab3" class="tab-pane">
+                        <h3>Store Payment Methods <a class="btn btn-mini createPaymentMethod supress"><i class="glyphicon glyphicon-plus"></i> Add</a></h3><br>
+                        <h4>Accounts</h4><br>
+                        <table class='table table-bordered'>
+                            <thead>
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% load br %}
+                            {% if accountMethods %}
+                                {% for method in accountMethods %}
+                                    <tr>
+                                        <td>{{ method.name }}</td>
+                                        <td>
+                                        {% if store|canEdit:method %}
+                                            <a class="btn deletePaymentMethod supress" data-original-title="Delete" data-id="{{ method.id }}"><i class="glyphicon glyphicon-trash"></i></a>
+                                            <a class="btn editPaymentMethod" data-id="{{ method.id }}" data-original-title="Edit" class="tip-bottom supress"><i class="glyphicon glyphicon-pencil"></i></a>
+                                        {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr class="error"><td colspan=2>You have not added any accounts.</td></tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                        <h4>Cards</h4><br>
+                        <table class='table table-bordered'>
+                            <thead>
+                                <tr>
+                                    <th>Card Name</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% load br %}
+                                {% if creditCardMethods %}
+                                    {% for method in creditCardMethods %}
+                                        <tr>
+                                            <td>{{ method.name }}</td>
+                                            <td>
+                                            {% if store|canEdit:method %}
+                                                <a class="btn deletePaymentMethod supress" data-original-title="Delete" data-id="{{ method.id }}"><i class="glyphicon glyphicon-trash"></i></a>
+                                                <a class="btn editPaymentMethod" data-id="{{ method.id }}" data-original-title="Edit" class="tip-bottom supress"><i class="glyphicon glyphicon-pencil"></i></a>
+                                            {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr class="error"><td colspan=2>You have not added any credit card Methods</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tab4" class="tab-pane">
+                        <h3>Privelege Levels <a class="btn btn-mini changePrivelegeLevels supress" data-id="{{ store.id }}"><i class="glyphicon glyphicon-edit"></i> Edit</a></h3><br>
+                        <div class="row">
+                            <div class="span5"><b>User Level Required to access Reports:</b></div>
+                            <div class="span7">{{ storeSettings.reportsLevel }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="span5"><b>User Level Required to adjust credit limits:</b></div>
+                            <div class="span7">{{ storeSettings.creditLimits }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.maskedinput.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/templating" id="createForm">
+        <div class="row">
+            <div class="col-12">
+                <form method="post" id="createEntityForm" action="{% url 'pos:createPaymentMethod' %}" class="form-horizontal">
+                    {% csrf_token %}
+                    {% load crispy_forms_tags %}
+                    {{ form|crispy }}
+                </form>
+            </div>
+        </div>
+    </script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        var search = br.search({
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            csrfToken:"{% csrf_token %}"
+        });
+
+        search.addEntity("Entities",{
+            prepend: "",
+            html: "Store",
+            human: "Store Settings"
+        });
+
+        search.addUpdate("Entities",{
+            button: $('.changeStoreDetails'),
+            url:'{% url 'admin:changeStoreDetails' 1 %}'
+        });
+
+        search.addUpdate("Entities", {
+            button: $('.changeSalesSettings'),
+            url:'{% url 'admin:changeStoreSaleSettings' 1 %}'
+        });
+
+        search.addUpdate("Entities", {
+            button: $('.changePrivelegeLevels'),
+            url:'{% url 'admin:changePrivelegeSettings' 1 %}'
+        });
+
+        search.addEntity("PaymentMethods",{
+            prepend: "",
+            html: "PaymentMethod",
+            human: "Payment Method"
+        });
+
+        search.addCreate("PaymentMethods",{
+            form: $('#createForm').html(),
+            button: $('.createPaymentMethod')
+        });
+
+        search.addDelete("PaymentMethods",{
+            button: $('.deletePaymentMethod'),
+            url:'{% url 'pos:deletePaymentMethod' 1 %}'
+        });
+
+        search.addUpdate("PaymentMethods",{
+            button: $('.editPaymentMethod'),
+            url:'{% url 'pos:updatePaymentMethod' 1 %}'
+        });
+    });
+    </script>
+{% endblock %}

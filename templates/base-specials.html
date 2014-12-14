@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% block heading %}
+
+    {% endblock %}
+    <div class="container-fluid">
+    <div class="row">
+    <div class="col-12">
+        <div class="widget-box collapsible" id="currentEntityWidget">
+            <div class="widget-title">
+                <a href="#currentEntity" data-toggle="collapse">
+                                    <span class="icon">
+                                        <i class="glyphicon glyphicon-play"></i>
+                                    </span>
+                    <h5>Current {{ entityName }}'</h5>
+                    <span class="label label-success">{{ currentEntities|length }}</span>
+                    <div class="buttons">
+                        <button role="button" class="startDate current btn btn-mini">{{ params.currentEntityStart }}</button> -
+                        <button role="button" class="endDate current btn btn-mini">{{ params.currentEntityEnd }}</button>
+                    </div>
+                </a>
+            </div>
+            <div class="collapse out" id="currentEntity">
+                <div class="widget-content">
+                    {% if currentEntities %}
+                        {% block currentTable %}
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    {% if canEdit %}
+                                        <th>Edit</th>
+                                        <th>De-Activate</th>
+                                    {% endif %}
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for entity in currentEntities %}
+                                    <tr>
+                                        <td>{{ entity.description }}</td>
+                                        <td>{{ entity.amount }}{% if entity.type == "Percent" %}%{% endif %}</td>
+                                        <td>{{ entity.startDate }}</td>
+                                        <td>{{ entity.endDate }}</td>
+                                        {% if canEdit %}
+                                            <td><a class="btn editEntityItem" data-id="{{ entity.id }}" class="tip-bottom supress"><i class="glyphicon glyphicon-pencil"></i></a></td>
+                                            <td><a class="btn deleteEntityItem" data-id="{{ entity.id }}" class="tip-bottom supress"><i class="glyphicon glyphicon-remove"></i></a></td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endblock %}
+                        <div class="pagination pagination-right">
+                            <ul>
+                                {% for x in currentEntities.paginator.page_range %}
+                                    <li{% if currentEntities.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        No {{ entityName }} is currently active in given time period.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box collapsible" id="pendingEntityWidget">
+                <div class="widget-title">
+                    <a href="#pendingEntity" data-toggle="collapse">
+                                    <span class="icon">
+                                        <i class="glyphicon glyphicon-pause"></i>
+                                    </span>
+                        <h5>Pending {{ entityName }}'</h5>
+                        <span class="label label-info">{{ pendingEntities|length }}</span>
+                        <div class="buttons">
+                            <a role="button" class="startDate pending btn btn-mini">{{ params.pendingEntityStart }}</a> -
+                            <a role="button" class="endDate pending btn btn-mini">{{ params.pendingEntityEnd }}</a>
+                        </div>
+                    </a>
+                </div>
+                <div class="collapse out" id="pendingEntity">
+                    <div class="widget-content">
+                        {% if pendingEntities %}
+                            {% block pendingTable %}
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        {% if canEdit %}
+                                            <th>Edit</th>
+                                            <th>De-Activate</th>
+                                        {% endif %}
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for entity in pendingEntities %}
+                                        <tr>
+                                            <td>{{ entity.description }}</td>
+                                            <td>{{ entity.amount }}{% if entity.type == "Percent" %}%{% endif %}</td>
+                                            <td>{{ entity.startDate }}</td>
+                                            <td>{{ entity.endDate }}</td>
+                                            {% if canEdit %}
+                                                <td><a class="btn editEntityItem" data-id="{{ entity.id }}" class="tip-bottom supress"><i class="glyphicon glyphicon-pencil"></i></a></td>
+                                                <td><a class="btn deleteEntityItem" data-id="{{ entity.id }}" class="tip-bottom supress"><i class="glyphicon glyphicon-remove"></i></a></td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endblock %}
+                            <div class="pagination pagination-right">
+                                <ul>
+                                    {% for x in pendingEntities.paginator.page_range %}
+                                        <li{% if pendingEntities.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% else %}
+                            No {{ entityName }} is currently scheduled in given time period.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box collapsible" id="completedEntityWidget">
+                    <div class="widget-title">
+                        <a href="#completedEntity" data-toggle="collapse">
+                                    <span class="icon">
+                                        <i class="glyphicon glyphicon-stop"></i>
+                                    </span>
+                            <h5>Completed {{ entityName }}'</h5>
+                            <span class="label label-info">{{ completeEntities|length }}</span>
+                            <div class="buttons">
+                                <a role="button" class="completed startDate btn btn-mini">{{ params.completedEntityStart }}</a> -
+                                <a role="button" class="completed endDate btn btn-mini">{{ params.completedEntityEnd }}</a>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="collapse out" id="completedEntity">
+                        <div class="widget-content">
+                            {% if completeEntities %}
+                                {% block completedTable %}
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>Amount</th>
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for entity in completeEntities %}
+                                            <tr>
+                                                <td>{{ entity.description }}</td>
+                                                <td>{{ entity.amount }}{% if entity.type == "Percent" %}%{% endif %}</td>
+                                                <td>{{ entity.startDate }}</td>
+                                                <td>{{ entity.endDate }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% endblock %}
+                                <div class="pagination pagination-right">
+                                    <ul>
+                                        {% for x in completeEntities.paginator.page_range %}
+                                            <li{% if completeEntities.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% else %}
+                                No {{ entityName }} has been completed in given time period.
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.maskedinput.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/templating" id="createForm">
+        <div class="row">
+            <div class="col-12">
+                <form method="post" id="createEntityForm" action="{{ createURL }}" class="form-horizontal">
+                    {% csrf_token %}
+                    {% load crispy_forms_tags %}
+                    {{ form|crispy }}
+                </form>
+            </div>
+        </div>
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            var currentEntityDiv = $('#currentEntity');
+            var pendingEntityDiv = $('#pendingEntity');
+            var completeEntityDiv = $('#completedEntity');
+
+            var search = br.search({
+                ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+                csrfToken:"{% csrf_token %}"
+            });
+
+            search.addEntity("Entities",{
+                prepend: "",
+                html: "Entity",
+                human: "{{ entityName }}"
+            });
+
+            search.addCreate("Entities",{
+                form: $('#createForm').html(),
+                button: $('.addEntity')
+            });
+
+            search.addDelete("Entities",{
+                button: $('.deleteEntityItem'),
+                url:'{{ deleteURL }}'
+            });
+
+            search.addUpdate("Entities",{
+                button: $('.editEntityItem'),
+                url:'{{ updateURL }}'
+            });
+
+            search.addRead("Entities",{
+                button: $('.viewEntityItem'),
+                url:'{{ viewURL }}'
+            });
+
+            search.addQuerySet("Entities",{
+                name:'current',
+                prepend:"currentEntity",
+                parameters: {
+                    Start: "{{ params.currentEntityStart }}",
+                    End: "{{ params.currentEntityEnd }}",
+                    Page: "{{ params.currentEntityPage }}"
+                }
+            });
+
+            search.addQuerySet("Entities",{
+                name:'pending',
+                prepend:"pendingEntity",
+                parameters: {
+                    Start: "{{ params.currentEntityStart }}",
+                    End: "{{ params.currentEntityEnd }}",
+                    Page: "{{ params.currentEntityPage }}"
+                }
+            });
+
+            search.addQuerySet("Entities",{
+                name:'completed',
+                prepend:"completedEntity",
+                parameters: {
+                    Start: "{{ params.completedEntityStart }}",
+                    End: "{{ params.completedEntityEnd }}",
+                    Page: "{{ params.completedEntityPage }}"
+                }
+            });
+
+            search.addPagination("Entities","current",'Page',currentEntityDiv);
+            search.addPagination("Entities","pending",'Page',pendingEntityDiv);
+            search.addPagination("Entities","completed",'Page',completeEntityDiv);
+
+            var getQuerySetFromElement = function(element) {
+                var queryset = "";
+                if (element.hasClass("current")) {
+                    queryset = "current";
+                }
+                else if (element.hasClass("pending")) {
+                    queryset = "pending";
+                }
+                else if (element.hasClass("completed")) {
+                    queryset = "completed";
+                }
+                return queryset;
+            };
+
+            $('.startDate').click(function() {
+                var queryset = getQuerySetFromElement($(this));
+                var returnDate = prompt("Please enter a date (mm/dd/yyy) to Search Until",$(this).text());
+                if(returnDate==""||returnDate==null) {
+                    return
+                }
+                if(isNaN(new Date(returnDate))){
+                    alert("Invalid Date Entered!");
+                    return
+                }
+                search.changeParameter("Entities",queryset,"Start",returnDate);
+            });
+
+            $('.endDate').click(function() {
+                var queryset = getQuerySetFromElement($(this));
+                var returnDate = prompt("Please enter a date (mm/dd/yyy) to Search Until",$(this).text());
+                if(returnDate==""||returnDate==null) {
+                    return
+                }
+                if(isNaN(new Date(returnDate))){
+                    alert("Invalid Date Entered!");
+                    return
+                }
+                search.changeParameter("Entities",queryset,"End",returnDate);
+            });
+
+        });
+    </script>
+{% endblock %}

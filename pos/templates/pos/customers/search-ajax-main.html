@@ -1,0 +1,41 @@
+{% if customer_list %}
+    <table class="table table-bordered table-hover">
+        <thead>
+        <th class="hidden">id</th>
+        <th>Full Name</th>
+        <th>Address</th>
+        <th class="hidden">Formatted Address</th>
+        <th>Contact Information</th>
+        <th>Attach</th>
+        </thead>
+        {% for customer in customer_list %}
+            <tr>
+                <td class="hidden id">{{ customer.id }}</td>
+                <td class="hidden creditLimit">{% if customer.account %}{{ customer.account.remainingCreditLimit }}{% else %}0.00{% endif %}</td>
+                <td class="name">{{ customer.firstName }} {{ customer.lastName }}</td>
+                <td class="address">
+                    {% if customer.paddress|default_if_none:"" != "" %}
+                        {{ customer.paddress }}
+                    {% else %}
+                        {{ customer.address }}
+                    {% endif %}
+                </td>
+                <td class="hidden htmlAddress">
+                    {{ customer.htmlFormattedAddress|safe }}
+                </td>
+                <td class="firstContact">
+                    {{ customer.firstContactPoint }}
+                </td>
+                <td>
+                    {% if format == "add" %}
+                        <a class="addCustomer btn btn-primary" href="#"><i class="glyphicon glyphicon-plus"></i></a>
+                    {% else %}
+                        <a class="btn btn-primary" href="{% url 'core:viewCustomer' customer.id %}"><i class="glyphicon glyphicon-eye-open"></i></a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No Customers Found !</p>
+{% endif %}

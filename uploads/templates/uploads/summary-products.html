@@ -1,0 +1,299 @@
+{% if EANExists or invalidIsCore or invalidPackSize or invalidCategory or invalidBrand or invalidSuggestedSell or EANBlankError or listConfusedEANExists or listOfBlankEANS or invalidTradePrice or invalidTradePrice or invalidGoPrice %}
+    <table class="table table-bordered">
+        <tr>
+            <th>Model</th>
+            <th>Category</th>
+            <th>Trade</th>
+            <th>Description</th>
+            <th>Go Price</th>
+            <th>Suggested Sell</th>
+            <th>Pack Size</th>
+            <th>Core</th>
+            <th>Cust Care Plan</th>
+            <th>EAN</th>
+            <th>Status</th>
+        </tr>
+        {% if listConfusedEANExists %}
+            <tr>
+                <td colspan="11" bgcolor="#FFF8DC" style="font-weight: bold">Confused</td>
+            </tr>
+            {% for i in listConfusedEANExists %}
+                <tr>
+                    <td>
+                        {% if isConfusedItem == i.model %}
+                            {{ i.model }}
+                        {% else %}
+                            {{ i.model }}
+                        {% endif %}
+                    </td>
+                    <td>{{i.category}}</td>
+                    <td>{{i.tradePrice}}</td>
+                    <td>{{i.description}}</td>
+                    <td>{{i.goPrice}}</td>
+                    <td>{{i.suggestedSell}}</td>
+                    <td>{{i.packSize}}</td>
+                    <td>{{i.isCore}}</td>
+                    <td>{{i.manWarranty}}</td>
+                    <td bgcolor="#FFDAB9">{{i.EAN}}</td>
+                    <td>{{i.status}}</td>
+                </tr>
+            {% endfor%}
+        {% endif %}
+        {% if listOfBlankEANS %}
+            <tr>
+                <td colspan="11" bgcolor="#FFF8DC" style="font-weight: bold">Blank Error</td>
+            </tr>
+            {% for i in listOfBlankEANS %}
+                <tr>
+                    <td>
+                        {% if isConfusedItem == i.model %}
+                            {{ i.model }}
+                        {% else %}
+                            {{ i.model }}
+                            {% if i.isBefore == True%}
+                                -Before
+                            {% else %}
+                                -After
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>{{i.category}}</td>
+                    <td>{{i.tradePrice}}</td>
+                    <td>{{i.description}}</td>
+                    <td>{{i.goPrice}}</td>
+                    <td>{{i.suggestedSell}}</td>
+                    <td>{{i.packSize}}</td>
+                    <td>{{i.isCore}}</td>
+                    <td>{{i.manWarranty}}</td>
+                    <td bgcolor="#FFDAB9">{{i.EAN}}</td>
+                    <td>{{i.status}}</td>
+                </tr>
+            {% endfor%}
+        {% endif %}
+     </table>
+{% else %}
+    {% ifequal uploadType "products"%}
+        <table class="table table-bordered">
+            <tr>
+                <th>Model</th>
+                <th>Category</th>
+                <th>Trade</th>
+                <th>Description</th>
+                <th>Go Price</th>
+                <th>Suggested Sell</th>
+                <th>Pack Size</th>
+                <th>Core</th>
+                <th>Cust Care Plan</th>
+                <th>EAN</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <td colspan="11" bgcolor="#FFF8DC" style="font-weight: bold">Editing</td>
+            </tr>
+            {% if listEdited %}
+                {% for i in listEdited %}
+                    <tr>
+                        {% if i.modelEdited %}
+                            <td bgcolor="#FFDEAD">
+                                {{i.model}}
+                            </td>
+                        {% else %}
+                            <td>
+                                {{ i.model }}
+                                {% if i.isBefore == True%}
+                                    -Before
+                                {% else %}
+                                    -After
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                        {% if i.categoryEdited %}
+                            <td bgcolor="#FFDEAD">{{i.category}}</td>
+                        {% else %}
+                            <td>{{i.category}}</td>
+                        {% endif %}
+                        {% if i.tradePriceEdited %}
+                            <td bgcolor="#FFDEAD">{{i.tradePrice}}</td>
+                        {% else %}
+                            <td>{{i.tradePrice}}</td>
+                        {% endif %}
+                        {% if i.descriptionEdited %}
+                            <td bgcolor="#FFDEAD">{{i.description}}</td>
+                        {% else %}
+                            <td>{{i.description}}</td>
+                        {% endif %}
+                        {% if i.goPriceEdited %}
+                            <td bgcolor="#FFDEAD">{{i.goPrice}}</td>
+                        {% else %}
+                            <td>{{i.goPrice}}</td>
+                        {% endif %}
+                        {% if i.suggestedSellEdited %}
+                            <td bgcolor="#FFDEAD">{{i.suggestedSell}}</td>
+                        {% else %}
+                            <td>{{i.suggestedSell}}</td>
+                        {% endif %}
+                        {% if i.packSizeEdited %}
+                            <td bgcolor="#FFDEAD">{{i.packSize}}</td>
+                        {% else %}
+                            <td>{{i.packSize}}</td>
+                        {% endif %}
+                        {% if i.isCoreEdited %}
+                            <td bgcolor="#FFDEAD">{{i.isCore}}</td>
+                        {% else %}
+                            <td>{{i.isCore}}</td>
+                        {% endif %}
+                        {% if i.manWarrantyEdited %}
+                            <td bgcolor="#FFDEAD">{{i.manWarranty}}</td>
+                        {% else %}
+                            <td>{{i.manWarranty}}</td>
+                        {% endif %}
+                        {% if i.EANEdited %}
+                            <td bgcolor="#FFDEAD">{{i.EAN}}</td>
+                        {% else %}
+                            <td>{{i.EAN}}</td>
+                        {% endif %}
+                        {% if i.statusEdited %}
+                            <td bgcolor="#FFDEAD">current</td>
+                        {% else %}
+                            <td>{{ i.status }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor%}
+            {% else %}
+                <tr>
+                    <td colspan="11">No Results</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td colspan="11" bgcolor="#FFF8DC" style="font-weight: bold">Adding</td>
+            </tr>
+            {% if listAdded %}
+                {% for i in listAdded %}
+                    <tr>
+                        <td bgcolor="#FFDAB9">{{i.model}}</td>
+                        <td bgcolor="#FFDAB9">{{i.category}}</td>
+                        <td bgcolor="#FFDAB9">{{i.tradePrice}}</td>
+                        <td bgcolor="#FFDAB9">{{i.description}}</td>
+                        <td bgcolor="#FFDAB9">{{i.goPrice}}</td>
+                        <td bgcolor="#FFDAB9">{{i.suggestedSell}}</td>
+                        <td bgcolor="#FFDAB9">{{i.packSize}}</td>
+                        <td bgcolor="#FFDAB9">{{i.isCore}}</td>
+                        <td bgcolor="#FFDAB9">{{i.manWarranty}}</td>
+                        <td bgcolor="#FFDAB9">{{i.EAN}}</td>
+                        <td bgcolor="#FFDAB9"></td>
+                    </tr>
+                {% endfor%}
+            {% else %}
+                <tr>
+                    <td colspan="11">No Results</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td colspan="10" bgcolor="#FFF8DC" style="font-weight: bold">Superseding</td>
+                <td colspan="1" bgcolor="#FFF8DC" style="">Do not supersede</td>
+            </tr>
+            {% if listPendingSuperseding %}
+                {% for i in listPendingSuperseding %}
+                    <tr>
+                        <td>
+                            {{ i.model }}
+                        </td>
+                        <td>{{i.category}}</td>
+                        <td>{{i.tradePrice}}</td>
+                        <td>{{i.description}}</td>
+                        <td>{{i.goPrice}}</td>
+                        <td>{{i.suggestedSell}}</td>
+                        <td>{{i.packSize}}</td>
+                        <td>{{i.isCore}}</td>
+                        <td>{{i.manWarranty}}</td>
+                        <td>{{i.EAN}}</td>
+                        <td>
+                            <div class="form-group">
+                                <input id="{{i.model}}_check" class="supersedeCheckbox" type="checkbox" name="checks[]" value="1"/>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor%}
+            {% else %}
+                <tr>
+                    <td colspan="11">No Results</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td colspan="11" bgcolor="#FFF8DC" style="font-weight: bold">Resurrecting</td>
+            </tr>
+            {% if listResurrected %}
+                {% for i in listResurrected %}
+                    <tr>
+                        <td>
+                            {{ i.model }}
+                        </td>
+                        <td>{{i.category}}</td>
+                        <td>{{i.tradePrice}}</td>
+                        <td>{{i.description}}</td>
+                        <td>{{i.goPrice}}</td>
+                        <td>{{i.suggestedSell}}</td>
+                        <td>{{i.packSize}}</td>
+                        <td>{{i.isCore}}</td>
+                        <td>{{i.manWarranty}}</td>
+                        <td>{{i.EAN}}</td>
+                        <td>{{i.status}}</td>
+                    </tr>
+                {% endfor%}
+            {% else %}
+                <tr>
+                    <td colspan="11">No Results</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td colspan="11" bgcolor="#FFF8DC" style="font-weight: bold">No Changes</td>
+            </tr>
+            {% if listNoChanges %}
+                {% for i in listNoChanges %}
+                    <tr>
+                        <td>
+                            {{ i.model }}
+                        </td>
+                        <td>{{i.category}}</td>
+                        <td>{{i.tradePrice}}</td>
+                        <td>{{i.description}}</td>
+                        <td>{{i.goPrice}}</td>
+                        <td>{{i.suggestedSell}}</td>
+                        <td>{{i.packSize}}</td>
+                        <td>{{i.isCore}}</td>
+                        <td>{{i.manWarranty}}</td>
+                        <td>{{i.EAN}}</td>
+                        <td>{{i.status}}</td>
+                    </tr>
+                {% endfor%}
+            {% else %}
+                <tr>
+                    <td colspan="11">No Results</td>
+                </tr>
+            {% endif %}
+         </table>
+    {%endifequal%}
+{% endif%}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

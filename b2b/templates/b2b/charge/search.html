@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Charges Archive{% endblock %}
+
+{% block content %}
+    {% load humanize %}
+    <div id="content-header">
+        <h1>Charges <small> Archive </small></h1>
+    </div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="{% url 'b2b:HOInvoicingHome' %}"><i class="glyphicon glyphicon-list-alt"></i><strong>Invoicing</strong></a>
+        <a href="{% url 'b2b:chargesHome' %}"><i class="glyphicon glyphicon-list-alt"></i>Charges</a>
+        <a href="#" class="supress"><i class="glyphicon glyphicon-th-list"></i><strong>Search Charges</strong></a>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </span>
+                        <h5>Search</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="row">
+                            <div class="col-12">
+                                <form method="GET">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="q" placeholder="Search The Customer Name, Any Model Numbers in the sale, Invoice Number, Comments Text etc here" value="{{ q }}">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary">Search!</button>
+                                        </span>
+                                    </div>
+                                </form>
+                            </div>
+                        </div
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                        <h5>Charges</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div id="resultsDiv">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Charge Date</th>
+                                        <th>Store</th>
+                                        <th>Created by</th>
+                                        <th>Charge Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for charge in entities %}
+                                    <tr>
+                                        <td>{{ charge.chargeDate|date:'d M Y' }}</td>
+                                        <td>{{ charge.store.name }}</td>
+                                        <td>{{ charge.createdBy.name }} <small>{{ charge.created|naturaltime }}</small></td>
+                                        <td>$ {{ charge.totalInvoices }}</td>
+                                        <td>
+                                            <a class="btn btn-primary" href="{% url 'b2b:printStoreChargeSheet' charge.id %}"><i class="glyphicon glyphicon-print"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <ul class="pagination alternate pull-right">
+                                {% for x in entities.paginator.page_range %}
+                                    <li{% if entities.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var search = br.search({
+                ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+                csrfToken:"{% csrf_token %}"
+            });
+
+            search.addEntity("Entities",{
+                prepend: "",
+                html: "Entity",
+                human: "{{ entityName }}"
+            });
+
+            search.addQuerySet("Entities",{
+                name:'All',
+                prepend:"",
+                parameters: {
+                    q: '{{ q }}',
+                    page: '{{ page }}'
+                }
+            });
+
+            search.addPagination("Entities","All",'page',$('#resultsDiv'));
+
+        });
+    </script>
+{% endblock %}

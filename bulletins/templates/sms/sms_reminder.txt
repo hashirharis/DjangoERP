@@ -1,0 +1,1 @@
+{% if bulletins|length_is:1 %}{% with bulletins|first as bulletin%}BULLETIN BOARD REMINDER!!! "{{ bulletin.subject|truncatechars:75 }}" ends in 1 day and you have not responded to it.{% endwith %}{% else %}REMINDER!!! {{ bulletins|length }} collations are ending in 1 day and you have not responded to them. Please log in to the intranet !{% endif %}

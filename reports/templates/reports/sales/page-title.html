@@ -1,0 +1,47 @@
+{% if isSalesAnalysisView %}
+    {% if isbrandanalysisdetailedView or iscategoryanalysisdetailedView%}
+        {% if isBrandsView_allStores or isCatView_allStores%}
+            Detailed Sales Analysis of All Stores
+        {% else %}
+            Detailed Sales Analysis for {{ store.name }}
+        {% endif %}
+    {% else %}
+        {% if isBrandsView_allStores or isCatView_allStores%}
+            Sales Analysis of All Stores
+        {% else %}
+            Sales Analysis for {{ store.name }}
+        {% endif %}
+    {% endif %}
+{% elif isItemisedView %}
+    {% if isItemisedViewAllStores %}
+        Itemised Sales of All Stores
+    {% else %}
+        Itemised Sales for {{ store.name }}
+    {% endif %}
+{% elif isItemisedSummaryView %}
+    Itemised Summary by Category - Sales for {{ store.name }} - Note: GST excluded
+{% elif isSalesPersonView %}
+    Sales People at {{ store.name }}
+{% elif isMonthlySalesView %}
+    {% if current == 'true' %}
+        Monthly Sales for {{ store.name }} - This year
+    {% else %}
+        Monthly Sales for {{ store.name }} - Last year
+    {% endif %}
+{% elif isDistributionView %}
+    Sales Distribution (per customer's address postcode)
+{% elif isSalesByCustomerView %}
+    Sales by Customer for {{ store.name }}
+{% elif isWarrantiesView %}
+   Cust Care Plans by salesperson for {{ store.name }}
+{% elif isSalesPersonView %}
+    <span class="text"> Sales Person Reports - Sales for {{ store.name }}</span>
+{% elif isSalesPersonView %}
+    <span class="text"> Sales Person Reports - Sales for {{ store.name }}</span>
+{% elif isSalesPersonView %}
+    <span class="text"> Sales Person Reports - Sales for {{ store.name }}</span>
+{% else %}
+{% endif %}
+{% if drillParentName %}
+    - Drill-down by {{ drillParentName }}
+{% endif %}

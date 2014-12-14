@@ -1,0 +1,40 @@
+{% extends "stock/stocktake/base.html" %}
+{% block title %}New Stocktake{% endblock %}
+{% block content %}
+{% load br %}
+{{ block.super }}
+<div id="content-header">
+    {% if stockTake %}
+        <h1>Quote - Terminal {{ terminal.name }} - <small> Ref : {{ stockTake.reference }} ({{ stockTake.created }}) </small></h1>
+    {% else %}
+        <h1>New Stocktake</h1>
+    {% endif %}
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'stock:dashboard' %}"><i class="glyphicon glyphicon-gift"></i>Stock</a>
+    <a href="{% url 'stock:stockTakeHome' %}"><i class="glyphicon glyphicon-list-alt"></i>Stocktakes</a>
+
+    <a href="#" class="supress"><i class="glyphicon glyphicon-th-list"></i><strong>View Stocktake</strong></a>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#collapseTwo" data-toggle="collapse">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-barcode"></i>
+                </span>
+                    <h5>Stock Take Lines</h5>
+                </a>
+            </div>
+            <div class="collapse in" id="collapseTwo">
+                <div class="widget-content stockTakeLinesDiv nopadding" style="max-height:800px;overflow-y: scroll;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

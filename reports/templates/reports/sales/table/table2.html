@@ -1,0 +1,48 @@
+{% load br %}
+
+<div id="resultsDiv">
+
+    {% if objects %}
+        <table cellpadding="0" cellspacing="0" border="0" class="display table " id="example">
+        {% include "reports/pagination-panel.html" %}
+            <thead>
+                <tr>
+                    {% if isMonthlySalesView %}
+                        {% include "reports/sales/table/tablerow-monthly-sales-reports.html" %}
+                    {% else %}
+                    {% endif %}
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    {% if isMonthlySalesView %}
+                        {% include "reports/sales/table/tablerow-monthly-sales-reports.html" %}
+                    {% else %}
+                    {% endif %}
+                </tr>
+            </tfoot>
+            <tbody>
+                {% if isMonthlySalesView %}
+                    {% include "reports/sales/table/tablebody-monthly-sales-reports2.html" %}
+                {% else %}
+                {% endif %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-content">
+                        <div class="widget-title">
+                            <span class="icon">
+                                <i class="glyphicon glyphicon-list-alt"></i>
+                            </span>
+                            <h5>Results</h5>
+                        </div>
+                        <h3>Failed to return results.</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>

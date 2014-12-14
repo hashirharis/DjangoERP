@@ -1,0 +1,468 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Dashboard{% endblock %}
+
+{% block content %}
+
+    <div id="content-header">
+        {% if bbuser.is_bb_admin %}
+            <h1>Dashboard</h1>
+        {% else %}
+            {% if personal %}
+                {% for message in personal %}
+                     <div class="row">
+                        <div class="col-lg-12 col-12">
+                            <div class="alert alert-danger alert-dismissable">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <h4>{{ message.subject }}</h4>
+                                <p>{{ message.content|safe }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div id="breadcrumb">
+        <a href="#" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="#" class="current">Dashboard</a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-12 center" style="text-align: center;">
+            <ul class="quick-actions">
+                <li>
+                    <a href="{% url 'core:searchProducts' %}" data-module="Sale" class="tip-bottom" data-original-title="Product/Catalog Search">
+                        <i class="icon-search"></i>
+                        Search
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'pos:home' %}" data-module="Sale" class="tip-bottom" data-original-title="Point of Sale">
+                        <i class="icon-shopping-bag"></i>
+                        Sales
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'stock:dashboard' %}" data-module="Stock" class="tip-bottom" data-original-title="Stock Order/ Amendments">
+                        <i class="icon-wallet"></i>
+                        Stock
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin:listStaff' %}" data-module="Admin" class="tip-bottom" data-original-title="Add/Edit Staff and Settings">
+                        <i class="icon-lock"></i>
+                        Admin
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'reports:home' %}" class="tip-bottom" data-original-title="Reports and Reporting Tools" data-module="Admin">
+                        <i class="icon-graph"></i>
+                        Reports
+                    </a>
+                </li>
+                 <li>
+                    <a href="{% url 'tele:home' %}" class="tip-bottom" data-original-title="Contacts">
+                        <i class="icon-web"></i>
+                        Contacts
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        {% if not bbuser.is_bb_admin %}
+        <div class="col-lg-12 col-12">
+        {% else %}
+        <div class="col-lg-12 col-12">
+        {% endif %}
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#messageBoard" data-toggle="collapse">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-envelope"></i>
+                        </span>
+                        <h5>Message Board</h5>
+                        <div class="buttons">
+                            {% if bbuser.is_bb_admin %}
+                            <a href="{% url "bulletins:createBulletin" "message" %}" class="btn createbtn"><i class="glyphicon glyphicon-plus"></i> Create</a>
+                            {% endif %}
+                            <a href="#" class="btn searchbtn tip-bottom" data-original-title="Search Bulletins"><i class="glyphicon glyphicon-search"></i></a>
+                            <a href="#" class="btn filterbtn tip-bottom" data-original-title="Filter Bulletins by Tag"><i class="glyphicon glyphicon-filter"></i></a>
+                            <a href="#" class="btn archivedbtn tip-bottom" data-original-title="View/Hide Archived Bulletins"><i class="glyphicon glyphicon-folder-open"></i></a>
+                        </div>
+                    </a>
+                </div>
+                <div class="collapse in" id="messageBoard">
+                    <div class="widget-content nopadding updates">
+                        <ul class="recent-posts">
+                            <li class="hidden">
+                                <input class="showArchived" type="hidden" value="false"/>
+                            </li>
+                            <li class="search" style="display:none;">
+                                Search :
+                                <input type="text"/>
+                            </li>
+                            <li class="filter" style="display:none;">
+                                Filter :
+                                <select class="tagFilter">
+                                    <option value="">All</option>
+                                    <option value="Important">Important</option>
+                                    <option value="Price List">Price List</option>
+                                    <option value="Collations">Collations</option>
+                                    <option value="Promotions">Promotions</option>
+                                    <option value="Sell Through">Sell Through</option>
+                                    <option value="Price Drops">Price Drops</option>
+                                    <option value="Miscellaneous">Miscellaneous</option>
+                                    <option value="Catalogue">Catalogue</option>
+                                </select>
+                            </li>
+                        </ul>
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% include "bulletins/message.html" %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-block">
+                                <h4 class="alert-heading">No Messages For You!</h4>
+                                There are no messages for you ...
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% if bbuser.is_bb_admin %}
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#personalMessages" data-toggle="collapse">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-envelope"></i>
+                        </span>
+                        <h5>Personal Messages</h5>
+                        <div class="buttons">
+                            <a href="{% url "bulletins:createBulletin" "personal" %}" class="btn createbtn"><i class="glyphicon glyphicon-plus"></i> Create</a>
+                            <a href="#" class="btn searchbtn tip-bottom" data-original-title="Search Bulletins"><i class="glyphicon glyphicon-search"></i></a>
+                            <a href="#" class="btn filterbtn tip-bottom" data-original-title="Filter Bulletins by Tag"><i class="glyphicon glyphicon-filter"></i></a>
+                            <a href="#" class="btn archivedbtn tip-bottom" data-original-title="View/Hide Archived Bulletins"><i class="glyphicon glyphicon-folder-open"></i></a>
+                        </div>
+                    </a>
+                </div>
+                <div class="collapse in" id="personalMessages">
+                    <div class="widget-content nopadding updates">
+                        <ul class="recent-posts">
+                            <li class="hidden">
+                                <input class="showArchived" type="hidden" value="false"/>
+                            </li>
+                            <li class="search" style="display:none;">
+                                Search :
+                                <input type="text"/>
+                            </li>
+                            <li class="filter" style="display:none;">
+                                Filter :
+                                <select class="tagFilter">
+                                    <option value="">All</option>
+                                    <option value="Important">Important</option>
+                                    <option value="Price List">Price List</option>
+                                    <option value="Collations">Collations</option>
+                                    <option value="Promotions">Promotions</option>
+                                    <option value="Sell Through">Sell Through</option>
+                                    <option value="Price Drops">Price Drops</option>
+                                    <option value="Miscellaneous">Miscellaneous</option>
+                                    <option value="Catalogue">Catalogue</option>
+                                </select>
+                            </li>
+                        </ul>
+                        {% if personal %}
+                            {% for message in personal %}
+                                {% include "bulletins/message.html" %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-block">
+                                <h4 class="alert-heading">No Messages For You!</h4>
+                                There are no messages for you ...
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {# admin users only #}
+            {% endif %}
+    </div>
+</div>
+
+<div id="viewMessage" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button data-dismiss="modal" class="close" type="button">×</button>
+                <h3>View Message</h3>
+            </div>
+            <div class="modal-body">
+                <p>Lorem ipsum dolor sit amet...</p>
+            </div>
+            <div class="modal-footer">
+                <strong class="pull-left">Bulletin Valid From: <span class="startDate"></span> - <span class="endDate"></span></strong>
+                <a data-dismiss="modal" id="print" class="btn btn-info btn-small suppress" href="#">Print</a>
+                {% if bbuser.is_bb_admin %}
+                <a id="edit" class="btn btn-default btn-small" href="#">Edit</a>
+                {% endif %}
+                <a data-dismiss="modal" class="btn btn-default btn-small" href="#">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{%  block javascript %}
+<script src="{{ STATIC_URL }}js/unicorn.dashboard.js"></script>
+<script src="{{ STATIC_URL }}js/jquery.flot.min.js"></script>
+<script src="{{ STATIC_URL }}js/jquery.flot.resize.min.js"></script>
+<script type="text/template" id="orderDropDownRow">
+<tr>
+    <td>
+        <select name="model" class="model">
+            <% _.each(models, function(v) { %>
+                <option value="<%= v.line %>"><%= v.model %></option>
+            <% }); %>
+        </select>
+    </td>
+    <% _.each(deliveryMonths, function(v) { %>
+        <td class="orderNum"><input type="number" min="0" value="0"/></td>
+    <% }); %>
+</tr>
+</script>
+<script type="text/javascript">
+
+var currentBulletin = 0;
+
+$(document).ready(function(){
+    //admin stuff
+    var adminBulletin = $('li.bulletin');
+    var allBulletins = $('li.bulletin, .new-update');
+    var archivedBulletins = $('li.bulletin.archived, .new-update.archived');
+    var showHideArchivedBulletins = $('.archivedbtn');
+    var showArchived = false;
+    var showFilterDiv = $('.filterbtn');
+    var showSearchDiv = $('.searchbtn');
+
+    $(".tagFilter").select2("val", "");
+    $("#nonOrderReason").select2("val", "");
+
+    $('.tagFilter').on("change", function(e) {
+        filterBulletins(this);
+    });
+
+    $('li.search input').keyup(function(e) {
+        filterBulletins(this);
+    });
+
+    /**
+     * @param element : is the element we are changing from. it is used to get the parent widget.
+     */
+    var filterBulletins = function(element) {
+        var parentWidgetBox = $(element).closest('.widget-box');
+        var showArchived = (parentWidgetBox.find('input.showArchived').val()=='true');
+        var filter = parentWidgetBox.find('.tagFilter').select2('val');
+        console.log(filter.length);
+        var search = parentWidgetBox.find('li.search input').val().toLowerCase();
+
+         $(element).closest('.widget-box').find(allBulletins).each(function(k,v){
+            if (!showArchived && $(v).hasClass('archived')) {
+                $(v).hide(400);
+                return; // skip the iteration
+            }
+            /** if there is a filter then use the filter **/
+            if ((filter.length<= 0 || $(v).find('.label').text().indexOf(filter)>-1) && $(v).text().toLowerCase().indexOf(search)>-1) {
+                $(v).show(400);
+            } else {
+                $(v).hide(400);
+            }
+            return;
+         });
+    };
+
+    showHideArchivedBulletins.click(function(e){
+        e.preventDefault();
+        $(this).toggleClass('enabled');
+        var showArchived = ($(this).closest('.widget-box').find('input.showArchived').val()=='true');
+        $(this).closest('.widget-box').find('input.showArchived').val(!showArchived);
+        filterBulletins(this);
+    });
+
+    showFilterDiv.click(function(e) {
+        e.preventDefault();
+        $(this).toggleClass('enabled');
+        var clearInput = !$(this).hasClass('enabled');
+        var filterListItem = $(this).closest('.widget-box').find('li.filter');
+        if(clearInput) {
+            filterListItem.find('.tagFilter').select2('val','');
+            filterBulletins(this);
+        }
+        filterListItem.toggle(400);
+    });
+
+    showSearchDiv.click(function(e) {
+        e.preventDefault();
+        $(this).toggleClass('enabled');
+        var clearInput = !$(this).hasClass('enabled');
+        var searchlistItem = $(this).closest('.widget-box').find('li.search');
+        if(clearInput) {
+            searchlistItem.find('input').val('');
+            filterBulletins(this);
+        }
+        searchlistItem.toggle(400, function(e) {
+            searchlistItem.find('input').focus();
+        });
+    });
+
+    archivedBulletins.hide();
+
+    adminBulletin.click(function(e){
+        $(this).find('.controls, .user-info').toggle();
+    });
+
+    //view
+    var viewBulletinButton = $('.new-update, .previewbtn');
+    var editBulletin = $('.editbtn');
+    var viewBulletinModal = $('#viewMessage');
+    var ajaxLoader = "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>";
+
+    editBulletin.click(function(e) {
+        e.stopPropagation();
+    });
+
+    viewBulletinButton.click(function(e) {
+        e.preventDefault();
+        var that = $(this);
+        var editURL = $(this).closest('li.bulletin').find('.editbtn').attr('href');
+        var id = $(this).data('id');
+        viewBulletin(id, editURL);
+        if (that.hasClass('unread')) {
+            that.removeClass('unread');
+            that.addClass('read');
+            that.find('.update-day').text('Read');
+        }
+    });
+
+    var viewBulletin = function(id, editURL) {
+        var url = "{% url "bulletins:bulletin" 1 %}";
+        url = url.substring(0,url.length-2) + id + "/";
+        viewBulletinModal.modal('show');
+        viewBulletinModal.find('.modal-body').html(ajaxLoader);
+
+        $.getJSON(url,function(msg) {
+            viewBulletinModal.data('prompt', msg.type=="short"&&msg.collation&&!msg.responded);
+            viewBulletinModal.find('.modal-body').html(msg.content);
+            viewBulletinModal.find('h3').text(msg.subject);
+            viewBulletinModal.find('#edit').attr('href',editURL);
+            viewBulletinModal.find('.startDate').text(msg.startDate);
+            viewBulletinModal.find('.endDate').text(msg.endDate);
+            //if collation then show order now button
+            var collationOrderButton = viewBulletinModal.find('#orderFromCollation');
+            if (msg.collation) {
+                collationOrderButton.show();
+                currentBulletin = id;
+            } else {
+                collationOrderButton.hide();
+            }
+			viewBulletinModal.find('.models').html("Eligible models: " + msg.eligibleModels);
+            //if short term then prompt at end.
+            readLogLoader(msg.readLog, msg.hitPercent);
+        });
+    }
+
+    var readLogLoader = function(readLogArray, hitRate) {
+        var newTable = $('<table class="table table-bordered table-hover"><thead><tr><th>Store</th><th>Has Read?</th></tr></thead><tbody></tbody></table>');
+        var bulk = newTable.find('tbody');
+
+        var tr = $("<tr class='warning'><td>Total Hit</td><td><i></i>"+hitRate+" %</td></tr>");
+        bulk.append(tr);
+
+        $.each(readLogArray, function(k,v) {
+            var tr = $("<tr><td>"+ v.store + "</td><td><i></i></td></tr>");
+            bulk.append(tr);
+            if (v.read) {
+                tr.addClass('success');
+                tr.find('i').addClass('glyphicon glyphicon-ok');
+            }
+            else {
+                tr.addClass('danger');
+                tr.find('i').addClass('glyphicon glyphicon-remove');
+            }
+        });
+        $('.righttable').html(newTable);
+    }
+
+    //print
+    $('#print').click(function() {
+        w=window.open();
+        w.document.write($('#viewMessage .modal-body').html());
+        w.document.close();
+        w.focus();
+        w.print();
+        w.close();
+    });
+
+    //view Read Log
+    var readLog = $('.readlogbtn');
+    readLog.click(function(e) {
+        e.preventDefault();
+        var that = $(this);
+        var id = $(this).data('id');
+        var url = "{% url "bulletins:bulletin" 1 %}";
+        url = url.substring(0,url.length-2) + id;
+        $('.righttable').html(ajaxLoader);
+
+        $.getJSON(url,function(msg) {
+            readLogLoader(msg.readLog, msg.hitPercent);
+        });
+
+        return false;
+    })
+
+    //delete
+    var deleteBulletin = $('.deletebtn');
+
+    deleteBulletin.click(function(e) {
+        e.preventDefault();
+        var bulletinElement = $(this).closest('.bulletin');
+        var id = $(this).data('id');
+        var url = "{% url "bulletins:bulletin" 1 %}";
+        url = url.substring(0,url.length-2) + id + "/";
+
+        if (!confirm("Are you sure you want to delete this bulletin ?")) {
+            return false;
+        }
+
+        var request = $.ajax({
+            url: url,
+            type: "POST",
+            data: {action: 'DELETE'},
+            dataType: "html",
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", br.getCookie('csrftoken'));
+            }
+        });
+
+        request.done(function(msg) {
+            bulletinElement.remove();
+        });
+
+        return false;
+    });
+
+
+    //automatic bulletin open
+    {% if request.GET.id %}
+        viewBulletin({{ request.GET.id }});
+    {% endif %}
+
+    {% if reminders %}
+        $('#reminders').dropdown('toggle');
+    {% endif %}
+
+});
+</script>
+{%  endblock %}

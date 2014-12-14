@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}New Stocktake{% endblock %}
+{% block content %}
+{% load br %}
+{{ block.super }}
+<div id="content-header">
+    <h1>New Stocktake Dump From Motorolla CS3070</h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'stock:dashboard' %}"><i class="glyphicon glyphicon-gift"></i>Stock</a>
+    <a href="{% url 'stock:stockTakeHome' %}"><i class="glyphicon glyphicon-list-alt"></i>Stocktakes</a>
+    <a href="#" class="supress"><i class="glyphicon glyphicon-th-list"></i><strong>New Stocktake Dump</strong></a>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#collapseTwo" data-toggle="collapse">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-barcode"></i>
+                </span>
+                    <h5>Barcode Scanner Dump</h5>
+                </a>
+            </div>
+            <div class="collapse in" id="collapseTwo">
+                <div class="widget-content">
+                    <p style="padding-bottom: 5px;">Paste the entire barcode dump from the Barcode Scanner here. The Dump is located on the device itself under Scanned Barcodes.
+                    <br/>
+                    <small>*Multiple quantities of the same product will be automatically collated after saving/processing the stocktake</small>
+                    </p>
+                    <div class="errors" style="display:none;color:red;padding-bottom: 5px;"></div>
+                    <textarea name="dump" id="csvdump" cols="30" rows="50" style="width:100%"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascript %}
+<script>
+$(function() {
+    $('#csvdump').change(function() {
+        var $el = $(this);
+        if ($el.val().length){
+            if(!confirm("Do you wish to try and process this barcode dump file ?")) {
+                return
+            }
+            $('.errors').hide();
+            $(this).prop('disabled', true);
+             var request = $.ajax({
+                url: '{% url 'stock:stocktakeFromBarcodeDump' %}',
+                type: "POST",
+                data: {csv: $el.val()},
+                dataType: "json",
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", br.getCookie('csrftoken'));
+                }
+            });
+
+            request.done(function(msg) {
+                if(msg.error) {
+                    $('.errors').text(msg.error);
+                    $('.errors').show();
+                    $el.prop('disabled', false);
+                } else {
+                    window.location = msg.open;
+                }
+            });
+        }
+    })
+});
+</script>
+{% endblock %}

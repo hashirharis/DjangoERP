@@ -1,0 +1,44 @@
+{% load br %}
+
+<div id="resultsDiv">
+    {% if objects %}
+        <table cellpadding="0" cellspacing="0" border="0" class="display table " id="example">
+        {% include "reports/pagination-panel.html" %}
+        {% if isSales %}
+            {% include "reports/sales/table/table.html" %}
+        {% elif isIRP %}
+            {% include "reports/IRP/table/table.html" %}
+        {% elif isBanking %}
+            {% include "reports/banking/table/table.html" %}
+        {% elif isCustomer %}
+            {% include "reports/customer/table/table.html" %}
+        {% elif isInward %}
+            {% include "reports/inward/table/table.html" %}
+        {% elif isLedger %}
+            {% include "reports/ledger/table/table.html" %}
+        {% elif isJsb %}
+            {% include "reports/jsb/table/table.html" %}
+        {% elif isTax %}
+            {% include "reports/tax/table/table.html" %}
+        {% elif isWarranties %}
+            {% include "reports/warranties/table/table.html" %}
+        {% endif %}
+        </table>
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-content">
+                        <div class="widget-title">
+                            <span class="icon">
+                                <i class="glyphicon glyphicon-list-alt"></i>
+                            </span>
+                            <h5>Results</h5>
+                        </div>
+                        <h3>Failed to return results.</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>

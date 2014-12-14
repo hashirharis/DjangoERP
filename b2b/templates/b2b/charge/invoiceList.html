@@ -1,0 +1,41 @@
+{% extends "b2b/charge/new.html" %}
+
+{% block form %}
+<div class="widget-box collapsible">
+    <div class="widget-title">
+        <a href="#collapseOne" data-toggle="collapse">
+        <span class="icon">
+            <i class="glyphicon glyphicon-book"></i>
+        </span>
+            <h5>Charge Parameters</h5>
+        </a>
+    </div>
+    <div class="collapse in" id="collapseOne">
+        <div class="widget-content">
+            <form action="{% url 'b2b:newChargeStepTwo' %}" class="form-horizontal" method="post" id="form_searchInvoices">
+                {% csrf_token %}
+                <div class="control-group">
+                    <label class="control-label" for="invoiceDate">End Date</label>
+                    <div class="controls">
+                        <input disabled type="text" id="endDate" placeholder="dd/mm/yyyy" value="{{ endDate|date:"d/m/Y" }}">
+                        <input type="hidden" id="endDate_hidden" name="endDate" value="{{ endDate|date:"c" }}"/>
+                    </div>
+                </div>
+            </form>
+            <div class="row">
+                <div class="col-10">
+                    <div class="form-actions" style="text-align: right">
+                        <button id="btn_searchInvoices" data-loading-text="Searching..." class="btn btn-large btn-info">Produce Charge Sheet</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block total %}$ {{ completeTotal }}{% endblock %}
+
+{% block results %}
+{{ block.super }}
+{% endblock %}

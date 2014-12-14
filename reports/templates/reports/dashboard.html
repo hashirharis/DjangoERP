@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div id="content-header">
+    <h1>BiRite<small> Reports</small></h1>
+</div>
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a><i class="glyphicon glyphicon-signal"></i><strong>Reports</strong></a>
+</div>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 center" style="text-align: center;">
+            <div id="accordion">
+                {% if store.displayHOMenu %}
+                    <h3>JBS</h3>
+                        {% include "reports/jsb/dashboard.html" %}
+                    <h3>IRP</h3>
+                        {% include "reports/IRP/dashboard.html" %}
+                {% endif %}
+                <h3>Stock</h3>
+                    {% include "reports/merchandiser/dashboard.html" %}
+                <h3>Sales</h3>
+                    {% include "reports/sales/dashboard.html" %}
+                <h3>Cust Care Plans</h3>
+                    {% include "reports/warranties/dashboard.html" %}
+                <h3>To do later</h3>
+
+
+							<div class="widget-content">
+								<div class="alert alert-info alert-block">
+									<a class="close" data-dismiss="alert" href="#">×</a>
+									<h4 class="alert-heading">Info!</h4>
+                                    <p>The following reports are to be completed later as instructed by management<br />
+                                    -banking<br />
+                                    -customers<br />
+                                    -goods inward<br />
+                                    -IRP	- Extended Credit Report<br />
+                                    -IRP	- Wholesale Price List Report<br />
+                                    -ledger - statements<br />
+                                    -ledger - aged<br />
+                                    -ledger	- selected<br />
+                                    -Tax	- Daily snapshot<br />
+                                    -Tax	- tax report</p>
+
+								</div>
+							</div>
+
+
+
+                    {#                <h3>Banking</h3>#}
+                    {#                    {% include "reports/banking/dashboard.html" %}#}
+                    {#                <h3>Customer</h3>#}
+                    {#                    {% include "reports/customer/dashboard.html" %}#}
+                    {#                <h3>Goods Inward</h3>#}
+                    {#                    {% include "reports/inward/dashboard.html" %}#}
+                    {#                <h3>Ledger</h3>#}
+                    {#                    {% include "reports/ledger/dashboard.html" %}#}
+                    {#                <h3>Tax</h3>#}
+                    {#                    {% include "reports/tax/dashboard.html" %}#}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+
+    <script>
+        $(function() {
+        $( "#accordion" ).accordion();
+        });
+    </script>
+
+{% endblock %}

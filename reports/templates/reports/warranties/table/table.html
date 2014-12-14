@@ -1,0 +1,15 @@
+{% load br %}
+
+<thead>
+    <tr>
+        {% include "reports/warranties/table/tablerow.html" %}
+    </tr>
+</thead>
+<tfoot>
+    <tr>
+        {% include "reports/warranties/table/tablerow.html" %}
+    </tr>
+</tfoot>
+<tbody>
+    {% include "reports/warranties/table/tablebody.html" %}
+</tbody>

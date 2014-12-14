@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %} {{ product.model }} - Product Details {% endblock %}
+
+<style type="text/javascript">
+li { cursor: pointer; cursor: hand; }
+
+</style>
+
+{% block content %}
+
+<div id="content-header">
+    <h1>{{ product.model }} <small>Product Information</small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a style="cursor: pointer; cursor: hand;" onClick="javascript:history.go(-1);" class="tip-bottom" data-original-title="Go to Stock Analysis"><i class="glyphicon glyphicon-home"></i>Stock Analysis</a>
+    <a href="">View</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 col-lg-6">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseOne" data-toggle="collapse">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-chevron-up"></i>
+                        </span>
+                        <h5>Public Summary</h5>
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseOne">
+                    <div class="widget-content">
+                        <table class="table table-bordered">
+                            <tr class="success">
+                                <td>Go Price</td>
+                                <td>$ {{ product.goPrice }}</td>
+                            </tr>
+                            <tr>
+                                <td>Cost Price</td>
+                                <td><small><em>Check Under Store Information Summary</em></small></td>
+                            </tr>
+                            {% if product.warranty %}
+                            <tr>
+                                <td>Start Range</td>
+                                <td>$ {{ product.warranty.startValue }}</td>
+                            </tr>
+                            <tr>
+                                <td>End Range</td>
+                                <td>$ {{ product.warranty.endValue }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <td>Brand</td>
+                                <td>{{ product.brand.brand|title }}</td>
+                            </tr>
+                            <tr>
+                                <td>Class</td>
+                                <td>{{ product.category.parentCategory.parentCategory }}</td>
+                            </tr>
+                            <tr>
+                                <td>Type</td>
+                                <td>{{ product.category.parentCategory }}</td>
+                            </tr>
+                            <tr>
+                                <td>Category</td>
+                                <td>{{ product.category }}</td>
+                            </tr>
+                            <tr>
+                                <td>Model Status</td>
+                                <td>{{ product.status }}</td>
+                            </tr>
+                            <tr>
+                                <td>Tags</td>
+                                <td>
+                                    {% for tag in product.tags.all %}
+                                        <a href class="supress"><span data-id="{{ tag.id }}" class="tagSearch
+                                        {% if tag.type == "Deal" %}
+                                            label-success
+                                        {% elif tag.type == "Feature" %}
+                                            label-warning
+                                        {% elif tag.type == "Other" %}
+                                            label-info
+                                        {% endif %} label">{{ tag }}</span></a>&nbsp
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <ul class="quick-actions">
+                <li style="cursor: pointer; cursor: hand;">
+                    <a onClick="javascript:history.go(-1);" class="tip-bottom" data-original-title="Back to Analysis">
+                        <i class="glyphicon glyphicon-circle-arrow-left"></i>
+                        Back
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-lg-6 col-12">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseTwo" data-toggle="collapse" class="collapsed">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-chevron-down"></i>
+                        </span>
+                        <h5>Store Summary</h5>
+                        <div class="buttons"><a href="#" class="btn btn-mini"><i class="glyphicon glyphicon-print"></i> Print Label </a></div>
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseTwo">
+                    <div class="widget-content">
+                        <h3>Cost Breakdown</h3>
+                        {% include 'core/product/product-calc-summary.html' %}
+
+                        <h3>Product Deals <span class="badge badge-success">{{ currentCount }} Current</span> <span class="badge badge-info">{{ pendingCount }} Pending</span>
+                            {% if canEdit %}
+                            {% endif %}
+                        </h3>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Deal Type</th>
+                                <th>Amount</th>
+                                <th>Comments</th>
+                                <th>Start-End Date</th>
+                            </tr>
+                            {% if deals %}
+                            {% for deal in deals %}
+                                <tr class="{% if deal.active %}success{% else %}info{% endif %}">
+                                    <td>{{ deal.get_verbose_type }}</td>
+                                    <td>{% if not deal.percent %}${% endif %}{{ deal.amount }}{% if deal.percent %}%{% endif %}</td>
+                                    <td>{{ deal.comments }}</td>
+                                    <td>{{ deal.startDate|date:'d/m/y' }} - {{ deal.endDate|date:'d/m/y' }}</td>
+                                </tr>
+                            {% endfor %}
+                            {% else %}
+                                <tr class="error" align="center">
+                                    <td colspan="5">There are no deals currently being offered with this product..</td>
+                                </tr>
+                            {% endif %}
+                        </table>
+
+                        <h3>Stock Levels <span class="badge">{{ stock_levels_total.total }}</span></h3>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Stock Level</th>
+                                <th>Store</th>
+                                <th>Contact</th>
+                            </tr>
+                            {% if stock_levels_total.total > 0 %}
+                            {% for stocklevel in stock_levels.all %}
+                                <tr>
+                                    <td>{{ stocklevel.level }}</td>
+                                    <td><a href="#">{{ stocklevel.store }}</a></td>
+                                    <td><a href="#">{{ stocklevel.store.contact.firstName }}</a></td>
+                                </tr>
+                            {% endfor %}
+                            {% else %}
+                                <tr class="error" align="center">
+                                    <td colspan="3">There are no stores which currently have this product in stock.</td>
+                                </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-title">
+                            <span class="icon">
+                                <i class="glyphicon glyphicon-list-alt"></i>
+                            </span>
+                    <h5>Product Description</h5>
+                </div>
+                <div class="widget-content">
+                    {% autoescape off %}
+                        {{ product.description }}
+                    {% endautoescape %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+
+        $('.supress').click(function(e){
+            e.preventDefault();
+        });
+
+        $('.tagSearch').click(function(){
+            productSearch({tags:$(this).attr('data-id')})
+        });
+
+        $('.brandSearch').click(function(){
+            productSearch({brand:$(this).attr('data-id')})
+        });
+
+        $('.categorySearch').click(function(){
+            productSearch({category:$(this).attr('data-id')})
+        });
+
+        var productSearch = function(params) {
+            // The rest of this code assumes you are not using a library.
+            // It can be made less wordy if you use one.
+            var form = $('<form></form>');
+            form.attr("method", 'get');
+            form.attr("action", '{% url 'core:searchProducts' %}');
+
+            for(var key in params) {
+                if(params.hasOwnProperty(key)) {
+                    var hiddenField = $('<input></input>')
+                    hiddenField.attr("type", "hidden");
+                    hiddenField.attr("name", key);
+                    hiddenField.attr("value", params[key]);
+                    form.append(hiddenField);
+                }
+            }
+
+            $('body').append(form);
+            form.submit();
+        };
+
+        var productsearch = br.search({
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            csrfToken:"{% csrf_token %}"
+        });
+
+        productsearch.submitPage = function() {
+            {% if canEdit %}window.location = "{% url 'core:searchProducts' %}";
+            {% else %}window.location = "{% url 'core:priceLookup' %}";
+            {% endif %}
+        };
+
+        productsearch.addEntity("Product",{
+            prepend: "",
+            html: "Product",
+            human: "Product"
+        });
+
+        productsearch.addDelete("Product",{
+            button: $('.deleteProduct'),
+            url:'{% url 'core:deleteProduct' 1 %}'
+        });
+
+        var search = br.search({
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            csrfToken:"{% csrf_token %}"
+        });
+
+        search.submitPage = function() {
+            window.location.reload();
+        };
+
+        search.addEntity("Deal",{
+            prepend: "",
+            html: "Deal",
+            human: "Deal"
+        });
+
+        search.addDelete("Deal",{
+            button: $('.deleteDeal'),
+            url:'{% url 'core:deleteProductDeal' 1 %}'
+        });
+    });
+    </script>
+{% endblock %}

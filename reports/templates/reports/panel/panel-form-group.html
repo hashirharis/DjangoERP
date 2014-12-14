@@ -1,0 +1,33 @@
+<div class="form-group">
+    <div class="input-group">
+        <span class="input-group-btn">
+            <button class="btn btn-success">Search</button>
+            <div class="btn-group dropup">
+                <button class="btn btn-dark-blue">Options</button>
+                <button data-toggle="dropdown" class="btn btn-dark-blue dropdown-toggle"><span class="caret"></span></button>
+                <ul class="dropdown-menu dropdown-dark-blue pull-right">
+                    {% if isSales %}
+                        {% include "reports/panel/sales/panel-form-group.html" %}
+                    {% elif isIRP %}
+                        {% include "reports/panel/IRP/panel-form-group.html" %}
+                    {% elif isBanking %}
+                        {% include "reports/panel/banking/panel-form-group.html" %}
+                    {% elif isCustomer %}
+                        {% include "reports/panel/customer/panel-form-group.html" %}
+                    {% elif isInward %}
+                        {% include "reports/panel/inward/panel-form-group.html" %}
+                    {% elif isLedger %}
+                        {% include "reports/panel/ledger/panel-form-group.html" %}
+                    {% elif isJsb %}
+                        {% include "reports/panel/jsb/panel-form-group.html" %}
+                    {% elif isTax %}
+                        {% include "reports/panel/tax/panel-form-group.html" %}
+                    {% elif isWarranties %}
+                        {% include "reports/panel/warranties/panel-form-group.html" %}
+                    {% else %}
+                    {% endif%}
+                </ul>
+            </div>
+        </span>
+    </div>
+</div>

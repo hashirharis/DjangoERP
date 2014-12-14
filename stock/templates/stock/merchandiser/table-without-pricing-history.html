@@ -1,0 +1,64 @@
+{% load br %}
+
+<style type="text/css">
+
+</style>
+
+<div id="resultsDiv">
+    {% if products %}
+        {% include "stock/merchandiser/pagination-panel.html" %}
+        <table cellpadding="0" cellspacing="0" border="0" class="display table " id="example">
+            <thead>
+                <tr>
+                    <th>Model Num</th>
+                    <th>Brand</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>GO</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>Model Num</th>
+                    <th>Brand</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>GO</th>
+                </tr>
+            </tfoot>
+            <tbody>
+                {% for product in products %}
+                    <tr style="white-space: nowrap;">
+                        <td>{% filter truncatechars:91 %}<a href="{% url 'stock:viewProduct' product.id %}">{{ product.model }}</a>{% endfilter %}</td>
+                        <td>{% filter truncatechars:91 %}{{ product.brand }}{% endfilter %}</td>
+                        <td>{% filter truncatechars:91 %}{{ product.description }}{% endfilter %}</td>
+                        <td>{% filter truncatechars:91 %}{{ product.category }}{% endfilter %}</td>
+                        <td>{{ product.goPrice}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-content">
+                        <div class="widget-title">
+                            <span class="icon">
+                                <i class="glyphicon glyphicon-list-alt"></i>
+                            </span>
+                            <h5>Results</h5>
+                        </div>
+                        <h3>Failed to return results.</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+
+
+
+
+

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}HO Invoicing Dashboard{% endblock %}
+
+{% block content %}
+
+    <div id="content-header">
+        <h1>Head Office Invoices</h1>
+    </div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="{% url 'b2b:HOInvoicingHome' %}"><i class="glyphicon glyphicon-book"></i>HO Invoicing</a>
+        <a href="#" class="supress"><i class="glyphicon glyphicon-th-list"></i><strong>Search Invoices</strong></a>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </span>
+                        <h5>Search</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="row">
+                            <div class="col-12">
+                                <form action="{% url 'b2b:searchHOInvoices' filter %}" method="GET">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="q" placeholder="Search any models, invoice number, order number or distributor name here. " value="{{ q }}">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary">Search!</button>
+                                        </span>
+                                    </div>
+                                </form>
+                            </div>
+                        </div
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                        <h5>Results</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div id="resultsDiv">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Distributor</th>
+                                        <th>Invoice Number</th>
+                                        <th>Invoice Date</th>
+                                        <th>Freight(Ex)</th>
+                                        <th>Total Invoice(Inc)</th>
+                                        <th>Total Store Net(Ex)</th>
+                                        <th>View</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% if entities %}
+                                {% for invoice in entities %}
+                                    <tr>
+                                        <td>{{ invoice.distributor.distributor }}</td>
+                                        <td>{{ invoice.invoiceNumber }}</td>
+                                        <td>{{ invoice.invoiceDate|date:"d M Y" }}</td>
+                                        <td>${{ invoice.freight|floatformat:2 }}</td>
+                                        <td>${{ invoice.invTotal|floatformat:2 }}</td>
+                                        <td>${{ invoice.netTotal|floatformat:2 }}</td>
+                                        {% if store.code == "VW" %} <!--if VW user open invoice in VW view-->
+                                            {% if invoice.createdBy.store.code == "VW" %}
+                                                <td><a class="btn btn-primary" href="{% url 'vw:openHOInvoice' invoice.id %}"><i class="glyphicon glyphicon-pencil"></i></a></td>
+                                            {% else %}
+                                                <td><a class="btn btn-primary" href="{% url 'b2b:openHOInvoice' invoice.id %}"><i class="glyphicon glyphicon-pencil"></i></a></td>
+                                            {% endif %}
+                                        {% else %}
+                                            {% if invoice.createdBy.store.code == "VW" %}  <!--can not edit virtual warehouse invoices from here/ visibility: hidden-->
+                                                <td><a style="visibility: hidden" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i></a></td>
+                                            {% else %}
+                                                <td><a class="btn btn-primary" href="{% url 'b2b:openHOInvoice' invoice.id %}"><i class="glyphicon glyphicon-pencil"></i></a></td>
+                                            {% endif %}
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td class="danger" colspan="8" style="text-align: center;">No Invoices Available</td>
+                                    </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                            <ul class="pagination alternate pull-right">
+                                {% for x in entities.paginator.page_range %}
+                                    <li{% if entities.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var search = br.search({
+                ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+                csrfToken:"{% csrf_token %}"
+            });
+
+            search.addEntity("Entities",{
+                prepend: "",
+                html: "Entity",
+                human: "{{ entityName }}"
+            });
+
+            search.addQuerySet("Entities",{
+                name:'All',
+                prepend:"",
+                parameters: {
+                    q: '{{ q }}',
+                    page: '{{ page }}'
+                }
+            });
+
+            search.addPagination("Entities","All",'page',$('#resultsDiv'));
+
+        });
+    </script>
+{% endblock %}

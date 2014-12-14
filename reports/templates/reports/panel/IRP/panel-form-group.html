@@ -1,0 +1,22 @@
+{% if isStorePurchases %}
+    <a href="/reports/export/storePurchases/irp/?{{search_string}}">Export</a>
+{% elif isExtended %}
+    <a href="/reports/export/extended/irp/?{{search_string}}">Export</a>
+{% elif isInvoiceByDate %}
+    {% include "reports/panel/IRP/panel-form-group-daily.html" %}
+{% elif isStoreListing %}
+    <a href="/reports/export/storeListing/irp/?{{search_string}}">Export</a>
+{% elif isWholesale %}
+    <a href="/reports/export/wholesale/irp/?{{search_string}}">Export</a>
+{% elif isRebates %}
+    <a href="/reports/export/rebates/irp/?{{search_string}}">Export</a>
+{% elif isIAS %}
+    <a href="/reports/export/IAS/irp/?{{search_string}}">Export</a>
+{% elif isB2B %}
+    <a href="/reports/export/b2b/irp/?{{search_string}}">Export</a>
+{% endif %}
+
+
+
+
+

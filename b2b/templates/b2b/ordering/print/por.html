@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+
+    <title>POR-{{ etOrder.stockOrder.reference }}</title>
+
+    <link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/invoice-A4style.css' />
+    <style type="text/css" media="print">
+        #hiderow,
+        .codesExplained,
+        .delete {
+          display: none;
+        }
+    </style>
+</head>
+
+<body onload="window.print()">
+
+<div id="page-wrap">
+
+    <div id="header">PURCHASE ORDER RESPONSE</div>
+
+    <div id="identity">
+
+        <div id="address" style="height:100%;">
+        	<strong>Our Order : </strong>{{ por.EAPOR.purchaseOrderNumberReference }}<br>
+            <strong>Response : </strong>{{ por.EAPOR.orderResponseNumber }} <br>
+            <strong>Reference : </strong> <br>
+            <strong>Status :</strong> {{ por.EAPOR.messageFunction }}
+            {% if por.EAPOR.messageFunction == "29" %}(Accepted Without Amendment)
+            {% elif por.EAPOR.messageFunction == "4" %}(Change)
+            {% elif por.EAPOR.messageFunction == "27" %}(Not Accepted)
+            {% endif %} <br> <br>
+
+            <strong>Comments: </strong><br><br>
+            {% for comment in por.FTXHEADER %}
+                {{ comment.freeTextLine1 }} <br />
+            {% endfor %}
+        </div>
+
+        <div id="logo">
+            <img id="image" style="max-width: 540px; max-height: 100px;" src="{{ STATIC_URL }}img/logo.jpg" alt="logo" />
+        </div>
+
+    </div>
+
+    <div style="clear:both"></div>
+
+    <div id="customer">
+    </div>
+
+    <table id="items">
+        <tr>
+            <th>Line</th>
+            <th>Status</th>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Backorder Date</th>
+            <th>Order Variance</th>
+            <th>Variance Code</th>
+            <th>Variance Reason</th>
+            <th>Order Price</th>
+            <th>Actual Price</th>
+            <th>Substitute</th>
+        </tr>
+
+        {% for orderLine in por.LINEITEM %}
+            <tr class="item-row">
+                <td>{{ orderLine.lineItemNumber }}</td>
+                <td>{{ orderLine.itemStatusCode }}</td>
+                <td class="item-name">{{ orderLine.itemDescription }}</td>
+                <td>{{ orderLine.quantity }}</td>
+                <td>{{ orderLine.datetimeBackorder }}</td>
+                <td>{{ orderLine.quantityVariance }}</td>
+                <td class="varianceCode">{{ orderLine.quantityVarianceCode }}</td>
+                <td>{{ orderLine.quantityVarianceReasonCode }}</td>
+                <td>{{ orderLine.unitInvoicePrice }}</td>
+                <td>{{ orderLine.unitAdvicePrice }}</td>
+                <td>{{ orderLine.productSubstitutionCode }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <br>
+    <div class="codesExplained">
+        <strong>Codes Explanation</strong> <br> <br>
+		<strong>Status :</strong> <br> <br>
+        <table>
+            <tr>
+                <td>3</td>
+                <td>Change</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Accept without amendment</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>Not Accepted</td>
+            </tr>
+        </table><br>
+		<strong>Variance Code :</strong> <br> <br>
+        <table>
+            <tr>
+                <td>BP</td>
+                <td>Shipment Partial - back order to follow</td>
+            </tr>
+            <tr>
+                <td>CP</td>
+                <td>Shipment partial -considered complete no back order</td>
+            </tr>
+        </table><br>
+		<strong>Variance Reason</strong> <br> <br>
+        <table>
+            <tr>
+                <td>AU</td>
+                <td>No deliv. outstanding payments</td>
+            </tr>
+            <tr>
+                <td>AUE</td>
+                <td>EAN code unknown</td>
+            </tr>
+            <tr>
+                <td>AV</td>
+                <td>Out of inventory</td>
+            </tr>
+            <tr>
+                <td>AW</td>
+                <td>EAN product withdrawn</td>
+            </tr>
+            <tr>
+                <td>PC</td>
+                <td>Pack difference</td>
+            </tr>
+            <tr>
+                <td>QT</td>
+                <td>Qty price break</td>
+            </tr>
+            <tr>
+                <td>SL</td>
+                <td>Sale location different</td>
+            </tr>
+        </table><br>
+    </div>
+</div>
+
+</body>
+
+</html>

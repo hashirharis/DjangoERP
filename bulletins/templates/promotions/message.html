@@ -1,0 +1,77 @@
+{% load br %}
+{% if not bbuser.is_bb_admin %}
+<div class="new-update clearfix {% if bbuser.store|hasRead:message %}read{% else %}unread{% endif %}" data-id="{{ message.id }}"><!-- if unread -->
+    <div class="update-done">
+        {% if message.tag == "Important" %}
+            <span class="label label-danger" style="display:inline;">{{ message.tag }}</span>
+        {% elif message.tag == "Price List" %}
+            <span class="label label-warning" style="display:inline;">{{ message.tag }}</span>
+        {% elif message.tag == "Collations" %}
+            <span class="label label-inverse" style="display:inline;">{{ message.tag }}</span>
+        {% elif message.tag == "Promotions" %}
+            <span class="label label-info" style="display:inline;">{{ message.tag }}</span>
+        {% elif message.tag == "Sell Through" %}
+            <span class="label label-success" style="display:inline;">{{ message.tag }}</span>
+        {% elif message.tag == "Price Drops" %}
+            <span class="label label-yellow" style="display:inline;">{{ message.tag }}</span>
+        {% elif message.tag == "Miscellaneous" %}
+            <span class="label label-muave" style="display:inline;">{{ message.tag }}</span>
+        {% elif message.tag == "Catalogue" %}
+            <span class="label label-salmon" style="display:inline;">{{ message.tag }}</span>
+        {% endif %}
+        {{ message.subject }}
+        {% if message.promotion and message.promotion.endingSoon %}
+            <span class="label label-danger" style="display:inline;">Ending Soon</span>
+        {% endif %}
+    </div>
+    <div class="update-date">
+        {% if bbuser.store|hasRead:message %}
+           <span class="update-day">Read</span>
+        {% else %}
+            <span class="update-day">Unread</span>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+    {% if forloop.first %}
+        <ul class="recent-posts">
+    {% endif %}
+    <li class="bulletin" data-id="{{ message.id }}">
+        <div class="article-post" style="margin-left: 0px;">
+            <p>
+                {% if message.tag == "Important" %}
+                    <span class="label label-danger" style="display:inline;">{{ message.tag }}</span>
+                {% elif message.tag == "Price List" %}
+                    <span class="label label-warning" style="display:inline;">{{ message.tag }}</span>
+                {% elif message.tag == "Collations" %}
+                    <span class="label label-inverse" style="display:inline;">{{ message.tag }}</span>
+                {% elif message.tag == "Promotions" %}
+                    <span class="label label-info" style="display:inline;">{{ message.tag }}</span>
+                {% elif message.tag == "Sell Through" %}
+                    <span class="label label-success" style="display:inline;">{{ message.tag }}</span>
+                {% elif message.tag == "Price Drops" %}
+                    <span class="label label-yellow" style="display:inline;">{{ message.tag }}</span>
+                {% elif message.tag == "Miscellaneous" %}
+                    <span class="label label-muave" style="display:inline;">{{ message.tag }}</span>
+                {% elif message.tag == "Catalogue" %}
+                    <span class="label label-salmon" style="display:inline;">{{ message.tag }}</span>
+                {% endif %}
+                <strong>{{ message.subject }}</strong>
+            </p>
+            <div class="user-info" style="display:none;">
+                valid : {{ message.startDate|date:"d M, Y" }} - {{ message.endDate|date:"d M, Y" }} <br>
+                eligible models : {{ message.eligibleModels }}<br>
+            </div>
+            <span class="controls" style="display:none;">
+                <br>
+                <a href="{% url 'bulletins:updatePromotion' message.id %}" class="btn btn-primary btn-xs editbtn"><i class="glyphicon glyphicon-edit"></i> Edit</a>
+                <a href="#" class="btn btn-primary btn-xs previewbtn" data-id="{{ message.id }}"><i class="glyphicon glyphicon-search"></i> Preview</a>
+                <a href="#" class="btn btn-primary btn-xs deletebtn" data-id="{{ message.id }}"><i class="glyphicon glyphicon-remove"></i> Delete</a>
+            </span>
+        </div>
+    </li>
+    {% if forloop.last %}
+        </ul>
+    {% endif %}
+{% endif %}
+

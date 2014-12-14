@@ -1,0 +1,54 @@
+{% load reportTags %}
+
+{% for level2Category in objects %}
+
+    <tr>
+        <td style="font-weight:bold;">{{ level2Category.staffName }}</td>
+        <td>{{ level2Category.level2Category }}</td>
+        <td>{{ level2Category.totalQuantity }}</td>
+        {% if level2Category.isDataRow == "isDataRow" %}
+            <td>${{ level2Category.totalPrice|floatformat:2 }}</td>
+        {% else %}
+            <td></td>
+        {% endif %}
+        {% if level2Category.isDataRow == "isDataRow" %}
+            {% if level2Category.totalReturnedQuantity == 0 %}
+                <td>-</td>
+            {% else %}
+                <td>{{ level2Category.totalReturnedQuantity }}</td>
+            {% endif %}
+            {% if level2Category.totalReturnedPrice == 0 %}
+                <td>-</td>
+            {% else %}
+                <td>${{ level2Category.totalReturnedPrice |floatformat:2 }}</td>
+            {% endif %}
+            <td>-{{ level2Category.xxx }}</td>
+            <td>-{{ level2Category.xxx }}</td>
+        {% else %}
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        {% endif %}
+    </tr>
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

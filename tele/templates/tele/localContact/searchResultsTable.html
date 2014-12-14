@@ -1,0 +1,25 @@
+<thead>
+    <th>Name </th>
+    <th class="visible-lg">Address </th>
+    <th>Email </th>
+    <th class="visible-lg">Actions </th>
+</thead>
+<tbody>
+    {% for object in searchResults %}
+        <tr>
+            <td class="hidden-lg">
+                <a class="btn btn-primary tip-bottom" data-original-title="View" href="{% url 'tele:viewLocalContact' object.id %}">{{ object.name }}</a>
+            </td>
+            <td class="visible-lg">{{ object.name }}</td>
+            <td class="visible-lg">{{ object.address }}</td>
+            <td>{{ object.email }}</td>
+            <td class="visible-lg">
+                <div>
+                <a class="btn btn-primary tip-bottom" data-original-title="View" href="{% url 'tele:viewLocalContact' object.id %}"><i class="glyphicon glyphicon-eye-open"></i></a>
+                <a class="btn btn-primary tip-bottom" data-original-title="Edit" href="{% url 'tele:updateLocalContact' object.id %}"><i class="glyphicon glyphicon-pencil"></i></a>
+                <a class="btn btn-primary tip-bottom" data-original-title="Delete" href="{% url 'tele:deleteLocalContact' object.id %}"><i class="glyphicon glyphicon-remove"></i></a>
+            </div>
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>

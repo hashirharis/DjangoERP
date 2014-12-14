@@ -1,0 +1,7 @@
+{% if isDailySnapshot %}
+    {% include "reports/panel/tax/panel-form-group-tax-daily.html" %}
+{% elif isTaxReport %}
+    <li>
+        <a href="/reports/export/taxReport/tax/?{{search_string}}">Export</a>
+    </li>
+{% endif %}

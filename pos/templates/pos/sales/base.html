@@ -1,0 +1,710 @@
+{% extends "base.html" %}
+{% block css %}
+    <style type="text/css">
+    #addPayment #paymentAmount {
+        background-color: #FFFFD5;
+    }
+    .totalgreen {
+        color:#5cb85c;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+{% load br %}
+
+<div class="modal fade" id="netBreakDown">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">×</button>
+                <h3>Cost Price Breakdown</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="netBreakDownContent">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createCustomer">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">×</button>
+                <h3>Create New Customer</h3>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="createCustomerForm" action="{% url 'pos:createCustomer' %}" class="form-horizontal">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            {% load crispy_forms_tags %}
+                            {% crispy customerForm %}
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+                <button type="submit" id="createCustomerSubmit" class="btn btn-primary">Create Customer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addCustomerModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Search Customer</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="input-group">
+                        <input class="genericSearchModalInput form-control" type="text" placeholder="Please enter any current customer details (Phone number, name etc)">
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary genericSearchModalSearch">Search!</button>
+                        </span>
+                    </div>
+                    <div class="col-12" style="height:20px"></div>
+                    <div class="genericSearchModalResultDiv">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="createCustomerButton" role="button" class="btn btn-info"><i class="glyphicon glyphicon-plus"></i> Create Customer</a>
+                <button class="btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addPayment">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">×</button>
+                <h3>Add Payment</h3>
+            </div>
+            <div class="modal-body">
+             <div class="row">
+                    <div class="col-4">
+                        <table id="paymentMethodsButtonsTable" class="table table-bordered">
+                            <tbody>
+                            {% for paymentMethod in paymentMethods %}
+                                {% if not paymentMethod.parentMethod %}
+                                    <tr>
+                                    <td><button class="btn btn-primary {% if not store|getChildrenForPayment:paymentMethod %}paymentMethodSelect{% else %}parentMethodSelect{% endif %}" value="{{ paymentMethod.id }}">{{ paymentMethod.name }}</button></td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-8">
+                        <div id="paymentInputDiv" style="margin-top:100px;margin:0 auto;text-align: center;display:none;padding-bottom: 20px;">
+                            <h5 id="paymentTypeHeader">Payment Type</h5>
+                            <h3>Amount Tendered</h3>
+                            <input id="paymentAmount" style="text-align: right;font-size: 200%;height:50px;margin-bottom:10px;" value="0.00" type="number" increments="1.00" max="">
+                            <input id="paymentMethodHidden" type="hidden" name="country" value="Norway">
+                            <input id="addPaymentToSale" class="btn btn-block btn-primary" value="Confirm"/>
+                        </div>
+                        <div id="subMethods" style="text-align: center;">
+                        {% for paymentMethod in paymentMethods %}
+                            {% if not paymentMethod.parentMethod %}
+                                {% if store|getChildrenForPayment:paymentMethod %}
+                                    <div class="paymentSubMethods" style="display:none;" id="{{ paymentMethod.id }}">
+                                    <table class="table table-bordered">
+                                    {% for children in store|getChildrenForPayment:paymentMethod %}
+                                        <tr><td><button class="btn btn-primary paymentMethodSelect" value="{{ children.id }}">{{ children.name }}</button> <br></td></tr>
+                                    {% endfor %}
+                                    </table>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="viewPayment">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">×</button>
+                <h3>View Payments</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="paymentsTableDiv">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="viewInvoice">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">×</button>
+                <h3>View Invoices</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="invoicesTableDiv">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/tinymce/jquery.tinymce.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.modalsearch.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.objmodifier.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.profitmargincalculator.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.linestable.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.sale.js"></script>
+    <script type="text/template" id="ProductRowTemplate">
+        <tr class="item">
+            <td><button class="delete btn btn-danger btn-mini"><i class="glyphicon glyphicon-remove"></i></button></td>
+            <td><button class="changeQuantity btn btn-primary btn-mini"><%= values.quantity %></button></td>
+            <td><%= values.description %></td>
+            <td>
+                <% if (values.warrantyRef=="") { %>
+                N/A
+                <% } else { %>
+                <button class="btn btn-primary btn-mini tip-bottom" data-original-title="<%= values.warrantyRef %>"><i class="glyphicon glyphicon-info-sign"></i></button>
+                <% } %>
+            </td>
+            <td><button class="netBreakDown btn btn-primary btn-mini tip-bottom" data-original-title="View Net Price Breakdown"><i class="glyphicon glyphicon-list-alt"></i></button></td>
+            <td><%= values.released %></td>
+            <td><button class="releaseProduct btn btn-primary btn-mini"><%= values.toRelease %></button></td>
+            <td><button class="changeUnitPrice btn btn-primary btn-mini"><i class="glyphicon glyphicon-cog"></i> $<%= values.unitPrice.toFixed(2) %></button></td>
+            <td><button class="changeTotalPrice btn btn-primary btn-mini"><i class="glyphicon glyphicon-list-alt"></i> $<%= values.totalPrice.toFixed(2) %></button></td>
+        </tr>
+    </script>
+    <script type="text/template" id="PaymentRowTemplate">
+        <tr class="item">
+            <td><%= values.method_name %></td>
+            <td><%= values.dateToString %></td>
+            <td><%= values.amount %></td>
+            <td><% if (values.printURL!=""&&values.printURL!=undefined) { %>
+                <a href="<%= values.printURL %>" class="print btn tip-bottom" title="Print Payment Reciept"><i class="glyphicon glyphicon-print"></i></a>
+                <% } else { %>
+                <a class="delete btn tip-bottom" title="Remove Payment"><i class="glyphicon glyphicon-remove"></i></a>
+                <% } %>
+            </td>
+        </tr>
+    </script>
+    <script type="text/template" id="InvoiceRowTemplate">
+        <tr class="item">
+            <td><%= values.reference %></td>
+            <td><%= values.createdToString %></td>
+            <td><%= values.total %></td>
+            <td><a href="<%= values.printURL %>" class="print btn tip-bottom" title="Print Invoice"><i class="glyphicon glyphicon-print"></i></a></td>
+        </tr>
+    </script>
+    <script type="text/javascript">
+    var saleModel = br.saleModel();
+    $(document).ready(function() {
+        saleModel.saveURL = "{% url 'pos:saveSale' terminal.id %}";
+        var takePaymentsTrigger = true; //will activate only once when a product is added
+        var viewPaymentsTrigger = true; //will activate only once a payment has been made
+
+        //control binds - mainly for the notes
+        saleModel.completeControlBind($('#saleNote'),'saleNote');
+        saleModel.completeControlBind($('#storeNote'),'storeNote');
+        //
+
+        var printingFunction = function(e) {
+            e.preventDefault();
+           $('#printWindow').attr('src',$(this).attr("href"));
+        };
+
+        var viewNetBreakDown = function(id) {
+            var ajaxLoader = "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>";
+            var netBreakDownModal = $('#netBreakDown');
+            br.viewNetBreakDown(id,'{% url 'core:getProductCalcSummary' %}',ajaxLoader,netBreakDownModal);
+        }
+
+        var paymentsTable = br.lineTableWidget({
+            totals: [
+                {title: 'Total',key :"total",value: 0.00}
+            ],
+            headers: [
+                {title: "Payment Method",key: 'method_name'},
+                {title: "Date/Time",key: 'dateToString'},
+                {title: "Amount",key: 'amount'},
+                {title: "Print/Delete",key: 'printURL'}
+            ],
+            emptyText: "Add Payments on the left",
+            rowTemplate: _.template($('#PaymentRowTemplate').html()),
+            rowBindingFunction: function(row) {
+                var line = row.data('line');
+                row.find('.delete').bind('click',function(e) {
+                    e.preventDefault();
+                    saleModel.removePayment(line);
+                });
+                row.find('.print').bind('click',printingFunction);
+                row.find('.tip-bottom').tooltip({ placement: 'bottom' });
+                return row;
+            },
+            rowUnBindingFunction: function(row) {
+                row.find('.print').unbind('click');
+                return row;
+            }
+        });
+
+        $('#paymentsTableDiv').append(paymentsTable.tableElement);
+
+        var invoicesTable = br.lineTableWidget({
+            totals: [
+                {title: 'Total',key :"total",value: 0.00}
+            ],
+            headers: [
+                {title: "Invoice Reference",key: 'reference'},
+                {title: "Created",key: 'createdToString'},
+                {title: "Total",key: 'total'},
+                {title: "Print",key: 'printURL'}
+            ],
+            emptyText: "No Invoices have been generated",
+            rowTemplate: _.template($('#InvoiceRowTemplate').html()),
+            rowBindingFunction: function(row) {
+                var line = row.data('line');
+                row.find('.print').bind('click',printingFunction);
+                row.find('.tip-bottom').tooltip({ placement: 'bottom' });
+                return row;
+            },
+            rowUnBindingFunction: function(row) {
+                row.find('.print').unbind('click');
+                return row;
+            }
+        });
+
+        $('#invoicesTableDiv').append(invoicesTable.tableElement);
+
+        var salesTable = br.lineTableWidget({
+            totals: [
+                {title: 'Sub-Total',key :"subTotal",value: 0.00},
+                {title: 'Tax',key :"taxTotal",value: 0.00},
+                {title: 'Total',key :"total",value: 0.00}
+            ],
+            headers: [
+                {title: "Remove",key: 'delete'},
+                {title: "Quantity",key: 'quantity'},
+                {title: "Description",key: 'description'},
+                {title: "Warr. Ref",key: 'warrantyRef'},
+                {title: "Break Down",key: 'breakdown'},
+                {title: "Released",key: 'released'},
+                {title: "To Release",key: 'toRelease'},
+                {title: "Price per Item",key: 'unitPrice'},
+                {title: "Total",key: 'totalPrice'}
+            ],
+            emptyText: "Please add products using the option above!",
+            rowTemplate: _.template($('#ProductRowTemplate').html()),
+            rowBindingFunction: function(row) {
+                var line = row.data('line');
+                var that = this;
+                if (saleModel.status!="COMPLETED") { // only have these options available if the sale is not completed.
+                    row.find('.delete').click(function() {
+                        saleModel.negateSalesLine(line);
+                    });
+                    row.find('.changeQuantity').click(function() {
+                        var salesLine = saleModel.getSalesLine(line);
+                        var initValue = salesLine.quantity;
+                        var quantity = prompt("Please enter new Quantity",initValue);
+                        saleModel.changeLineQuantity(line,quantity);
+                    });
+                    row.find('.releaseProduct').click(function() {
+                        var salesLine = saleModel.getSalesLine(line);
+                        var initValue = salesLine.quantity-salesLine.released;
+                        var newValue = prompt("Please enter quantity to release", initValue);
+                        saleModel.changeLineReleased(line, newValue);
+                    });
+                    row.find('.changeUnitPrice').click(function() {
+                        var salesLine = saleModel.getSalesLine(line);
+                        if (salesLine.released==0&&salesLine.toRelease==0) {
+                            br.marginCalculator({
+                                costPrice:salesLine.unitCostPrice,
+                                salePrice:salesLine.unitPrice,
+                                callback : function(costPrice) {
+                                    saleModel.changeLineUnitPrice(line,costPrice);
+                                }
+                            });
+                        }
+                        else {
+                            alert("This price is locked in, the products have either been released or will be released!")
+                        }
+                    });
+                    row.find('.changeTotalPrice').click(function() {
+                        var salesLine = saleModel.getSalesLine(line);
+                        br.marginCalculator({
+                            costPrice:(salesLine.unitCostPrice*salesLine.quantity),
+                            salePrice: salesLine.totalPrice,
+                            callback : function(totalPrice) {
+                                saleModel.changeLineTotalPrice(line,totalPrice);
+                            }
+                        });
+                    });
+                }
+                row.find('.netBreakDown').click(function() {
+                    var salesLine = saleModel.getSalesLine(line);
+                    var productID = salesLine.productID
+                    viewNetBreakDown(productID);
+                });
+                row.find('.tip-bottom').tooltip({ placement: 'bottom' });
+                return row;
+            },
+            rowUnBindingFunction: function(row) {
+                row.find('.delete').unbind('click');
+                row.find('.changeTotalPrice').unbind('click');
+                row.find('.changeUnitPrice').unbind('click');
+                row.find('.changeQuantity').unbind('click');
+                row.find('.netBreakDown').unbind('click');
+                return row;
+            }
+        });
+
+        $('.ProductsTableWidget').append(salesTable.tableElement);
+
+        var genericProductSearchObject = br.genericModalSearch({
+            entity: "Product",
+            placeholder: "Please search for Products here",
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            url:"{% url 'core:searchProductsAjax' %}",
+            postData: {format: "sale"},
+            callback: function(obj) {
+                obj = saleModel.addProductFromModal(obj);
+                br.objModifier({
+                    object: obj,
+                    values: [{human: 'Quantity', actual: 'quantity', defaultVal:obj.quantity, editable: true},
+                            {human: 'Sell Price', actual: 'unitPrice', defaultVal:obj.unitPrice.toFixed(2), editable: true}
+                            ],
+                    callback: function(v) {
+                        saleModel.changeLineUnitPrice(v.line, v.unitPrice);
+                        if (!v.isWarranty&& v.availableStock <= 0) {
+                            if(confirm("Are you sure you want to add a product that is not currently in stock ?")) {
+                                saleModel.changeLineQuantity(v.line, v.quantity);
+                            }else {
+                                saleModel.removeSalesLine(v.line);
+                                return;
+                            }
+                        }
+                        if (v.isWarranty) {
+                            if (v.warrantyRef==""|| v.warrantyRef==undefined) {
+                                var reference = prompt("Please enter product that this Cust Care Plan refers to","");
+                                saleModel.changeLineWarrantyRef(v.line, reference);
+                                saleModel.changeLineQuantity(v.line, v.quantity);
+                            }
+                            genericProductSearchObject.ajaxSearchAndReturn();
+                        }
+                        else {
+                            saleModel.changeLineQuantity(v.line, v.quantity);
+                            if(confirm("Would you like to add a Cust Care Plan for this product?")) {
+                                warrantySearch(v.unitPrice, v.productID);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        var ProductSearchModal = genericProductSearchObject.element;
+        var warrantySearch = function(unitPrice, productID) {
+            genericProductSearchObject.postData['productID'] = productID;
+            genericProductSearchObject.postData['price'] = unitPrice;
+            ProductSearchModal.modal('show');
+            genericProductSearchObject.ajaxSearchAndReturn();
+            delete genericProductSearchObject.postData['productID'];
+            delete genericProductSearchObject.postData['price'];
+        };
+
+        var CustomerSearchModal = br.genericModalSearch({
+            entity: "Customer",
+            placeholder: "Please search for Customers here",
+            results: "html",
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            url: '{% url 'pos:searchCustomerAjax' %}',
+            postData: {format: "add"},
+            element: $('#addCustomerModal'),
+            callback: function(obj) {
+                saleModel.addCustomerFromModal(obj);
+            }
+        }).element;
+        saleModel.bindCollectionToTable(invoicesTable,"invoiceLines"); //just for CRUD operations, totals have to be updated manually
+        saleModel.bindEvent("invoiceLines", "added", function(newVal){
+            console.log("here");
+            $('#viewInvoiceButton').removeClass("hidden");
+        });
+        saleModel.bindCollectionToTable(paymentsTable,"paymentLines"); //just for CRUD operations, totals have to be updated manually
+        saleModel.bindEvent("paymentsTotal","update",function(newVal) {
+            paymentsTable.changeTotal('total',newVal.toFixed(2));
+        });
+        saleModel.bindEvent("paymentLines", "added", function(newVal){
+            if(viewPaymentsTrigger) {
+                $('#viewPaymentButton').removeClass("disabled");
+                $('#viewPaymentButton').removeClass("hidden");
+                $('#addPayment').modal('hide');
+                $('#viewPaymentButton').bind('click',function() {
+                    $('#viewPayment').modal('show');
+                });
+                $('#searchCustomerButton').hide();
+            }
+        });
+        saleModel.bindEvent("isRefund","update",function(newVal) {
+            if(newVal) {
+                CreditPaymentMethodTableCell.show();
+                AccountParentMethodTableCell.hide();
+            }else {
+                AccountParentMethodTableCell.show();
+                CreditPaymentMethodTableCell.hide();
+            }
+        });
+        saleModel.bindCollectionToTable(salesTable,"salesLines"); //just for CRUD operations, totals have to be updated manually
+        saleModel.bindEvent("salesLines","added",function(newVal){
+            if (takePaymentsTrigger) {
+                $('#addPaymentButton').removeClass("disabled");
+                $('#addPaymentButton').bind('click',function() {
+                    $('#addPayment').modal('show');
+                });
+                takePaymentsTrigger = false;
+            }
+        });
+        saleModel.bindEvent("salesTotalExGST","update",function(newVal) {
+            salesTable.changeTotal('subTotal',"$" + newVal.toFixed(2));
+        });
+        saleModel.bindEvent("salesTotalInGST","update",function(newVal) {
+            salesTable.changeTotal('total',"$" + newVal.toFixed(2));
+            $('.totalgreen').text("Total : $" + newVal.toFixed(2));
+        });
+        saleModel.bindEvent("salesTotalGST","update",function(newVal) {
+            salesTable.changeTotal('taxTotal',"$" + newVal.toFixed(2));
+        });
+        saleModel.bindEvent("customer","update",function(obj){
+            $('#customerInformation').html('<h4>'+ obj.name +'<div class="pull-right">' + obj.firstContact + '</div></h4><p class="deliveryAddress"></p><textarea rows="4" cols="50" style="display:none;" id="deliveryAddressHTML"></textarea>');
+            $('.customernameblue').text("Customer : " + obj.name);
+            $('#changeDeliveryAddress').show();
+        });
+        saleModel.bindEvent("deliveryAddress","update",function(newVal){
+            $('#customerInformation').find('p.deliveryAddress').html(newVal);
+            $('#customerInformation').find('textarea#deliveryAddressHTML').val(newVal);
+        });
+        saleModel.bindEvent("totalOwing","update",function(newVal){
+            PaymentAmountInput.attr("value", newVal.toFixed(2));
+            if(saleModel.customer && saleModel.customer.creditLimit < newVal) {
+                PaymentsModalWindow.find('.parentMethodSelect[value='+ br.accountParentID +']').closest('td').hide();
+            }
+            else {
+                PaymentsModalWindow.find('.parentMethodSelect[value='+ br.accountParentID +']').closest('td').show();
+            }
+        });
+        saleModel.bindEvent("printingAvailable","update",function(newVal){
+            if (newVal) {
+                $('.print').toggleClass("hidden"); // for pending sales to tell whether we can print, it also indicates that we have payments so hide the printing of proforma invoice
+            }
+        });
+        $('#addProductButton').click(function() {
+            ProductSearchModal.modal('show');
+        });
+        $('#searchCustomerButton').click(function(){
+            CustomerSearchModal.modal('show');
+        });
+        $('#createCustomerButton').click(function() {
+            CustomerSearchModal.modal('hide');
+            $('#createCustomer').modal('show');
+        });
+        $('#saveQuoteButton').click(function() {
+            saleModel.saveAsQuote();
+        });
+        $('#deleteSaleButton').click(function(e) {
+            if(!confirm("Are you sure you want to delete this sale ?")){
+                e.preventDefault();
+            }
+        });
+        $('.print').click(printingFunction);
+        //Create Customer Form
+        $('#createCustomerForm').ajaxForm({
+            dataType:  'json',
+            success:   processJson
+        });
+        function processJson(data) {
+            // 'data' is the json object returned from the server
+            if(data.errors!=undefined) {
+                jQuery.each(data.errors, function(key,val) {
+                    var errorInput = $("#id_"+key);
+                    errorInput.parents('.control-group').addClass('error');
+                    errorInput.parents('.controls').append('<span class="help-inline">' + val + '</span>')
+                });
+            }
+            else {
+                //customer added
+                $('#createCustomerForm span.help-inline').remove();
+                $('#createCustomerForm .control-group').removeClass('error');
+                var customer = {
+                    id: data.id,
+                    name: data.fullName,
+                    firstContact: data.firstContactPoint,
+                    htmlAddress: data.formattedAddress,
+                    creditLimit: data.creditLimit
+                }
+                saleModel.addCustomerFromModal(customer);
+                $('#createCustomer').modal('hide');
+            }
+        };
+        $('#createCustomer').on('hidden.bs.modal', function () {
+            $('#createCustomerForm span.help-inline').remove();
+            $('#createCustomerForm .control-group').removeClass('error');
+        });
+        $('#createCustomerSubmit').click(function() {
+            $('#createCustomerForm').submit();
+        });
+        //end create customer form.
+        //
+        //Edit delivery Address
+        var changeInformation = function(e) {
+            $(this).hide();
+            $('#customerInformation').find('p.deliveryAddress').hide();
+            $('#customerInformation').find('textarea#deliveryAddressHTML').show();
+            $('#saveDeliveryAddress').show();
+            tinymce.init({
+                menubar : false,
+                toolbar: "|",
+                force_br_newlines : true,
+                force_p_newlines : false,
+                forced_root_block : '',
+                selector: "textarea#deliveryAddressHTML",
+                width: '302px',
+                height: '170px'
+            });
+        };
+
+        $('#saveDeliveryAddress').bind('click',function() {
+            var newAddress = tinyMCE.activeEditor.getContent();
+            tinyMCE.activeEditor.remove();
+            saleModel.set('deliveryAddress',newAddress);
+            $('#changeDeliveryAddress').show();
+            $('#customerInformation').find('p.deliveryAddress').show();
+            $('#customerInformation').find('textarea#deliveryAddressHTML').hide();
+            $(this).hide();
+        });
+
+        $('#changeDeliveryAddress').click(changeInformation);
+
+        //End editing delivery Address
+        var completeSale = function(){
+            saleModel.completeSale();
+        };
+        $('#completeSaleOrder').click(function(){
+            var prevText = $(this).text();
+            var button = $(this);
+            $(this).attr('disabled', 'true');
+            $(this).text($(this).data('loading-text'));
+            window.setTimeout(function() {
+                button.text(prevText);
+                button.removeAttr('disabled');
+            }, 1000);
+            completeSale();
+        });
+        //
+        //payments
+        var PaymentsModalWindow = $('#addPayment');
+        var AddPaymentButton = PaymentsModalWindow.find("#addPaymentToSale");
+        var PaymentTypeHiddenInput = PaymentsModalWindow.find("#paymentMethodHidden");
+        var PaymentSubMethodSelectDiv = PaymentsModalWindow.find("#subMethods");
+        var PaymentParentSelectButton = PaymentsModalWindow.find(".parentMethodSelect")
+        var PaymentMethodSelectButton = PaymentsModalWindow.find(".paymentMethodSelect");
+        var CreditPaymentMethodTableCell = PaymentsModalWindow.find('.paymentMethodSelect[value='+ br.creditPaymentID +']').closest('td');
+        var AccountParentMethodTableCell = PaymentsModalWindow.find('.parentMethodSelect[value='+ br.accountParentID +']').closest('td');
+        var PaymentAmountInput = PaymentsModalWindow.find("#paymentAmount");
+        var PaymentAmountDiv = PaymentsModalWindow.find("#paymentInputDiv");
+
+        CreditPaymentMethodTableCell.hide();
+
+        PaymentParentSelectButton.click(function() {
+            PaymentSubMethodSelectDiv.find('.paymentSubMethods').hide();
+            PaymentAmountDiv.hide();
+            var parentMethod = $(this).val();
+            PaymentSubMethodSelectDiv.find('#'+parentMethod).show();
+        });
+
+        PaymentMethodSelectButton.click(function() {
+            var paymentMethodID = $(this).val();
+            var paymentMethod = $(this).text();
+            PaymentsModalWindow.find('#paymentTypeHeader').text(paymentMethod);
+            PaymentTypeHiddenInput.attr("name",paymentMethod);
+            PaymentTypeHiddenInput.val(paymentMethodID);
+            PaymentAmountDiv.show();
+            PaymentAmountInput.focus();
+            PaymentSubMethodSelectDiv.find('.paymentSubMethods').hide();
+        });
+
+        AddPaymentButton.click(function() {
+            var paymentMethodID = parseInt(PaymentTypeHiddenInput.val());
+            var paymentMethod = PaymentTypeHiddenInput.attr("name");
+            var paymentAmount = parseFloat(PaymentAmountInput.val());
+            var paymentDate = new Date();
+            var payment = {
+                method_id : paymentMethodID,
+                method_name : paymentMethod,
+                amount : paymentAmount,
+                paymentDate : paymentDate,
+                dateToString : paymentDate.toLocaleString()
+            }
+            saleModel.addPaymentFromModal(payment);
+            PaymentAmountDiv.hide();
+            PaymentSubMethodSelectDiv.find('.paymentSubMethods').hide();
+        });
+        //end of payments
+        //saleloading
+        {% if salesData %}
+            saleModel.loadSale({{ salesData|safe }});
+            $('#printingMenu').removeClass("hidden");
+            console.log(saleModel);
+        {% endif %}
+        //end of sale loading
+        //after sale has been loaded bind change event.
+        saleModel.bindEvent("all", "update", function(newVal) {
+            //if anything changes
+            window.onbeforeunload = function() {
+               return "Are you sure you want to leave, all unsaved changes will be lost as a result.";
+            }
+            $('#completeSaleOrder').removeClass("hidden");
+        });
+    });
+    </script>
+
+{% endblock %}

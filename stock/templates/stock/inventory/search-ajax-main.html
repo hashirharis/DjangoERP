@@ -1,0 +1,25 @@
+{% load br %}
+{% if object_list %}
+<table class="table table-bordered table-hover">
+    <thead>
+    <th class="hidden">id</th>
+    <th>Model Num</th>
+    <th>Purchased Net Price</th>
+    <th>Actions</th>
+    </thead>
+    <tbody>
+    {% for object in object_list %}
+        <tr>
+            <td class="hidden id">{{ object.id }}</td>
+            <td class="modelNum">{{ object.inventory.product.model }}</td>
+            <td class="description hidden">{{ object.inventory.product.model }} {{ object.inventory.product.description }}</td>
+            <td>${{ object.purchaseNet|floatformat:2 }}</td>
+            <td class="unitPrice hidden">{{ object.purchaseNet|floatformat:2 }}</td>
+            <td>
+                <a class="addProduct btn btn-primary"><i class="glyphicon glyphicon-plus"></i></a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}

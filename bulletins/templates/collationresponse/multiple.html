@@ -1,0 +1,63 @@
+{% load br %}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Model</th>
+            {% for month in collation.deliveryMonths %}
+                {% if not month.hidden and not month.deleted %}
+                    <th>{{ month.month }}</th>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Order Numbers</td>
+            {% for month in collation.deliveryMonths %}
+                {% if not month.hidden and not month.deleted %}
+                    <td>
+                    {% getOrderFor store month as order %}
+                    {% if order.status == "Open" and not collation.archived %}
+                        <input data-orderid="{{ order.id }}" type="text" class="orderNum" value="{{ order.orderNumber }}" />
+                    {% else %}
+                        <input type="text" disabled value="{{ order.orderNumber }}" />
+                    {% endif %}
+                    </td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        {% for orderLine in collationOrdersForStore %}
+            {% if not orderLine.order.deliveryMonth.hidden and not orderLine.order.deliveryMonth.deleted and not orderLine.collationLine.hidden and not orderLine.collationLine.deleted %}
+                 {% ifchanged orderLine.collationLine.model %}
+                    </tr>
+                    <tr>
+                    <td>
+                        {{ orderLine.collationLine.model }}
+                    </td>
+                {% endifchanged %}
+                    <td>
+                        {% if orderLine.order.status == "Open" and not collation.archived %}
+                            <input data-orderid="{{ orderLine.order.id }}" data-orderlineid="{{ orderLine.id }}" class="quantity" type="number" value="{{ orderLine.quantity }}" min="0"/>
+                        {% else %}
+                            <input disabled type="number" value="{{ orderLine.quantity }}" min="0"/>
+                        {% endif %}
+                    </td>
+            {% endif %}
+        {% endfor %}
+        <tr>
+            <td>Order Comments</td>
+            {% for month in collation.deliveryMonths %}
+                {% if not month.hidden and not month.deleted %}
+                    <td>
+                    {% getOrderFor store month as order %}
+                    {% if order.status == "Open" and not collation.archived %}
+                        <textarea data-orderid="{{ order.storeComment }}" class="orderComment" rows="4" cols="50">{{ order.storeComment }}</textarea>
+                    {% else %}
+                        <textarea disabled rows="4" cols="50">{{ order.storeComment }}</textarea>
+                    {% endif %}
+                    </td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>

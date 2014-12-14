@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Stocktake Dashboard{% endblock %}
+
+{% block content %}
+{% load humanize %}
+<div id="content-header">
+    <h1> Stocktake <small> Dashboard </small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'stock:dashboard' %}"><i class="glyphicon glyphicon-gift"></i>Stock</a>
+    <a href="{% url 'stock:stockTakeHome' %}"><i class="glyphicon glyphicon-list-alt"></i><strong>Stocktakes</strong></a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 center" style="text-align: center;">
+            <ul class="quick-actions">
+                <li>
+                    <a href="{% url 'stock:newStockTake' %}" class="tip-bottom" data-original-title="New Manual Stocktake">
+                        <i class="icon-survey"></i>
+                        New
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'stock:newBarcodeStockTake' %}" class="tip-bottom" data-original-title="New Stocktake From Barcode Scanner Dump">
+                        <i class="icon-download"></i>
+                        Dump
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'stock:searchStockTake' 'COMPLETED' %}" class="tip-bottom" data-original-title="View All Stocktakes completed previously">
+                        <i class="icon-cabinet"></i>
+                        Archived
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-8">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseOne" data-toggle="collapse">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-time"></i>
+                        </span>
+                        <h5>Saved/Pending Stocktakes</h5>
+                        <span class="label label-warning">{{ pending|length }}</span>
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseOne">
+                    <div class="widget-content">
+                        {% if pending %}
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Reference</th>
+                                        <th>Created</th>
+                                        <th>Created by</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for stocktake in pending %}
+                                    <tr>
+                                        <td>{{ stocktake.id }}</td>
+                                        <td>{{ stocktake.created|naturaltime }}</td>
+                                        <td>{{ stocktake.createdBy.name }}</td>
+                                        <td><a class="btn btn-primary" href="{% url 'stock:openStockTake' stocktake.id %}"><i class="glyphicon glyphicon-pencil"></i></a></td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                        <p>There are no pending stocktakes.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseTwo" data-toggle="collapse">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-time"></i>
+                        </span>
+                        <h5>Recently Completed Stocktakes</h5>
+                        <span class="label label-success">{{ completed|length }}</span>
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseTwo">
+                    <div class="widget-content">
+                        {% if completed %}
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Reference</th>
+                                        <th>Created</th>
+                                        <th>Created by</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for stocktake in completed %}
+                                    <tr>
+                                        <td>{{ stocktake.id }}</td>
+                                        <td>{{ stocktake.created|naturaltime }}</td>
+                                        <td>{{ stocktake.createdBy.name }}</td>
+                                        <td>
+                                            <a class="btn btn-primary" href="{% url 'stock:openStockTake' stocktake.id %}"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                        <p>There are no completed stocktakes.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

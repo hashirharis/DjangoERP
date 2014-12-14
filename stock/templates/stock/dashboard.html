@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Dashboard{% endblock %}
+
+{% block content %}
+
+    <div id="content-header">
+        <h1> Stock Control <small> Dashboard </small></h1>
+    </div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="{% url 'stock:dashboard' %}"><i class="glyphicon glyphicon-gift"></i><strong>Stock/Invoicing</strong></a>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 center" style="text-align: center;">
+                <ul class="quick-actions">
+                    <li>
+                        <a href="{% url 'stock:stockTakeHome' %}" class="tip-bottom" data-original-title="View Previous/Create Stocktake">
+                            <i class="icon-survey"></i>
+                            Stocktake
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'stock:claimHome' %}" class="tip-bottom" data-original-title="View Previous/Create Claim">
+                            <i class="icon-mail"></i>
+                            Claims
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'b2b:stockOrderHome' %}" class="tip-bottom" data-original-title="View Pending/Completed or Place a New Order">
+                            <i class="icon-wallet"></i>
+                            Stock Order
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'stock:createMovement' %}" class="tip-bottom" data-original-title="Book stock in/out or correct stock levels">
+                            <i class="icon-graph"></i>
+                            Adjust Levels
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'stock:merchandiser' %}" class="tip-bottom" data-original-title="Analyse stock, sales and history">
+                            <i class="icon-book"></i>
+                            Merchandiser
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'b2b:searchHOInvoices' 'ALL' %}?viewable=yes" class="tip-bottom" data-original-title="View Invoices from Head Office">
+                            <i class="icon-download"></i>
+                            HO Invoices
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

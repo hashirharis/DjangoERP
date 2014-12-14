@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+
+    <title>Sale {{ sale.code }} Receipt</title>
+
+    <link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/invoice-thermalstyle.css' />
+    <style type="text/css" media="print">
+        #hiderow,
+        .delete {
+          display: none;
+        }
+    </style>
+
+</head>
+
+<body onload="window.print()">
+
+<div id="page-wrap">
+
+    <div id="identity">
+        <div id="address">
+            <h5>{{ sale.terminal.store.name }}</h5>
+            <h3>{{ sale.terminal.store.franchise }}</h3>
+            {{ sale.terminal.store.htmlFormattedAddress|safe }}
+        </div>
+    </div>
+
+    <div style="clear:both"></div>
+
+    <div id="orderType">** Customer Order **</div>
+
+    <div id="customer">
+        <div id="orderInfo">
+            <h3>Order No: {{ sale.code }}</h3>
+            Order Date: {{ sale.purchaseDate|date:"d N Y P" }}<br />
+            Printed: {% now "d N Y P" %}<br />
+        </div>
+        <div id="customer-title"><h3>Customer:</h3>{{ sale.customer.firstName }} {{ sale.customer.lastName }}<br />{{ sale.deliveryAddress|safe }}</div>
+        <div id="comments">
+            <h3>Comments:</h3>
+            {{ sale.note }}
+        </div>
+    </div>
+
+    <div style="clear:both;height:20px;"></div>
+
+    <table id="items">
+        <thead>
+        <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for saleLine in saleLines %}
+
+            <tr class="item-row">
+                <td class="item-name"><div class="delete-wpr">{{ saleLine.item.modelNum }}</div></td>
+                <td>{{ saleLine.quantity }}</td>
+                <td><span class="price">${{ saleLine.price|floatformat:2 }}</span></td>
+            </tr>
+
+        {% endfor %}
+
+        <tr>
+            <td class="blank"> </td>
+            <td class="total-line">Total</td>
+            <td class="total-value"><div id="total">${{ sale.total|floatformat:2 }}</div></td>
+        </tr>
+        <tr>
+            <td class="blank"> </td>
+            <td class="total-line">Paid to Date</td>
+            <td class="total-value">${{ sale.getSalePayments|floatformat:2 }}</td>
+        </tr>
+        <tr class="strong">
+            <td class="blank"> </td>
+            <td class="total-line">Payments {{ paymentText }}: </td>
+            <td class="total-value"></td>
+        </tr>
+
+        {% for payment in payments %}
+            <tr>
+            <td></td>
+            <td>{{ payment.paymentMethod.name }}</td>
+            <td>${{ payment.amount|floatformat:2 }}</td>
+            </tr>
+        {% endfor %}
+
+        <tr>
+            <td class="blank"> </td>
+            <td class="total-line balance">Balance Due</td>
+            <td class="total-value balance"><div class="due">${{ sale.balanceDue|floatformat:2 }}</div></td>
+        </tr>
+
+        </tbody>
+    </table>
+    <br />
+    <br />
+    <div class="servedBy">
+        SalesPerson: {{ sale.salesPerson.firstName }} <br />
+        Served {{ paymentText }} By: {{ servedBy }}
+    </div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,62 @@
+{% load reportTags %}
+
+{% if isWarranty %}
+    {% for obj in objects %}
+        <tr>
+            <td>{{ obj.modelNum }}</td>
+            <td>{{ obj.cust }}</td>
+            <td>{{ obj.store }}</td>
+            <td>{{ obj.salesPerson }}</td>
+            <td>{% filter truncatechars:18 %}{{ obj.description }}{% endfilter %}</td>  <!--desc-->
+            <td>{{ obj.purchaseDate }}</td>
+            <td>{{ obj.brand }}</td>
+            <td></td>
+            <td>{{ obj.unitPrice }}</td>
+            <td></td>
+        </tr>
+    {% endfor %}
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

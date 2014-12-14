@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Store/Franchise Products{% endblock %}
+
+{% block content %}
+
+{% block header %}
+<div id="content-header">
+    <h1> Products <small> Search </small></h1>
+</div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="{% url 'core:priceLookup' %}" class="tip-bottom" data-original-title="Search for Products"><i class="glyphicon glyphicon-search"></i>Products</a>
+        <a href="">Search</a>
+    </div>
+{% endblock %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </span>
+                    <h5>Search</h5>
+                </div>
+                <div class="widget-content">
+                    <form action="{% block formaction %}{% url 'core:priceLookup' %}{% endblock %}" method="GET">
+                        <div class="row">
+                            <div class="col-lg-8 col-12">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="q" placeholder="Search the Model Number or description here." value="{{ params.q }}">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary">Search!</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-12 hidden-lg" style="height:20px;"></div>
+                            <div class="col-lg-2 col-12">
+                                <input type="checkbox" value="superceded" name="status"/> Show Superseded
+                            </div>
+                            <div class="col-12 hidden-lg" style="height:20px;"></div>
+                            <div class="col-lg-2 col-12">
+                                <input type="checkbox" value="obsolete" name="status"/> Show Obsolete
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 10px;">
+                            <div class="col-lg-4 col-12">
+                                <select placeholder="Search Categories Here" multiple="multiple" id="searchCategory" class="selectmultiple" style="width:100%" name="category">
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-12 hidden-lg" style="height:20px;"></div>
+                            <div class="col-lg-4 col-12">
+                                <select placeholder="Search Tags here" multiple="multiple" id="searchTags" class="selectmultiple" style="width:100%" name="tags">
+                                    {% for tag in tags %}
+                                        <option value="{{ tag.id }}">{{ tag.tag }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-12 hidden-lg" style="height:20px;"></div>
+                            <div class="col-lg-4 col-12">
+                                <select placeholder="Search Brands here" multiple="multiple" id="searchBrand" class="selectmultiple" style="width:100%" name="brand">
+                                    {% for brand in brands %}
+                                        <option value="{{ brand.id }}">{{ brand.brand|title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                    <h5>Results</h5>
+                </div>
+                <div class="widget-content">
+                    <div id="resultsDiv">
+                        {% if products %}
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <th>Model Num</th>
+                                    <th>Brand</th>
+                                    <th class="visible-lg">Description</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th class="visible-lg">Action</th>
+                                </thead>
+                                <tbody>
+                                {% for product in products %}
+                                    <tr>
+                                        <td class="hidden-lg"><a class="btn btn-primary" href="{% url 'core:viewProduct' product.id %}"><i class="glyphicon glyphicon-eye-open"></i> {{ product.model }}</a></td>
+                                        <td class="visible-lg">{{ product.model }}</td>
+                                        <td>{{ product.brand|title }}</td>
+                                        <td class="visible-lg">{{ product.description }}</td>
+                                        <td>{{ product.category.parentCategory }}</td>
+                                        <td>{{ product.status }}</td>
+                                        <td class="visible-lg"><a class="btn btn-primary" href="{% url 'core:viewProduct' product.id %}"><i class="glyphicon glyphicon-eye-open"></i> View</a></td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <ul class="pagination alternate pull-right">
+                                {% for x in paginator.page_range %}
+                                    <li{% if page_obj.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>Failed to return results.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/unicorn.form_common.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+
+            var search = br.search({
+                ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>"
+            });
+
+            search.addEntity("Entities",{
+                prepend: "",
+                html: "Entity",
+                human: "Products"
+            });
+
+            search.addQuerySet("Entities",{
+                name:'All',
+                prepend:"",
+                parameters: {
+                    q: '{{ params.q }}',
+                    page: '{{ page_obj.number }}',
+                    brand: '{{ params.brand }}',
+                    status: '{{ params.status }}',
+                    category:'{{ params.category }}',
+                    tags: '{{ params.tags }}'
+                }
+            });
+
+            search.addPagination("Entities","All",'page',$('#resultsDiv'));
+
+            //set the selected tags
+            var tags = search.getParameter("Entities","All","tags").split(",");
+            $('#searchTags').select2('val',tags);
+
+            //set the selected brand
+            var brands = search.getParameter("Entities","All","brand").split(",");
+            $('#searchBrand').select2('val',brands);
+
+            //set the selected category
+            var categories = search.getParameter("Entities","All","category").split(",");
+            $('#searchCategory').select2('val',categories);
+
+            //check the check boxes according to which status was set
+            var status = search.getParameter("Entities","All","status").split(",");
+            if (_.contains(status,'obsolete')) {
+                $('input[value=obsolete]').iCheck('check');
+            }
+            if (_.contains(status,'superceded')) {
+                $('input[value=superceded]').iCheck('check');
+            }
+
+        });
+    </script>
+{% endblock %}

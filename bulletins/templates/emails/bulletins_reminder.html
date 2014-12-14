@@ -1,0 +1,23 @@
+<table style="width:100%;font-family:arial,sans-serif;" border="0">
+    <tr>
+        <td style="text-align:center;font-size:22px;color:#ffff00;background-color:#000000">
+             REMINDER!! THE BELOW ITEMS ARE ENDING IN 1 DAY and you have not read/responded to them
+        </td>
+    </tr>
+    <tr>
+        <table style="width:100%;font-family:arial,sans-serif;" border="0">
+            {% for bulletin in bulletins %}
+                <tr>
+                    <td style="font-size:14px;text-align: center;">
+                        {{ bulletin.getChild.0|title }} : {{ bulletin.subject }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </tr>
+    <tr>
+        <td style="font-size:18px;text-align: center;">
+            Please check Bi-Rite bulletin board To view all your unread messages
+        </td>
+    </tr>
+</table>

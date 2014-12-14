@@ -1,0 +1,239 @@
+{% extends "bulletins/list.html" %}
+{% block title %}Bi-Rite Promotions Board{% endblock %}
+
+{% block css %}
+    <style type="text/css">
+        .widget-title .nav-tabs a {
+            font-size:small;
+        }
+        .clearfix {
+            background-color: #d9edf7;
+            border-top:thin double #d3d3d3;
+            height:35px;
+        }
+        {% if bbuser.is_bb_admin  %}
+            .pagination {
+               margin: 5px 7px;
+            }
+        {% else %}
+            .pagination {
+                margin: 5px -70px;
+            }
+        {% endif %}
+    </style>
+{% endblock %}
+
+{% block content %}
+<div id="content-header">
+    <h1>Promotions</h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="" class="current"><i class="glyphicon glyphicon-home"></i> Promotions</a>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 col-12">
+        <div class="widget-box">
+            <div class="widget-title">
+                <a href="#messageBoard" data-toggle="collapse">
+                    <div class="buttons">
+                        {% if bbuser.is_bb_admin %}
+                        <a href="{% url "bulletins:createPromotion" "message" %}" class="btn createbtn"><i class="glyphicon glyphicon-plus"></i> Create</a>
+                        {% endif %}
+                        <a href="#" class="btn searchbtn tip-bottom" data-original-title="Search Bulletins"><i class="glyphicon glyphicon-search"></i> Search</a>
+                        <a href="#" id="viewArchived" class="btn tip-bottom" data-original-title="View Archived Bulletins"><i class="glyphicon glyphicon-folder-open"></i>View Archive</a>
+                   </div>
+                </a>
+                <ul class="nav nav-tabs">
+                    <li class=""><a style="color: orange;" data-toggle="tab" href="#upcoming">Upcoming</a></li>
+                    <li class=""><a style="color: darkgreen;" data-toggle="tab" href="#current">Current</a></li>
+                    <li class=""><a style="color: #ff0000;" data-toggle="tab" href="#expired">Expired</a></li>
+                </ul>
+            </div>
+            <ul class="recent-posts">
+                <li class="search" style="display:none;">
+                    Search :
+                    <input type="text"/>
+                </li>
+            </ul>
+            <!--upcomming tab-->
+            <div class="tab-content">
+                <div id="upcoming" class="tab-pane active">
+                    {% if pending %}
+                        {% for message in pending %}
+                            {% include "promotions/message.html" %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-block">
+                            <h4 class="alert-heading">No Upcoming Promotions.</h4>
+                            There are no upcoming promotions for you ...
+                        </div>
+                    {% endif %}
+                    <!--pagination shown if queryset has more than 50 items-->
+                    {% if pending.paginator.page_range|length > 1 %}
+                        <div class="paginationBox">
+                            <ul class="pagination alternate pull-right">
+                                {% for x in pending.paginator.page_range %}
+                                    <li{% if pending.number == x %} class="disabled"{% endif %}><a href="?pendingPage={{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                    {% else %}
+                    {% endif %}
+                </div>
+                <!--current tab-->
+                <div id="current" class="tab-pane">
+                    {% if current %}
+                        {% for message in current %}
+                            {% include "promotions/message.html" %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-block">
+                            <h4 class="alert-heading">No Current Promotions.</h4>
+                            There are no current promotions for you ...
+                        </div>
+                    {% endif %}
+                    <!--pagination shown if queryset has more than 50 items-->
+                    {% if current.paginator.page_range|length > 1 %}
+                        <div class="paginationBox">
+                            <ul class="pagination alternate pull-right nav-tabs2">
+                                {% for x in current.paginator.page_range %}
+                                    <li{% if current.number == x %} class="disabled"{% endif %}><a href="?currentPage={{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                    {% else %}
+                    {% endif %}
+                </div>
+                <!--expired tab-->
+                <div id="expired" class="tab-pane">
+                    {% if expired %}
+                        {% for message in expired %}
+                            {% include "promotions/message.html" %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-block">
+                            <h4 class="alert-heading">No Expired Promotions.</h4>
+                            There are no expired promotions for you ...
+                        </div>
+                    {% endif %}
+                    <!--pagination shown if queryset has more than 50 items-->
+                    {% if expired.paginator.page_range|length > 1 %}
+                        <div class="paginationBox">
+                            <ul class="pagination alternate pull-right">
+                                {% for x in expired.paginator.page_range %}
+                                    <li{% if expired.number == x %} class="disabled"{% endif %}><a href="?expiredPage={{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                    {% else %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Archived Messages-->
+    <div id="archivedMessages" style="display:none" class="col-lg-12 col-12" tabindex='1'>
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#messageBoard" data-toggle="collapse">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-folder-open"></i>
+                    </span>
+                    <h5>Archived</h5>
+                    <div class="buttons">
+                        <a href="#" class="btn searchbtn tip-bottom" data-original-title="Search Bulletins"><i class="glyphicon glyphicon-search"></i> Search</a>
+                    </div>
+                </a>
+            </div>
+            <ul class="recent-posts">
+                <li class="search" style="display:none;">
+                    Search :
+                    <input type="text"/>
+                </li>
+            </ul>
+            <div class="collapse in" id="messageBoard">
+                <div class="widget-content nopadding updates">
+                    {% if archived %}
+                        {% for message in archived %}
+                            {% include "promotions/message.html" %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-block">
+                            <h4 class="alert-heading">No Archived Promotions For You!</h4>
+                            There are no archived promotions for you ...
+                        </div>
+                    {% endif %}
+                    <!--pagination shown if queryset has more than 50 items-->
+                    {% if archived.paginator.page_range|length > 1 %}
+                        <div class="paginationBox">
+                            <ul class="pagination alternate pull-right">
+                                {% for x in archived.paginator.page_range %}
+                                    <li{% if archived.number == x %} class="disabled"{% endif %}><a href="?archivedPage={{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                    {% else %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="viewMessage" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button data-dismiss="modal" class="close" type="button">×</button>
+                <h3>View Message</h3>
+            </div>
+            <div class="modal-body">
+                <p>Lorem ipsum dolor sit amet...</p>
+            </div>
+            <div class="models" style="position: relative;padding: 20px;">
+                <p>Lorem ipsum dolor sit amet...</p>
+            </div>
+            <div class="modal-footer">
+                <strong class="pull-left">Promotion Valid From: <span class="startDate"></span> - <span class="endDate"></span></strong>
+                <a data-dismiss="modal" id="print" class="btn btn-info btn-small suppress" href="#">Print</a>
+                {% if bbuser.is_bb_admin %}
+                <a id="edit" class="btn btn-default btn-small" href="#">Edit</a>
+                {% endif %}
+                <a data-dismiss="modal" class="btn btn-default btn-small" href="#">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block navname %}promotions{% endblock %}
+
+{% block javascript %}
+    {{ block.super }}
+    <script>
+        $(function() {
+            <!--sets the tab that was active before page refresh-->
+            {% if request.GET.pendingPage %}
+                $('a[href="#upcoming"]' ).tab('show');
+            {% elif request.GET.expiredPage %}
+                $('a[href="#expired"]' ).tab('show');
+            {% else %}
+                $('a[href="#current"]' ).tab('show');
+            {% endif %}
+            <!--Animate a scroll to the archived messages list-->
+            $("#viewArchived").click(function(){
+                $("#archivedMessages").fadeIn("3000");
+                $('html, body').animate({
+                    scrollTop: $("#archivedMessages").offset().top
+                }, 500);
+            });
+        });
+    </script>
+{% endblock %}
+
+

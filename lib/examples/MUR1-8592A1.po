@@ -1,0 +1,10 @@
+EAPO|ORDERS|220|MUR1-8592A1|9|P|9377778616193|9377779071717|201302010916|20130202||20130502|20130502|20130202|||||9377779071717|||||||||||9377778616193|Electrolux Appliances Pty Ltd|||||||9377779140604|Murwillumbah||||||||||||||||||||||||||||||~
+LINEITEM|1|WCM3200WC|9314163567975||Freezer Chest Freezer, 320 Litre, Removable Baskets|1|||AAA|681.69||||10|~
+LINEITEM|2|WRM2400WC|9316561021561||Refrigerator All Refrigerator, 240 Litre Auto Defrost White|2|||AAA|521.73||||10|~
+LINEITEM|3|39S600M|9315540383867||Clothes Dryer Clothes Dryer, 6kg Stainless Drum|2|||AAA|390||||10|~
+LINEITEM|4|39P400M|9315540383829||Clothes Dryer Clothes Dryer, 4.0kg ColourBond Drum|2|||AAA|284.14||||10|~
+LINEITEM|5|WSF6605WR|7332543256785||Dishwasher 13 plc XXL, 5 prog, load sensing, delay start, 4.5 wels|1|||AAA|636.68||||10|~
+LINEITEM|6|39S500M|9315540369311||Clothes Dryer Clothes Dryer, 5kg Stainless Drum|2|||AAA|342.15||||10|~
+LINEITEM|7|EDV505|8853328008201||Clothes Dryer Clothes Dryer, 5kg Sensor Dry with Reverse Tumble|2|||AAA|405||||10|~
+LINEITEM|8|EDV605|8853328008218||Clothes Dryer Clothes Dryer, 6kg Electronic, Reverse Tumble, Auto Sens|2|||AAA|452.85||||10|~
+END|6110.11|MUR1-8592A1~

@@ -1,0 +1,109 @@
+{% extends "b2b/charge/new.html" %}
+
+{% block form %}
+<div class="widget-box collapsible">
+    <div class="widget-title">
+        <a href="#collapseOne" data-toggle="collapse">
+        <span class="icon">
+            <i class="glyphicon glyphicon-book"></i>
+        </span>
+            <h5>Charge Parameters</h5>
+        </a>
+    </div>
+    <div class="collapse in" id="collapseOne">
+        <div class="widget-content">
+            <form action="{% url 'b2b:completeCharge' %}" class="form-horizontal" method="post" id="form_searchInvoices">
+                {% csrf_token %}
+                <div class="control-group">
+                    <label class="control-label" for="invoiceDate">End Date</label>
+                    <div class="controls">
+                        <input disabled type="text" id="endDate" placeholder="dd/mm/yyyy" value="{{ endDate|date:"d/m/Y" }}">
+                        <input type="hidden" id="endDate_hidden" name="endDate" value="{{ endDate|date:"c" }}"/>
+                    </div>
+                </div>
+            </form>
+            <div class="row">
+                <div class="col-10">
+                    <div class="form-actions" style="text-align: right">
+                        <button id="btn_searchInvoices" data-loading-text="Searching..." class="btn btn-large btn-info">Charge Stores</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block total %}$ {{ completeTotal }}{% endblock %}
+
+{% block results %}
+<table class="table table-bordered table-hover">
+    <thead>
+        <th>Store</th>
+        <th>Distributor</th>
+        <th>Invoice Number</th>
+        <th>Invoice Date</th>
+        <th>Order Reference</th>
+        <th>Model</th>
+        <th>Type</th>
+        <th>Unit Price (Exc)</th>
+        <th>Quantity</th>
+        <th>Net (Inc)</th>
+        <th>Extended Credit</th>
+    </thead>
+{% if stores %}
+    {% for store in stores %}
+        {% for invoice in store.storeInvoices %}
+            {% with forloop.counter as invoicecounter %}
+            {% for line in invoice.lines %}
+            <tr>
+                <td class="hidden">{{ invoice.id }}</td>
+                <td>{% if invoicecounter == 1 and forloop.counter == 1 %}<strong>{{ invoice.store.name }}</strong>{% endif %}</td>
+                <td>{{ line.distributor }}</td>
+                <td>{{ line.invoiceNum }}</td>
+                <td>{{ line.invoiceDate }}</td>
+                <td>{{ line.invoiceOrderRef }}</td>
+                <td>{{ line.model }}</td>
+                <td>{{ line.invoiceType }}</td>
+                <td>{{ line.unitPrice }}</td>
+                <td>{{ line.quantity }}</td>
+                <td>{{ line.netInc }}</td>
+                <td>{{ line.extCredit }}</td>
+            </tr>
+            {% if forloop.last and invoice.freight > 0 %}
+            <tr>
+                <td class="hidden">{{ line.invoiceID }}</td>
+                <td></td>
+                <td>{{ line.distributor }}</td>
+                <td>{{ line.invoiceNum }}</td>
+                <td>{{ line.invoiceDate }}</td>
+                <td>{{ line.invoiceOrderRef }}</td>
+                <td>DELIVERY</td>
+                <td>{{ line.invoiceType }}</td>
+                <td>{{ invoice.freight }}</td>
+                <td>{{ line.quantity }}</td>
+                <td>{{ invoice.freightInc }}</td>
+                <td>{{ line.extCredit }}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+            {% endwith %}
+        {% endfor %}
+        <tr class="success">
+            <td colspan="8"></td>
+            <td>Store Total (Inc)</td>
+            <td>{{ store.storeTotal }}</td>
+            <td></td>
+        </tr>
+    {% endfor %}
+{% else %}
+    <tr class="danger">
+        {% if request.POST %}
+            <td class="error" colspan="8">No invoices found</td>
+        {% else %}
+            <td class="error" colspan="8">Search for invoices using above options</td>
+        {% endif %}
+    </tr>
+{% endif %}
+</table>
+{% endblock %}

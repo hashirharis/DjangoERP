@@ -1,0 +1,65 @@
+{% for saleLine in objects %}
+    <tr>
+        {% if saleLine.isDataRow == "isDataRow" %}
+            {% if isbrandanalysisdetailedView  %}
+                <td>{{ saleLine.name }}</td>
+            {% elif iscategoryanalysisdetailedView %}
+                <td>{{ saleLine.name }}</td>
+            {% else %}
+            {% endif %}
+            {% if isBrandsView%}
+                <td>
+                    <a href="{% url 'reports:salesReportsView' report_type="drill" second_style=saleLine.brandId %}" class="tip-bottom">
+                        {{ saleLine.brand }}
+                    </a>
+                </td>
+            {% else %}
+                <td>{{ saleLine.category }}</td>
+            {% endif %}
+            <td>{{ saleLine.quantity }}</td>
+            <td>${{ saleLine.totalSalesSell }}</td>  <!--sell-->
+            <td>${{ saleLine.totalSalesNett }}</td>  <!--nett-->
+            <td>${{ saleLine.GP }}</td> <!--GP-->
+            <td>{{ saleLine.GPPerc }}%</td> <!--GP%-->
+        {% else %}
+            {% if isbrandanalysisdetailedView or iscategoryanalysisdetailedView%}
+                <td></td>
+            {% else %}
+            {% endif %}
+            {% if isBrandsView %}
+                <td></td>
+            {% else %}
+                <td></td>
+            {% endif %}
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+        {% endif %}
+    </tr>
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

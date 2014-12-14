@@ -1,0 +1,47 @@
+<ul class="quick-actions">
+    <li>
+        <a href="{% url 'reports:salesReportsView' report_type="brandanalysis" second_style=0 %}" class="tip-bottom" data-original-title="">
+            <i class="icon-wallet"></i>
+            Sales Analysis
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'reports:salesReportsView' report_type="itemised" second_style=0 %}" class="tip-bottom" data-original-title="">
+            <i class="icon-wallet"></i>
+            Itemised Sales Report
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'reports:salesReportsView' report_type="salesperson" second_style=0 %}" class="tip-bottom" data-original-title="">
+            <i class="icon-wallet"></i>
+            Sales Person Report
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'reports:salesReportsView' report_type="monthly" second_style=0 %}" class="tip-bottom" data-original-title="">
+            <i class="icon-wallet"></i>
+            Monthly Sales Report
+        </a>
+    </li>
+    {% if store.displayHOMenu %}
+        <li>
+            <a href="{% url 'reports:salesReportsView' report_type="distribution" second_style=0 %}" class="tip-bottom" data-original-title="">
+                <i class="icon-wallet"></i>
+                Distribution
+            </a>
+        </li>
+    {% endif %}
+    <li>
+        <a href="{% url 'reports:salesReportsView' report_type="salesByCustomer" second_style=0 %}" class="tip-bottom" data-original-title="">
+            <i class="icon-wallet"></i>
+            Sales by Customer
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'reports:salesReportsView' report_type="warranties" second_style=0 %}" class="tip-bottom" data-original-title="">
+            <i class="icon-wallet"></i>
+            Cust Care Plans by sales person
+        </a>
+    </li>
+</ul>
+

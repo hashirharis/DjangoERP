@@ -1,0 +1,114 @@
+{% load br %}
+
+<div id="resultsDiv">
+
+    {% if objects %}
+        <table cellpadding="0" cellspacing="0" border="0" class="display table " id="example">
+        {% include "reports/pagination-panel.html" %}
+            <thead>
+                <tr>
+                    {% if isSalesAnalysisView %}
+                        {% include "reports/sales/table/tablerow-sales-analysis.html" %}
+                    {% elif isItemisedView %}
+                        {% include "reports/sales/table/tablerow-itemised-sales-reports.html" %}
+                    {% elif isItemisedSummaryView %}
+                        {% include "reports/sales/table/tablerow-itemised-summary-sales-reports.html" %}
+                    {% elif isSalesPersonView %}
+                        {% include "reports/sales/table/tablerow-sales-person-reports.html" %}
+                    {% elif isMonthlySalesView %}
+                        {% include "reports/sales/table/tablerow-monthly-sales-reports.html" %}
+                    {% elif isDistributionView %}
+                        {% include "reports/sales/table/tablerow-distribution.html" %}
+                    {% elif isSalesByCustomerView %}
+                        {% include "reports/sales/table/tablerow-sales-by-customer.html" %}
+                    {% elif isWarrantiesView %}
+                        {% include "reports/sales/table/tablerow-warranties.html" %}
+                    {% elif isSalesPersonView %}
+                        {% include "reports/sales/table/tablerow-sales-person-reports.html" %}
+                    {% elif isSalesPersonView %}
+                        {% include "reports/sales/table/tablerow-sales-person-reports.html" %}
+                    {% elif isSalesPersonView %}
+                        {% include "reports/sales/table/tablerow-sales-person-reports.html" %}
+                    {% elif isSalesPersonView %}
+                        {% include "reports/sales/table/tablerow-sales-person-reports.html" %}
+                    {% else %}
+                    {% endif %}
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    {% if isSalesAnalysisView %}
+                        {% include "reports/sales/table/tablerow-sales-analysis.html" %}
+                    {% elif isItemisedView %}
+                        {% include "reports/sales/table/tablerow-itemised-sales-reports.html" %}
+                    {% elif isItemisedSummaryView %}
+                        {% include "reports/sales/table/tablerow-itemised-summary-sales-reports.html" %}
+                    {% elif isSalesPersonView %}
+                        {% include "reports/sales/table/tablerow-sales-person-reports.html" %}
+                    {% elif isMonthlySalesView %}
+                        {% include "reports/sales/table/tablerow-monthly-sales-reports.html" %}
+                    {% elif isDistributionView %}
+                        {% include "reports/sales/table/tablerow-distribution.html" %}
+                    {% elif isSalesByCustomerView %}
+                        {% include "reports/sales/table/tablerow-sales-by-customer.html" %}
+                    {% elif isWarrantiesView %}
+                        {% include "reports/sales/table/tablerow-warranties.html" %}
+                    {% elif isSalesPersonView %}
+                        {% include "reports/sales/table/tablerow-sales-person-reports.html" %}
+                    {% elif isSalesPersonView %}
+                        {% include "reports/sales/table/tablerow-sales-person-reports.html" %}
+                    {% elif isSalesPersonView %}
+                        {% include "reports/sales/table/tablerow-sales-person-reports.html" %}
+                    {% elif isSalesPersonView %}
+                        {% include "reports/sales/table/tablerow-sales-person-reports.html" %}
+                    {% else %}
+                    {% endif %}
+                </tr>
+            </tfoot>
+            <tbody>
+                {% if isSalesAnalysisView %}
+                    {% include "reports/sales/table/tablebody-sales-analysis.html" %}
+                {% elif isItemisedView %}
+                    {% include "reports/sales/table/tablebody-itemised-sales-reports.html" %}
+                {% elif isItemisedSummaryView %}
+                    {% include "reports/sales/table/tablebody-itemised-summary-sales-reports.html" %}
+                {% elif isSalesPersonView %}
+                    {% include "reports/sales/table/tablebody-sales-person-reports.html" %}
+                {% elif isMonthlySalesView %}
+                    {% include "reports/sales/table/tablebody-monthly-sales-reports.html" %}
+                {% elif isDistributionView %}
+                    {% include "reports/sales/table/tablebody-distribution.html" %}
+                {% elif isSalesByCustomerView %}
+                    {% include "reports/sales/table/tablebody-sales-by-customer.html" %}
+                {% elif isWarrantiesView %}
+                    {% include "reports/sales/table/tablebody-warranties.html" %}
+                {% elif isSalesPersonView %}
+                    {% include "reports/sales/table/tablebody-sales-person-reports.html" %}
+                {% elif isSalesPersonView %}
+                    {% include "reports/sales/table/tablebody-sales-person-reports.html" %}
+                {% elif isSalesPersonView %}
+                    {% include "reports/sales/table/tablebody-sales-person-reports.html" %}
+                {% elif isSalesPersonView %}
+                    {% include "reports/sales/table/tablebody-sales-person-reports.html" %}
+                {% else %}
+                {% endif %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-content">
+                        <div class="widget-title">
+                            <span class="icon">
+                                <i class="glyphicon glyphicon-list-alt"></i>
+                            </span>
+                            <h5>Results</h5>
+                        </div>
+                        <h3>Failed to return results.</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>

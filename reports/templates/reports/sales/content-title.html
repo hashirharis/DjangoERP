@@ -1,0 +1,46 @@
+{% if isSalesAnalysisView %}
+    {% if isbrandanalysisdetailedView or iscategoryanalysisdetailedView%}
+        {% if isBrandsView_allStores or isCatView_allStores%}
+            <span class="text"> Reports - Detailed Sales Analysis of All Stores</span>
+        {% else %}
+            <span class="text"> Reports - Detailed Sales Analysis for {{ store.name }}</span>
+        {% endif %}
+    {% else %}
+        {% if isBrandsView_allStores or isCatView_allStores%}
+            <span class="text"> Reports - Sales Analysis of All Stores</span>
+        {% else %}
+            <span class="text"> Reports - Sales Analysis for {{ store.name }}</span>
+        {% endif %}
+    {% endif %}
+{% elif isItemisedView %}
+    {% if isItemisedViewAllStores %}
+        <span class="text"> Reports - Itemised Sales of All Stores</span>
+    {% else %}
+        <span class="text"> Reports - Itemised Sales for {{ store.name }}</span>
+    {% endif %}
+{% elif isItemisedSummaryView %}
+    <span class="text"> Reports - Itemised Summary by Category - Sales for {{ store.name }} - Note: GST excluded</span>
+{% elif isSalesPersonView %}
+    <span class="text"> Reports - Sales People at {{ store.name }}</span>
+{% elif isMonthlySalesView %}
+    {% if current == 'true' %}
+        <span class="text"> Reports - Monthly Sales for {{ store.name }} - This year</span>
+    {% else %}
+        <span class="text"> Reports - Monthly Sales for {{ store.name }} - Last year</span>
+    {% endif %}
+{% elif isDistributionView %}
+    <span class="text"> Reports - Sales Distribution</span>
+{% elif isSalesByCustomerView %}
+    <span class="text"> Reports - Sales by Customer for {{ store.name }}</span>
+{% elif isWarrantiesView %}
+    <span class="text"> Reports - Cust Care Plans for {{ store.name }}</span>
+{% elif isSalesPersonView %}
+    <span class="text"> Sales Person Reports - Sales for {{ store.name }}</span>
+{% elif isSalesPersonView %}
+    <span class="text"> Sales Person Reports - Sales for {{ store.name }}</span>
+{% else %}
+    bismila1d
+{% endif %}
+{% if drillParentName %}
+    - Drill-down by {{ drillParentName }}
+{% endif %}

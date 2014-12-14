@@ -1,0 +1,15 @@
+{% if isAll %}
+    <span class="text"> Reports - All Customers</span>
+{% elif isEmail %}
+    <span class="text"> Reports - Only customers with email</span>
+{% elif isBirthdays %}
+    <span class="text"> Reports - Customer Birthdays</span>
+{% elif isOrders %}
+    <span class="text"> Reports - Customer Orders</span>
+{% elif isAttendance %}
+    <span class="text"> Reports - Customer Attendance</span>
+{% elif isNew %}
+    <span class="text"> Reports - New Customers</span>
+{% elif isOnlySales %}
+    <span class="text"> Reports - Customers with sales</span>
+{% endif %}

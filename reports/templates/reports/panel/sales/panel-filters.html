@@ -1,0 +1,45 @@
+{% if isSalesAnalysisView %}
+    {% include "reports/panel/panel-filters-dates.html" %}
+    {% if isBrandsView or isItemisedView%}
+        {% include "reports/panel/panel-filters-brands.html" %}
+    {% else %}
+        {% include "reports/panel/panel-filters-classes.html" %}
+    {% endif %}
+    {% if isbrandanalysisdetailedView or iscategoryanalysisdetailedView %}
+        {% include "reports/panel/panel-filters-sales-person.html" %}
+    {% endif%}
+    {% include "reports/panel/panel-filters-sort.html" %}
+{#    {% include "reports/panel/panel-filters-GP.html" %}#}
+{% elif isItemisedView %}
+    {% include "reports/panel/panel-filters-dates.html" %}
+    {% include "reports/panel/panel-filters-brands.html" %}
+    {% include "reports/panel/panel-filters-models.html" %}
+    {%  if not isItemisedViewAllStores %}
+        {% include "reports/panel/panel-filters-sales-person.html" %}
+    {% endif%}
+{#    {% include "reports/panel/panel-filters-GP.html" %}#}
+    {% include "reports/panel/panel-filters-sort.html" %}
+{% elif isItemisedSummaryView %}
+    {% include "reports/panel/panel-filters-dates.html" %}
+{#    {% include "reports/panel/panel-filters-GP.html" %}#}
+{% elif isMonthlySalesView %}
+{#    {% include "reports/panel/panel-filters-dates.html" %}#}
+{% elif isSalesPersonView %}
+    {% include "reports/panel/panel-filters-dates.html" %}
+{% elif isDistributionView %}
+    {% include "reports/panel/panel-filters-dates.html" %}
+{% elif isSalesByCustomerView %}
+    {% include "reports/panel/panel-filters-dates.html" %}
+{% elif isWarrantiesView %}
+    {% include "reports/panel/panel-filters-dates.html" %}
+{% endif%}
+
+
+{#    {% include "reports/panel/panel-filters-dates.html" %}#}
+{#    {% include "reports/panel/panel-filters-brands.html" %}#}
+{#    {% include "reports/panel/panel-filters-classes.html" %}#}
+{#    {% include "reports/panel/panel-filters-sort.html" %}#}
+{#    {% include "reports/panel/panel-filters-GP.html" %}#}
+{#    {% include "reports/panel/panel-filters-models.html" %}#}
+{#    {% include "reports/panel/panel-filters-sales-person.html" %}#}
+{#    {% include "reports/panel/panel-filters-orders.html" %}#}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Virtual Warehouse{% endblock %}
+
+{% block content %}
+{% load humanize %}
+
+<div id="content-header">
+    <h1> Virtual Warehouse</h1>
+</div>
+
+<div id="breadcrumb">
+    <a href=""><i class="glyphicon glyphicon-book"></i>Virtual Warehouse</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 center" style="text-align: center;">
+            <ul class="quick-actions">
+                <li>
+                    <a href="{% url 'vw:newVWInvoiceIN' %}" data-module="Sale" class="tip-bottom" data-original-title="Add Stock">
+                        <i class="icon-database"></i>
+                        Add Stock
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'vw:newVWInvoiceOUT' %}" data-module="Sale" class="tip-bottom" data-original-title="Add Stock">
+                        <i class="icon-database"></i>
+                        Release Stock
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'vw:moveVWStockNoInvoice' %}" data-module="Sale" class="tip-bottom" data-original-title="Remove Stock">
+                        <i class="icon-survey"></i>
+                        Add/Release w/o invoice
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'stock:merchandiser' %}" data-module="Sale" class="tip-bottom" data-original-title="Check Stock Levels">
+                        <i class="icon-graph"></i>
+                        Check Stock Levels
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'b2b:HOInvoicingHome' %}" data-module="Sale" class="tip-bottom" data-original-title="Search through all invoices">
+                        <i class="icon-download"></i>
+                        Invoicing
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

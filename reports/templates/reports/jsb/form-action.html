@@ -1,0 +1,15 @@
+<form action="
+
+    {% block formaction %}
+
+        {% if isJsb1 %}
+            {% url 'reports:jsbReportsView' report_type="jsb1" report_class="jsb" %}
+        {% elif isJsb2 %}
+            {% url 'reports:jsbReportsView' report_type="jsb2" report_class="jsb" %}
+        {% endif %}
+
+    {% endblock %}
+
+method="GET">
+    {% include "reports/panel/panel.html" %}
+</form>

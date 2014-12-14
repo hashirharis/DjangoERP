@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Sales Reports{% endblock %}
+
+{% block content %}
+<div id="content-header">
+    <h1>Sales Reports<small> Dashboard</small></h1>
+</div>
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i>Home</a>
+    <a href="{% url 'reports:home' %}" class="tip-bottom" data-original-title="Go to Reports Dashboard"><i class="glyphicon glyphicon-shopping-cart"></i><strong>Reports</strong></a>
+    <a><i class="glyphicon glyphicon-shopping-cart"></i><strong>Sales Reports</strong></a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 center" style="text-align: center;">
+            <ul class="quick-actions">
+                <li>
+                    <a href="{% url 'reports:itemisedSalesReport' view_style="itemisedSalesReport" %}" class="tip-bottom" data-original-title="">
+                        <i class="icon-graph"></i>
+                        #Itemised Sales Report
+                    </a>
+                </li>
+                <li>
+                    <a href="" class="tip-bottom" data-original-title="">
+                        <i class="icon-graph"></i>
+                        Sales Person Report
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'reports:salesAnalysis' view_style="brand" %}" class="tip-bottom" data-original-title="">
+                        <i class="icon-graph"></i>
+                        #Sales Analysis
+                    </a>
+                </li>
+                <li>
+                    <a href="" class="tip-bottom" data-original-title="">
+                        <i class="icon-graph"></i>
+                        Monthly Sales Report
+                    </a>
+                </li>
+                <li>
+                    <a href="" class="tip-bottom" data-original-title="">
+                        <i class="icon-graph"></i>
+                        Sales by Brand
+                    </a>
+                </li>
+                <li>
+                    <a href="" class="tip-bottom" data-original-title="">
+                        <i class="icon-graph"></i>
+                        Sales by Class
+                    </a>
+                </li>
+                <li>
+                    <a href="" class="tip-bottom" data-original-title="">
+                        <i class="icon-graph"></i>
+                        Distribution
+                    </a>
+                </li>
+                <li>
+                    <a href="" class="tip-bottom" data-original-title="">
+                        <i class="icon-graph"></i>
+                        Sales by Customer
+                    </a>
+                </li>
+                <li>
+                    <a href="" class="tip-bottom" data-original-title="">
+                        <i class="icon-graph"></i>
+                        Cust Care Plans by Salesperson
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

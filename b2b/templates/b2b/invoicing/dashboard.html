@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}HO Invoicing Dashboard{% endblock %}
+
+{% block content %}
+{% load humanize %}
+
+<div id="content-header">
+    <h1> Invoicing <small> Dashboard </small> </h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'b2b:HOInvoicingHome' %}"><i class="glyphicon glyphicon-book"></i>HO Invoicing</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 center" style="text-align: center;">
+            <ul class="quick-actions">
+                {% if store.code == "VW" %}
+                <li>
+                    <a href="{% url 'vw:newVWInvoiceIN' %}" class="tip-bottom" data-original-title="Create a new VW Invoice">
+                        <i class="icon-survey"></i>
+                        New VW Invoice
+                    </a>
+                </li>
+                {% else %}
+                <li>
+                    <a href="{% url 'b2b:newHOInvoice' %}" class="tip-bottom" data-original-title="Create a new Invoice">
+                        <i class="icon-survey"></i>
+                        New
+                    </a>
+                </li>
+                {% endif %}
+                <li>
+                    <a href="{% url 'b2b:searchHOInvoices' 'PENDING' %}" class="tip-bottom" data-original-title="Search through all invoices pending actions">
+                        <i class="icon-search"></i>
+                        Search
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'b2b:searchHOInvoices' 'COMPLETED' %}" class="tip-bottom" data-original-title="Search through all completed invoices">
+                        <i class="icon-cabinet"></i>
+                        Completed
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'b2b:reconHome' %}" class="tip-bottom" data-original-title="View All Reconciliations">
+                        <i class="icon-book"></i>
+                        Recons
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'b2b:chargesHome' %}" class="tip-bottom" data-original-title="View All Charges">
+                        <i class="icon-pdf"></i>
+                        Charges
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseOne" data-toggle="collapse">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-time"></i>
+                        </span>
+                        <h5>Invoices</h5>
+                        <span class="label label-warning">{{ pending|length }}</span>
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseOne">
+                    <div class="widget-content">
+                        {% if pending %}
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Distributor</th>
+                                        <th>Invoice #</th>
+                                        <th>Modified</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for invoice in pending %}
+                                    <tr>
+                                        <td>{{ invoice.distributor.distributor }}</td>
+                                        <td>{{ invoice.invoiceNumber }}</td>
+                                        <td>{{ invoice.createdBy.name }} <small>{{ invoice.modifiedDate|naturaltime }}</small></td>
+                                        {% if store.code == "VW" %}  <!--if VW user open invoice in VW view-->
+                                            {% if invoice.createdBy.store.code == "VW" %}
+                                                <td><a class="btn btn-primary" href="{% url 'vw:openHOInvoice' invoice.id %}"><i class="glyphicon glyphicon-pencil"></i></a></td>
+                                            {% else %}
+                                                <td><a class="btn btn-primary" href="{% url 'b2b:openHOInvoice' invoice.id %}"><i class="glyphicon glyphicon-pencil"></i></a></td>
+                                            {% endif %}
+                                        {% else %}
+                                            {% if invoice.createdBy.store.code == "VW" %}  <!--can not edit virtual warehouse invoices from here/ visibility: hidden-->
+                                                <td><a style="visibility: hidden" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i></a></td>
+                                            {% else %}
+                                                <td><a class="btn btn-primary" href="{% url 'b2b:openHOInvoice' invoice.id %}"><i class="glyphicon glyphicon-pencil"></i></a></td>
+                                            {% endif %}
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                        <p>There have been no recently created invoices.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

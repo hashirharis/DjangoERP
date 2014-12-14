@@ -1,0 +1,57 @@
+{% load br %}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Model</th>
+            <th>{{ order.deliveryMonth.month }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Order Number</td>
+            <td>
+            {% if order.status == "Open" and not order.collation.archived %}
+                <input data-orderid="{{ order.id }}" type="text" class="orderNum" value="{{ order.orderNumber }}" />
+            {% else %}
+                <input type="text" disabled value="{{ order.orderNumber }}" />
+            {% endif %}
+            </td>
+        </tr>
+        {% if order.hoOrderNumber|cut:"" != '' %}
+        <tr>
+            <td>Supplier Order Number</td>
+            <td><input type="text" disabled value="{{ order.hoOrderNumber }}" /></td>
+        </tr>
+        {% endif %}
+        {% for orderLine in order.collationorderline_set.all %}
+            {% if not orderLine.collationLine.deleted %}
+                {% if not orderLine.collation.hidden or orderLine.quantity > 0 %}
+                    {% ifchanged orderLine.collationLine.model %}
+                    </tr>
+                    <tr>
+                    <td>
+                        {{ orderLine.collationLine.model }}
+                    </td>
+                {% endifchanged %}
+                   <td>
+                        {% if orderLine.order.status == "Open" and not order.collation.archived %}
+                            <input data-orderid="{{ order.id }}" data-orderlineid="{{ orderLine.id }}" class="quantity" type="number" value="{{ orderLine.quantity }}" min="0"/>
+                        {% else %}
+                            <input type="text" disabled value="{{ orderLine.quantity }}" />
+                        {% endif %}
+                   </td>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        <tr>
+            <td>Order Comments</td>
+            <td>
+            {% if order.status == "Open" and not order.collation.archived %}
+                <textarea data-orderid="{{ order.storeComment }}" class="orderComment" rows="4" cols="50">{{ order.storeComment }}</textarea>
+            {% else %}
+                <textarea disabled rows="4" cols="50">{{ order.storeComment }}</textarea>
+            {% endif %}
+            </td>
+        </tr>
+    </tbody>
+</table>

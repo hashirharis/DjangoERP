@@ -1,0 +1,26 @@
+{% load reportTags %}
+
+{% for salesPerson in objects %}
+    <tr>
+        <td>{{ salesPerson.name }}</td>
+        <td>${% filter floatformat:2 %}{{ salesPerson.salesTotalInc }}{% endfilter %}</td>
+        <td>${% filter floatformat:2 %}{{ salesPerson.salesTotalEx }}{% endfilter %}</td>
+        <td>{{ salesPerson.salesExWarrantiesPerSalesperson }}</td>
+        <td>{{ salesPerson.warrantiesPerSalesperson }}</td>
+        <td>{{ salesPerson.strikeRate }}</td>
+    </tr>
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

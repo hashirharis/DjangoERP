@@ -1,0 +1,42 @@
+<table class="table table-bordered table-hover">
+    <thead>
+        <th>Store</th>
+        <th>Invoice Number</th>
+        <th>Distributor</th>
+        <th>Invoice Date</th>
+        <th>Order Reference</th>
+        <th>Type</th>
+        <th>Net (Inc)</th>
+        <th>Extended Credit</th>
+    </thead>
+{% if stores %}
+    {% for store in stores %}
+        {% for invoice in store.storeInvoices %}
+            <tr>
+                <td>{% ifchanged invoice.store.name %}{{ invoice.store.name }}{% endifchanged %}</td>
+                <td>{{ invoice.invoiceNum }}</td>
+                <td>{{ invoice.distributor }}</td>
+                <td>{{ invoice.invoiceDate }}</td>
+                <td>{{ invoice.orderReference }}</td>
+                <td>{{ invoice.type }}</td>
+                <td>{{ invoice.netInc }}</td>
+                <td>{{ invoice.extCredit }}</td>
+            </tr>
+        {% endfor %}
+        <tr class="success">
+            <td colspan="5"></td>
+            <td>Store Total</td>
+            <td>{{ store.storeTotal }}</td>
+            <td></td>
+        </tr>
+    {% endfor %}
+{% else %}
+    <tr class="danger">
+        {% if request.POST %}
+            <td class="error" colspan="8">No invoices found</td>
+        {% else %}
+            <td class="error" colspan="8">Search for invoices using above options</td>
+        {% endif %}
+    </tr>
+{% endif %}
+</table>

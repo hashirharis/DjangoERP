@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Sales Search{% endblock %}
+
+{% block content %}
+
+    <div id="content-header">
+        <h1>{{ salesFilter }} Sales <small> Search </small></h1>
+    </div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="{% url 'pos:home' %}" class="tip-bottom" data-original-title="POS Home"><i class="glyphicon glyphicon-search"></i>Dashboard</a>
+        <a href="#"><i class="glyphicon glyphicon-search"></i>Sales</a>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </span>
+                        <h5>Search</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="row">
+                            <div class="col-12">
+                                <form action="{% url 'pos:searchSales' salesFilter %}" method="GET">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="q" placeholder="Search The Customer Name, Any Model Numbers in the sale, Invoice Number, Comments Text etc here" value="{{ q }}">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary">Search!</button>
+                                        </span>
+                                    </div>
+                                </form>
+                            </div>
+                        </div
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                        <h5>Results</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div id="resultsDiv">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Customer</th>
+                                    <th>Terminal</th>
+                                    <th>Sale Total</th>
+                                    <th>Modified Date</th>
+                                    <th>View</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for sale in entities %}
+                                    <tr>
+                                        <td>{{ sale.code }}</td>
+                                        <td>{{ sale.customer.firstName }} {{ sale.customer.lastName }}</td>
+                                        <td>{{ sale.terminal.name }}</td>
+                                        <td>${{ sale.total|floatformat:2 }}</td>
+                                        <td>{{ sale.modified }}</td>
+                                        <td><a class="btn btn-primary" href="{% url 'pos:openSale' sale.terminal.id sale.id %}"><i class="glyphicon glyphicon-eye-open"></i> View Sale</a></td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <ul class="pagination alternate pull-right">
+                                {% for x in entities.paginator.page_range %}
+                                    <li{% if entities.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var search = br.search({
+                ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+                csrfToken:"{% csrf_token %}"
+            });
+
+            search.addEntity("Entities",{
+                prepend: "",
+                html: "Entity",
+                human: "{{ entityName }}"
+            });
+
+            search.addQuerySet("Entities",{
+                name:'All',
+                prepend:"",
+                parameters: {
+                    q: '{{ q }}',
+                    page: '{{ page }}'
+                }
+            });
+
+            search.addPagination("Entities","All",'page',$('#resultsDiv'));
+
+        });
+    </script>
+{% endblock %}

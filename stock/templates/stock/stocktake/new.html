@@ -1,0 +1,90 @@
+{% extends "stock/stocktake/base.html" %}
+{% block title %}New Stocktake{% endblock %}
+{% block content %}
+{% load br %}
+{{ block.super }}
+<div id="content-header">
+    {% if stockTake %}
+        <h1>Ref : {{ stockTake.reference }} ({{ stockTake.created }})</h1>
+    {% else %}
+        <h1>New Stocktake</h1>
+    {% endif %}
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'stock:dashboard' %}"><i class="glyphicon glyphicon-gift"></i>Stock</a>
+    <a href="{% url 'stock:stockTakeHome' %}"><i class="glyphicon glyphicon-list-alt"></i>Stocktakes</a>
+    <a href="#" class="supress"><i class="glyphicon glyphicon-th-list"></i><strong>New Stocktake</strong></a>
+</div>
+
+<div class="row">
+   <div class="col-12">
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#collapseTwo" data-toggle="collapse">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-barcode"></i>
+                </span>
+                    <h5>Add Line</h5>
+                </a>
+            </div>
+            <div class="collapse in" id="collapseTwo">
+                <div class="widget-content">
+                    <form id="addLineForm">
+                        <label for="test">Product</label>
+                        &nbsp&nbsp&nbsp
+                        <input type="hidden" id="productSelect"/>
+{#                        <select name="test" id="productSelect">#}
+{#                            {% for product in products %}#}
+{#                                <option value="{{ product.id }}">{{ product.model }}</option>#}
+{#                            {% endfor %}#}
+{#                        </select>#}
+                        &nbsp&nbsp&nbsp
+                        <label for="quantity">Quantity</label>
+                        &nbsp&nbsp&nbsp
+                        <input type="text" value="1" id="quantity"/>
+                        <input id="systemQuantity" type="hidden" value="0"/>
+                        &nbsp&nbsp&nbsp
+                        <a id="addStockTakeLine" class="btn btn-primary">Add <i class="glyphicon glyphicon-plus"></i></a>
+                    </form>
+                    <br/>
+                    <small>*Multiple quantities of the same product will be automatically collated after saving/processing the stocktake</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#collapseTwo" data-toggle="collapse">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-barcode"></i>
+                </span>
+                    <h5>Stock Take Lines</h5>
+                </a>
+            </div>
+            <div class="collapse in" id="collapseTwo">
+                <div class="widget-content stockTakeLinesDiv nopadding" style="max-height:500px;overflow-y: scroll;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="widget-box">
+            <div class="widget-content">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-actions" style="text-align: right">
+                            <button id="saveStockTake" data-loading-text="Saving..." class="btn btn-large btn-info">Save</button>
+                            <button id="processStockTake" data-loading-text="Processing..." class="btn btn-large btn-success">Process</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

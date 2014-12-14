@@ -1,0 +1,62 @@
+<form action="{% block formaction %}
+    {% if isSalesAnalysisView %}
+        {% if isBrandsView %}
+            {% if isbrandanalysisdetailedView %}
+                {% if isBrandsView_allStores %}
+                    {% url 'reports:salesReportsView' report_type="brandanalysisdetailed" second_style=1 %}
+                {% else %}
+                    {% url 'reports:salesReportsView' report_type="brandanalysisdetailed" second_style=0 %}
+                {% endif %}
+            {% else %}
+                {% if isBrandsView_allStores %}
+                    {% url 'reports:salesReportsView' report_type="brandanalysis" second_style=1 %}
+                {% else %}
+                    {% url 'reports:salesReportsView' report_type="brandanalysis" second_style=0 %}
+                {% endif %}
+            {% endif %}
+        {% else %}
+            {% if iscategoryanalysisdetailedView %}
+                {% if isCatView_allStores %}
+                    {% url 'reports:salesReportsView' report_type="categoryanalysisdetailed" second_style=2 %}
+                {% else %}
+                    {% url 'reports:salesReportsView' report_type="categoryanalysisdetailed" second_style=0 %}
+                {% endif %}
+            {% else %}
+                {% if isCatView_allStores %}
+                    {% url 'reports:salesReportsView' report_type="categoryanalysis" second_style=2 %}
+                {% else %}
+                    {% url 'reports:salesReportsView' report_type="categoryanalysis" second_style=0 %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% elif isItemisedView %}
+        {% if isItemisedViewAllStores %}
+            {% url 'reports:salesReportsView' report_type="itemised" second_style=1 %}
+        {% else %}
+            {% url 'reports:salesReportsView' report_type="itemised" second_style=0 %}
+        {% endif %}
+    {% elif isItemisedSummaryView %}
+        {% url 'reports:salesReportsView' report_type="itemisedsummary" second_style=0 %}
+    {% elif isSalesPersonView %}
+        {% url 'reports:salesReportsView' report_type="salesperson" second_style=0 %}
+    {% elif isMonthlySalesView %}
+        {% url 'reports:salesReportsView' report_type="monthly" second_style=0 %}
+    {% elif isDistributionView %}
+        {% url 'reports:salesReportsView' report_type="distribution" second_style=0 %}
+    {% elif isSalesByCustomerView %}
+        {% url 'reports:salesReportsView' report_type="salesByCustomer" second_style=0 %}
+    {% elif isWarrantiesView %}
+        {% url 'reports:salesReportsView' report_type="warranties" second_style=0 %}
+    {% else %}
+    {% endif %}
+    {% endblock %}" method="GET">
+    {% if isSalesAnalysisView or isItemisedView or isItemisedSummaryView or isSalesPersonView or isMonthlySalesView %}
+        {% include "reports/panel/panel.html" %}
+    {% elif isDistributionView or isSalesByCustomerView or isWarrantiesView %}
+        {% include "reports/panel/panel.html" %}
+    {% else %}
+    {% endif %}
+</form>
+
+
+

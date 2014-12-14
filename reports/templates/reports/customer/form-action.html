@@ -1,0 +1,27 @@
+<form action="
+
+    {% block formaction %}
+
+        {% if isAll %}
+            {% url 'reports:customerReportsView' report_type="all" report_class="customer" %}
+        {% elif isEmail %}
+            {% url 'reports:customerReportsView' report_type="email" report_class="customer" %}
+        {% elif isBirthdays %}
+            {% url 'reports:customerReportsView' report_type="birthdays" report_class="customer" %}
+        {% elif isOrders %}
+            {% url 'reports:customerReportsView' report_type="orders" report_class="customer" %}
+        {% elif isAttendance %}
+            {% url 'reports:customerReportsView' report_type="attendance" report_class="customer" %}
+        {% elif isOnlySales %}
+            {% url 'reports:customerReportsView' report_type="onlySales" report_class="customer" %}
+        {% elif isNew %}
+            {% url 'reports:customerReportsView' report_type="new" report_class="customer" %}
+        {% endif %}
+
+    {% endblock %}
+
+" method="GET">
+    {% include "reports/panel/panel.html" %}
+</form>
+
+

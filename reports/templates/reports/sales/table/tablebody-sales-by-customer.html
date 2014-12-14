@@ -1,0 +1,38 @@
+{% load reportTags %}
+
+{% for customer in objects %}
+    <tr>
+        <td>{% filter truncatechars:25 %}{{ customer.lastName }}{% endfilter %}</td>
+        <td>{% filter truncatechars:25 %}{{ customer.firstName }}{% endfilter %}</td>
+        <td>${% filter floatformat:2 %}{{ customer.salesTotalInc }}{% endfilter %}</td>
+        <td>${% filter floatformat:2 %}{{ customer.salesTotalEx }}{% endfilter %}</td>
+        <td>${% filter floatformat:2 %}{{ customer.costPriceTotal }}{% endfilter %}</td>
+        <td>${% filter floatformat:2 %}{{ customer.gpDollarTotal }}{% endfilter %}</td>
+        <td>{% filter floatformat:2 %}{{ customer.gpPercTotal }}{% endfilter %}%</td>
+        <td>{{ customer.quantityOfSalesByCust }}</td>
+    </tr>
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

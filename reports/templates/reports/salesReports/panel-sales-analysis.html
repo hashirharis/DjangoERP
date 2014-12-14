@@ -1,0 +1,67 @@
+<div class="col-lg-2">
+    From: <input id="ui-datepicker" type="text" name="startDate" class="form-control input-sm" />
+</div>
+<div class="col-lg-2">
+    To: <input id="ui-datepicker-2" type="text" name="endDate" class="form-control input-sm" />
+</div>
+<div class="col-lg-2">
+    {% if isBrandsView %}
+        Brands:
+        <label>
+            <select placeholder="Filter by Brands" multiple="multiple" id="searchBrand" class="selectmultiple" name="brand">
+                {% for brand in brands %}
+                    <option value="{{ brand.id }}">{{ brand.brand|title }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    {% else %}
+        Categories:
+        <label>
+            <select placeholder="Filter by Categories" multiple="multiple" id="searchCategory" class="selectmultiple" name="category">
+                {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name|title }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    {% endif %}
+</div>
+<div class="col-lg-3">
+    Sort:
+    <label>
+        <select id="sortTypes" name="sortTypes">
+            <option value="" disabled selected>Sort by here</option>
+            {% for type in sortTypes %}
+                <option value="{{ type.id }}">{{ type.name }}</option>
+            {% endfor %}
+        </select>
+    </label>
+</div>
+<div class="col-lg-1">
+    True GP:
+    <label class="disabled"><input type="checkbox" value="trueGP" name="chkTrueGP"/></label>
+</div>
+<div class="form-group">
+    <div class="input-group">
+        <span class="input-group-btn">
+            <button class="btn btn-success">Search</button>
+            <div class="btn-group dropup">
+                <button class="btn btn-dark-blue">Options</button>
+                <button data-toggle="dropdown" class="btn btn-dark-blue dropdown-toggle"><span class="caret"></span></button>
+                <ul class="dropdown-menu dropdown-dark-blue pull-right">
+                    <li><a href="{% url 'reports:salesAnalysis' view_style="brand" %}">Start with Brands</a></li>
+                    <li><a href="{% url 'reports:salesAnalysis' view_style="category" %}">Start with Categories</a></li>
+                    <li class="divider"></li>
+                    {% if isBrandsView %}
+                        <li><a href="{% url 'reports:salesAnalysis' view_style="brand" %}">Clear all fields</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/reports/export/salesAnalysisCategory/brand/?{{search_string}}">Export to Excel</a></li>
+                    {% else %}
+                        <li><a href="{% url 'reports:salesAnalysis' view_style="category" %}">Clear all fields</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/reports/export/salesAnalysisCategory/category/?{{search_string}}">Export to Excel</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </span>
+    </div>
+</div>

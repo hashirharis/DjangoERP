@@ -1,0 +1,188 @@
+{% if isbrandanalysisdetailedView or iscategoryanalysisdetailedView %}
+    <li>
+        <a href="{% url 'reports:salesReportsView' report_type="brandanalysisdetailed" second_style=0 %}">
+            Start with Brands
+        </a>
+        <a href="{% url 'reports:salesReportsView' report_type="categoryanalysisdetailed" second_style=0 %}">
+            Start with Classes
+        </a>
+    </li>
+{% else %}
+    <li>
+        <a href="{% url 'reports:salesReportsView' report_type="brandanalysis" second_style=0 %}">
+            Start with Brands
+        </a>
+        <a href="{% url 'reports:salesReportsView' report_type="categoryanalysis" second_style=0 %}">
+            Start with Classes
+        </a>
+    </li>
+{% endif%}
+{% if isBrandsView %}
+    <li>
+        {% if isbrandanalysisdetailedView %}
+            <a href="{% url 'reports:salesReportsView' report_type="brandanalysisdetailed" second_style=0 %}">
+                Clear all fields
+            </a>
+        {% else %}
+            <a href="{% url 'reports:salesReportsView' report_type="brandanalysis" second_style=0 %}">
+                Clear all fields
+            </a>
+        {% endif %}
+    </li>
+    <li class="divider"></li>
+    <li>
+        {% if isbrandanalysisdetailedView %}
+            <a href="{% url 'reports:salesReportsView' report_type="brandanalysis" second_style=0 %}">
+                Normal View
+            </a>
+        {% else %}
+            <a href="{% url 'reports:salesReportsView' report_type="brandanalysisdetailed" second_style=0 %}">
+                Detailed View
+            </a>
+        {% endif %}
+    </li>
+    <li class="divider"></li>
+    {% if isBrandsView_allStores or isCatView_allStores %}
+        <li>
+            {% if isbrandanalysisdetailedView %}
+                <a href="/reports/export/brandanalysisdetailed/1/?{{search_string}}">
+                    Export to Excel
+                </a>
+            {% else %}
+                <a href="/reports/export/brandanalysis/1/?{{search_string}}">
+                    Export to Excel
+                </a>
+            {% endif %}
+        </li>
+    {% else %}
+        <li>
+            {% if isbrandanalysisdetailedView %}
+                <a href="/reports/export/brandanalysisdetailed/0/?{{search_string}}">
+                    Export to Excel
+                </a>
+            {% else %}
+                <a href="/reports/export/brandanalysis/0/?{{search_string}}">
+                    Export to Excel
+                </a>
+            {% endif %}
+        </li>
+    {% endif %}
+    {% if store.displayHOMenu %}
+        <li class="divider"></li>
+
+        {% if isbrandanalysisdetailedView %}
+            {% if isBrandsView_allStores %}
+                <li>
+                    <a href="{% url 'reports:salesReportsView' report_type="brandanalysisdetailed" second_style=0 %}">
+                        Show HO only
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{% url 'reports:salesReportsView' report_type="brandanalysisdetailed" second_style=1 %}">
+                        Show all Stores
+                    </a>
+                </li>
+            {% endif %}
+        {% else %}
+            {% if isBrandsView_allStores %}
+                <li>
+                    <a href="{% url 'reports:salesReportsView' report_type="brandanalysis" second_style=0 %}">
+                        Show HO only
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{% url 'reports:salesReportsView' report_type="brandanalysis" second_style=1 %}">
+                        Show all Stores
+                    </a>
+                </li>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% else %}
+    <li>
+        {% if iscategoryanalysisdetailedView %}
+            <a href="{% url 'reports:salesReportsView' report_type="categoryanalysisdetailed" second_style=0 %}">
+                Clear all fields
+            </a>
+        {% else %}
+            <a href="{% url 'reports:salesReportsView' report_type="categoryanalysis" second_style=0 %}">
+                Clear all fields
+            </a>
+        {% endif %}
+    </li>
+    <li class="divider"></li>
+    <li>
+        {% if iscategoryanalysisdetailedView%}
+            <a href="{% url 'reports:salesReportsView' report_type="categoryanalysis" second_style=0 %}">
+                Normal View
+            </a>
+        {% else %}
+            <a href="{% url 'reports:salesReportsView' report_type="categoryanalysisdetailed" second_style=0 %}">
+                Detailed View
+            </a>
+        {% endif %}
+    </li>
+
+    <li class="divider"></li>
+    {% if isBrandsView_allStores or isCatView_allStores %}
+        <li>
+            {% if iscategoryanalysisdetailedView %}
+                <a href="/reports/export/categoryanalysisdetailed/2/?{{search_string}}">
+                    Export to Excel
+                </a>
+            {% else %}
+                <a href="/reports/export/categoryanalysis/2/?{{search_string}}">
+                    Export to Excel
+                </a>
+            {% endif %}
+        </li>
+    {% else %}
+        <li>
+            {% if iscategoryanalysisdetailedView %}
+                <a href="/reports/export/categoryanalysisdetailed/0/?{{search_string}}">
+                    Export to Excel
+                </a>
+            {% else %}
+                <a href="/reports/export/categoryanalysis/0/?{{search_string}}">
+                    Export to Excel
+                </a>
+            {% endif %}
+        </li>
+    {% endif %}
+    {% if store.isHead %}
+        <li class="divider"></li>
+        {% if iscategoryanalysisdetailedView %}
+            {% if isCatView_allStores %}
+                <li>
+                    <a href="{% url 'reports:salesReportsView' report_type="categoryanalysisdetailed" second_style=0 %}">
+                        Show HO only
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{% url 'reports:salesReportsView' report_type="categoryanalysisdetailed" second_style=2 %}">
+                        Show all Stores
+                    </a>
+                </li>
+            {% endif %}
+        {% else %}
+            {% if isCatView_allStores %}
+                <li>
+                    <a href="{% url 'reports:salesReportsView' report_type="categoryanalysis" second_style=0 %}">
+                        Show HO only
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{% url 'reports:salesReportsView' report_type="categoryanalysis" second_style=2 %}">
+                        Show all Stores
+                    </a>
+                </li>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endif %}
+
+

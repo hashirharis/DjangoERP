@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Book stock In/Out{% endblock %}
+
+{% block content %}
+
+<div id="content-header">
+
+{% block header%}
+
+    <h1>Book Stock <small>In/Out</small></h1>
+
+{% endblock %}
+
+</div>
+
+<div id="breadcrumb">
+
+    {% block breadcrumbs%}
+
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'stock:dashboard' %}"><i class="glyphicon glyphicon-gift"></i>Stock</a>
+    <a href="#" class="supress"><i class="glyphicon glyphicon-th-list"></i><strong>Book Stock In/Out</strong></a>
+
+    {% endblock %}
+
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-gift"></i>
+                        </span>
+                        <h5>Create a stock movement</h5>
+                    </div>
+                    <div class="widget-content">
+                        <form method="POST" class="form-horizontal">
+                            <div class="row">
+                                <div class="col-12">
+                                    {% load crispy_forms_tags %}
+                                    {% crispy form %}
+                                    <div class="form-actions" style="text-align: right">
+                                      <button type="submit" class="btn btn-primary btn-large">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+</form>
+
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ STATIC_URL }}js/unicorn.form_common.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $( "#id_product" ).select2({
+                placeholder: "Search for a product",
+                minimumInputLength: 2,
+                ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+                    url: "{% url 'core:searchProductsAjax' %}",
+                    dataType: 'json',
+                    data: function (term, page) {
+                        return {
+                            q: term,
+                            format: 'stocktake'
+                        };
+                    },
+                    results: function (data, page) { // parse the results into the format expected by Select2.
+                        // since we are using custom formatting functions we do not need to alter remote JSON data
+                        return {results: data};
+                    }
+                },
+                initSelection: function(element, callback) {
+                    // the input tag has a value attribute preloaded that points to a preselected movie's id
+                    // this function resolves that id attribute to an object that select2 can render
+                    // using its formatResult renderer - that way the movie name is shown preselected
+                    var id=$(element).val();
+                    if (id!=="") {
+                        $.ajax("{% url 'core:searchProductsAjax' %}", {
+                            data: {
+                                productID: id,
+                                format: 'stocktake'
+                            },
+                            dataType: "json"
+                        }).done(function(data) { callback(data[0]); });
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

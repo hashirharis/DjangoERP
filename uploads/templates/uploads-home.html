@@ -1,0 +1,214 @@
+{%extends "base.html"%}
+
+{% load br %}
+
+{% block title %} Uploads {% endblock %}
+
+{%block content%}
+
+    {% if store.displayHOMenu %}
+
+        {% for i in modelslist %}
+            <div id="{{i}}" class="hidden_models">
+            </div>
+        {%endfor%}
+
+        {% block contentHeader %}
+
+            {% if not hasPK %}
+                <div class="row">
+                    <div id="content-header">
+                        {% include "uploads/content-header-without-pk.html" %}
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    {% include "uploads/body-without-pk.html" %}
+                </div>
+            {% else %}
+                <div class="row">
+                    <div id="content-header">
+                        {% include "uploads/content-header-with-pk.html" %}
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    {% include "uploads/body-with-pk.html" %}
+                </div>
+            {% endif %}
+
+        {% endblock %}
+
+    {% endif %}
+
+{% endblock %}
+
+{% block javascript %}
+
+<script>
+    window.onload=function(){
+        <!--products-->
+        {% if invalidModelIsNull %}
+            alert("Input Error Row {{ invalidModelIsNullRow }} (Model number can not be NULL): " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidCategoryIsNull %}
+            alert("Input Error Row {{ invalidCategoryIsNullRow }} (Category can not be NULL): " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidTradePriceIsNull %}
+            alert("Input Error Row {{ invalidTradePriceIsNullRow }} (Trade Price can not be NULL): " +
+                    "Please edit your csv and upload again!")
+        {% elif listConfusedEANExists %}
+            alert("EAN Error Row {{ EANExistsRow }} : You are confused! EAN already exists, " +
+                    "please edit your upload csv and upload it again.")
+        {% elif not writeupIsValid and uploadType == "writeups" %}
+            alert("Input Error: You are trying to add a model number that doesn't exist in the system, " +
+                    "please edit your csv and upload again!")
+        {% elif not catalogueIsValid and uploadType == "catalogue" %}
+            alert("Input Error: You are trying to add a model number that doesn't exist in the system, " +
+                    "please edit your csv and upload again!")
+        {% elif CSVUploadDoesNotExist %}
+            alert("Input Error: You have used a model number that doesn't exist, " +
+                    "please edit your csv and upload again!")
+        {% elif listOfBlankEANS %}
+            alert("EAN Error Row {{ listOfBlankEANSRow }} : You are trying to change a valid EAN to blank , " +
+                    "please edit your csv and upload again!")
+        {% elif fileNameSyntaxError %}
+            alert("File Name Error: Your file name has incorrect syntax.  It must start with either products, " +
+                    "writeups, or catalogue, followed by an underscore or space.  E.g. products_sony_winter_upload.csv")
+        {% elif invalidTradePrice %}
+            alert("Input Error (trade price): it must be a digit.  " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidGoPrice %}
+            alert("Input Error (go price): it must be a digit.  " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidSuggestedSell %}
+            alert("Input Error (invalid suggested sell price): it must be a digit.  " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidBrand %}
+            alert("Input Error (invalid brand): it must be a digit and between the current range of stores.  " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidCategory %}
+            alert("Input Error (invalid category): it must be a digit and between 1 and {{ invalidCategoryMax }}.  " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidPackSize %}
+            alert("Input Error (invalid pack size): it must be a digit and greater than zero.  " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidIsCore %}
+            alert("Input Error (invalid isCore value): it must be either true or false.  " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidEANIsNull %}
+            alert("Input Error (invalid EAN value): it must not be null.  " +
+                    "Please edit your csv and upload again!")
+        <!--writeups-->
+        {% elif invalidWriteupModelDoesNotExist %}
+            alert("Input Error Row: {{ invalidWriteupModelDoesNotExistRow }} (Invalid Model - Does Not Exist): " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidNameIsNull %}
+            alert("Input Error Row: {{ invalidNameIsNullRow }} (Name can not be NULL): " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidShortDescIsNull %}
+            alert("Input Error Row: {{ invalidShortDescIsNullRow }} (Short Desc can not be NULL): " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidWebDescIsNull %}
+            alert("Input Error Row: {{ invalidWebDescIsNullRow }} (Web Desc can not be NULL): " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidProdSpecIsNull %}
+            alert("Input Error Row: {{ invalidProdSpecIsNullRow }} (Product Spec can not be NULL): " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidManWarrIsNull %}
+            alert("Input Error Row: {{ invalidManWarrIsNullRow }} (Manual Warr can not be NULL): " +
+                    "Please edit your csv and upload again!")
+        <!--catalogues-->
+        {% elif invalidCatPrice %}
+            alert("Input Error Row {{ invalidCatPriceRow }} (Invalid Price): it must be a number  " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidCatModelDoesNotExist %}
+            alert("Input Error Row: {{ invalidCatModelDoesNotExistRow }} (Invalid Model - Does Not Exist): " +
+                    "Please edit your csv and upload again!")
+        {% elif invalidStartDateFormat %}
+            alert("Input Error (Invalid date format for Start Date): The first line of the upload must contain a Start Date.  Please edit your csv and upload again!")
+        {% elif invalidEndDateFormat %}
+            alert("Input Error (Invalid date format for End Date): The first line of the upload must contain a End Date.  Please edit your csv and upload again!")
+        <!--metadata error-->
+        {% elif invalidFirstLine %}
+            alert("Input Error (Invalid first line of upload file): The first row of the upload file must be empty and the " +
+                    "first cell should contain the word of either 1)products, 2)catalogue or 3)writeups.  " +
+                    "Please edit your csv and upload again!")
+        <!--others-->
+        {% elif products and hasPK %}
+            {% ifequal first_page 1 %} alert("Congratulations!  Review the results first and then click SAVE " +
+                    "to save the upload to disk!") {% endifequal %}
+        {% endif %}
+    };
+</script>
+
+<script>
+    function saveUpload(){
+        if(confirm("Are you ready to save this upload to disk?")){
+            $.ajax({
+                url: '{% url 'uploads:WriteOrDeleteUploadIfInvalid' pk 1 %}',
+                type: 'get',
+                success: function(data) {
+                    alert("Products successfully saved!");
+                },
+                failure: function(data) {
+                    alert('Error saving products!');
+                }
+            });
+        }
+    }
+
+    $(document).ready(function(){
+        var arr = []
+        $('.hidden_models').each(function(j, obj2) {
+            arr.push(obj2.id)
+        });
+        $('.supersedeCheckbox').each(function(i, obj) {
+        var id = obj.id.replace("_check","")
+        if(isInArray(id,arr))
+            obj.checked = true
+        });
+        $('.supersedeCheckbox').change(function() {
+            if(this.checked){
+                window.location =" {%url "uploads:add_to_session" %}"+$(this).attr('id').replace("_check","")+"/"+{{uploadId}};
+            }
+            else{
+                window.location =" {%url "uploads:remove_from_session" %}"+$(this).attr('id').replace("_check","")+"/"+{{uploadId}};
+            }
+        });
+    });
+
+    function isInArray(value, array) {
+        return array.indexOf(value) > -1;
+    }
+
+</script>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

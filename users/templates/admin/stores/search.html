@@ -1,0 +1,141 @@
+{% extends "base-crud.html" %}
+{% block title %}Product Tags Search{% endblock %}
+
+{% block content %}
+    <div id="content-header">
+        <h1>Stores <small>Search</small></h1>
+        <div class="btn-group">
+            <!-- <a class="addEntity btn btn-large tip-bottom" title="Add Staff"><i class="glyphicon glyphicon-plus"></i> Add Store</a> -->
+        </div>
+    </div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="{% url 'admin:listStaff' %}" class="tip-bottom" data-original-title="View all Employees"><i class="glyphicon glyphicon-user"></i> Employees Admin</a>
+        <a href="{% url 'admin:searchStores' %}" class="tip-bottom" data-original-title="View all Stores"><i class="glyphicon glyphicon-map-marker"></i> Stores</a>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </span>
+                        <h5>Search</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="row">
+                            <div class="col-12">
+                                <form method="GET">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="q" placeholder="Search the Store Name or Code here." value="{{ q }}">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary">Search!</button>
+                                        </span>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                        <h5>Results</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div id="resultsDiv">
+                            {% if object_list %}
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>Purchase Limit</th>
+                                        <th>Extended Credit</th>
+                                        <th>Current Debt</th>
+                                        <th>IRP Invoices</th>
+                                        <th>Purchases (not invoiced)</th>
+                                        <th>Open To Buy</th>
+                                        <th>Edit</th>
+                                        <th>Payments</th>
+                                    </thead>
+                                    <tbody>
+                                    {% for object in object_list %}
+                                        <tr>
+                                            <td>{{ object.code }}</td>
+                                            <td>{{ object.name }}</td>
+                                            <td>{{ object.purchaseLimit }}</td>
+                                            <td>{{ object.extendedCreditTotals }}</td>
+                                            <td>{{ object.currentDebt }}</td>
+                                            <td>{{ object.irpInvoices }}</td>
+                                            <td>{{ object.notInvoiced }}</td>
+                                            <td>{{ object.openToBuy }}</td>
+                                            <td>
+                                                {% load br %}
+                                                <a class="btn btn-primary editEntityItem" data-id="{{ object.id }}"><i class="glyphicon glyphicon-pencil"></i> Store</a>
+                                                <a class="btn btn-primary updateOpenToBuy" data-id="{{ object.id }}"><i class="glyphicon glyphicon-pencil"></i> Purchase Limits</a>
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-primary addPayment" data-id="{{ object.id }}"><i class="glyphicon glyphicon-plus-sign"></i> Add</a>
+                                                {% if object.storepayment_set.all %}
+                                                <a class="btn btn-primary listPayment" data-id="{{ object.id }}"><i class="glyphicon glyphicon-list"></i> List</a>
+                                                <a class="btn btn-primary revertLastPayment" data-id="{{ object.id }}"><i class="glyphicon glyphicon-refresh"></i> Revert Last</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <ul class="pagination alternate pull-right">
+                                    {% for x in paginator.page_range %}
+                                        <li{% if page_obj.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>Failed to return results.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+{{ block.super }}
+<script>
+ $(document).ready(function() {
+    search.addEntity("Payments",{
+        prepend: "",
+        html: "Payment",
+        human: "Payment"
+    });
+
+    search.addUpdate("Entities",{
+        button: $('.updateOpenToBuy'),
+        url:'{% url 'admin:updateFinancials' 1 %}'
+    });
+
+    search.addUpdate("Payments",{
+        button: $('.addPayment'),
+        url:'{% url 'b2b:createStorePayment' 1 %}'
+    });
+
+    search.addRead("Payments",{
+        button: $('.listPayment'),
+        url:'{% url "b2b:viewStorePayments" 1 %}'
+    });
+
+    search.addDelete("Payments",{
+        button: $('.revertLastPayment'),
+        url:'{% url "b2b:revertLastPayment" 1 %}'
+    });
+
+
+ });
+</script>
+{% endblock %}

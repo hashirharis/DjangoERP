@@ -1,0 +1,30 @@
+{% ifequal uploadType "catalogue"%}
+    <table class="table table-bordered">
+        <tr>
+            <th>
+                Model
+            </th>
+            <th>
+                Cat Price
+            </th>
+            <th>
+                Comment
+            </th>
+            <th>
+                Price Ticket Image URL
+            </th>
+        </tr>
+        {% for i in rowsFromUpload%}
+            <tr>
+                <td>
+                    {{ i.model }}
+                </td>
+                <td>${% filter floatformat:2 %}{{ i.price }}{% endfilter %}</td>
+                <td>{{i.comment}}</td>
+                <td>{{i.price_ticket_image_URL}}</td>
+            </tr>
+        {% endfor%}
+     </table>
+{%endifequal%}
+
+

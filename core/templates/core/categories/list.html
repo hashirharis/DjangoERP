@@ -1,0 +1,170 @@
+{% extends "base-crud.html" %}
+
+{% load br %}
+{% block css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jqtree.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.contextMenu.css">
+{% endblock %}
+
+{% block title %}Product Categories - List{% endblock %}
+
+{% block content %}
+    <div id="content-header">
+    <h1> Categories <small> List </small></h1>
+        <div class="btn-group">
+            <a class="addEntity btn btn-large tip-bottom supress" data-toggle="modal" title="Add Category"><i class="glyphicon glyphicon-plus"></i></a>
+        </div>
+    </div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href=""><i class="glyphicon glyphicon-list-alt"></i> Categories</a>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                        <h5>Categories - right click to edit/delete</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div id="resultsDiv">
+                        {% if object_list %}
+                            <div id="HiddenButtonDiv">
+                                {% for category in allCategories %}
+                                    {% if store|canEdit:category %}
+                                    <a href="#" id="cat_{{ category.id }}" class="editEntityItem hidden" data-id="{{ category.id }}"></a>
+                                    <a href="#" id="cat_{{ category.id }}" class="deleteEntityItem hidden" data-id="{{ category.id }}"></a>
+                                    <a href="#" id="cat_{{ category.id }}" class="updateCategoryMarkups hidden" data-id="{{ category.id }}"></a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div id="categoryTree"></div>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}js/tree.jquery.js"></script>
+<script src="{{ STATIC_URL }}js/jquery.contextMenu.js" type="text/javascript"></script>
+<script>
+$(function() {
+    /** fill the data arary up to a level of 4 **/
+    var data = [
+        {% for child in object_list %}
+            {
+                label: '{{ child.name }}',
+                id: {{ child.id }}
+                {% if store|getChildren:child|length %},
+                children: [
+                    {% for child in store|getChildren:child %}
+                        {
+                        label: '{{ child.name }}',
+                        id: {{ child.id }}
+                        {% if store|getChildren:child|length %},
+                        children: [
+                                {% for child in store|getChildren:child %}
+                                    {
+                                    label: '{{ child.name }}',
+                                    id: {{ child.id }}
+                                    {% if store|getChildren:child|length %},
+                                    children: [
+                                            {% for child in store|getChildren:child %}
+                                                {
+                                                    label: '{{ child.name }}',
+                                                    id: {{ child.id }}
+                                                }
+                                                {% if not forloop.last %},{% endif %}
+                                            {% endfor %}
+                                        ]
+                                    {% endif %}
+                                    }
+                                    {% if not forloop.last %},{% endif %}
+                                {% endfor %}
+                            ]
+                        {% endif %}
+                        }
+                        {% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ]
+                {% endif %}
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    var jqTree = $('#categoryTree');
+    var jqTreeContainer = $('#resultsDiv');
+
+    jqTree.tree({
+        data: data,
+        closedIcon: '+',
+        openedIcon: '-'
+    });
+
+    $.contextMenu({
+        selector: '#resultsDiv',
+        trigger: 'none',
+        build: function($trigger, e) {
+            // this callback is executed every time the menu is to be shown
+            // its results are destroyed every time the menu is hidden
+            // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
+            return {
+                determinePosition: function($menu, x, y) {
+                    $menu.css('display', 'block')
+                    .position({ my: "left top", at: "left bottom", of: $(jqTree.data('context-node-element')), offset: "0 0"})
+                    .css('display', 'none');
+                },
+                callback: function(key, options) {
+                    var item = [];
+                    if(key=="edit") {
+                       item  = $('#cat_'+jqTree.data('context-id')+'.editEntityItem');
+                    } else if (key=="delete") {
+                        item = $('#cat_'+jqTree.data('context-id')+'.deleteEntityItem');
+                    } else if(key=="markups") {
+                        item = $('#cat_'+jqTree.data('context-id')+'.updateCategoryMarkups');
+                    }
+                    else {
+                        return;
+                    }
+                    if (item.length) {item.click();}
+                    else {alert("You can not edit/delete this category because it is a Head Office Category.")}
+                },
+                items: {
+                    "edit": {name: "Edit", icon: "edit"},
+                    "delete": {name: "Delete", icon: "delete"},
+                    "markups": {name: "Markups", icon: "markups"}
+                }
+            };
+        }
+    });
+
+    jqTree.bind('tree.contextmenu',
+    function(event) {
+        jqTree.data('context-id', event.node.id);
+        jqTree.data('context-node-element', event.node.element);
+        jqTreeContainer.contextMenu();
+    });
+
+    search.addEntity("Markups",{
+        prepend: "",
+        html: "Markups",
+        human: "Markups"
+    });
+
+    search.addUpdate("Markups",{
+        button: $('.updateCategoryMarkups'),
+        url:'{% url 'core:updateProductCategoryMarkup' 1 %}'
+    });
+
+});
+</script>
+{% endblock %}

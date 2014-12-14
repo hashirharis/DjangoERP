@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+
+    <title>Customer Account Payment Receipt</title>
+
+    <link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/invoice-thermalstyle.css' />
+    <style type="text/css" media="print">
+        #hiderow,
+        .delete {
+          display: none;
+        }
+    </style>
+
+</head>
+
+<body onload="window.print()">
+
+<div id="page-wrap">
+
+    <div id="identity">
+        <div id="address">
+            <h5>{{ store.name }}</h5>
+            <h3>{{ store.franchise }}</h3>
+            {{ store.htmlFormattedAddress|safe }}
+        </div>
+    </div>
+
+    <div style="clear:both"></div>
+
+    <div id="orderType">** Account Payment **</div>
+
+    <div id="customer">
+        <div id="customer-title"><h3>Customer:</h3>{{ customer.firstName }} {{ customer.lastName }}<br />{{ customer.htmlFormattedAddress|safe }}</div>
+    </div>
+
+    <div style="clear:both;height:20px;"></div>
+
+    <table id="items">
+
+        <tbody>
+        <tr>
+            <td class="blank"> </td>
+            <td class="total-line">Account Total</td>
+            <td class="total-value"><div id="total">${{ snapshot.accountTotal|floatformat:2 }}</div></td>
+        </tr>
+        <tr>
+            <td class="blank"> </td>
+            <td class="total-line">Paid to Date</td>
+            <td class="total-value">${{ snapshot.paidToDate|floatformat:2 }}</td>
+        </tr>
+        <tr class="strong">
+            <td class="blank"> </td>
+            <td class="total-line">Balance Due: </td>
+            <td class="total-value">${{ snapshot.balanceDue|floatformat:2 }}</td>
+        </tr>
+        <tr class="strong">
+            <td class="blank"> </td>
+            <td class="total-line">Payments Today: </td>
+            <td class="total-value"></td>
+        </tr>
+
+        {% for payment in payments %}
+            <tr>
+            <td></td>
+            <td>{{ payment.paymentMethod.name }}</td>
+            <td>${{ payment.amount|floatformat:2 }}</td>
+            </tr>
+        {% endfor %}
+
+        <tr>
+            <td class="blank"> </td>
+            <td class="total-line balance">Balance C/Fwd</td>
+            <td class="total-value balance"><div class="due">${{ snapshot.balanceCarried|floatformat:2 }}</div></td>
+        </tr>
+        </tbody>
+    </table>
+    <br />
+    <br />
+</div>
+
+</body>
+
+</html>

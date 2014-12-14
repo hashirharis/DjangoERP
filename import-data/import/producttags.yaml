@@ -1,0 +1,15 @@
+- fields: {tag: 'Model Discount', type: 'Deal', group: 1, store: 12, isShared: true }
+  model: core.producttag
+  pk: 1
+- fields: {tag: 'Model Bonus', type: 'Deal', group: 1, store: 12, isShared: true }
+  model: core.producttag
+  pk: 2
+- fields: {tag: 'Percent Bonus', type: 'Deal', group: 1, store: 12, isShared: true }
+  model: core.producttag
+  pk: 3
+- fields: {tag: 'Vendor Bonus', type: 'Deal', group: 1, store: 12, isShared: true }
+  model: core.producttag
+  pk: 4
+- fields: {tag: 'Sell Through', type: 'Deal', group: 1, store: 12, isShared: true }
+  model: core.producttag
+  pk: 5

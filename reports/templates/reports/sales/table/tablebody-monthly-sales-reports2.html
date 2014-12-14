@@ -1,0 +1,65 @@
+{% load reportTags %}
+
+{% for obj in objects %}
+
+    <tr>
+        <td>{{ obj.month }}</td>
+        <td>{{ obj.released }}</td>
+        <td>${% filter floatformat:2 %}{{ obj.gp }}{% endfilter %}</td>
+        <td>{% filter floatformat:2 %}{{ obj.gpPerc }}{% endfilter %}%</td>
+        <td>{{ obj.income }}</td>
+        <td>{{ obj.accounts }}</td>
+    </tr>
+
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

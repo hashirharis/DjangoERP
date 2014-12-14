@@ -1,0 +1,173 @@
+
+
+	<div id="breadcrumb">
+		<a href="{%url 'home'%}" title="" class="tip-bottom" data-original-title="Go to Home"><i class="fa fa-home"></i></i><span class="glyphicon glyphicon-home"></span> Home</a>
+		<a href="#" class="current"><i class="glyphicon glyphicon-flag"></i>Ranging Home</a>
+	</div>
+	<br>
+<style>
+
+</style>
+    <div class="col-12">
+        <div class="widget-box">
+                <div class="widget-title">
+                    <h5>Stores</h5>
+                    {% if can_edit %}
+                    <div class="buttons">
+                         <a class="btn btn-mini" href='{% url "core_stock:editRange"%}'> <span class="glyphicon glyphicon-eye-open"></span> View Product Ranges</a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="widget-content">
+                    {% if no_ranges %}
+                        You have not been added to a range yet.  Please contact Head Office to be added to either Gold, Silver or Bronze
+                    {%else%}
+                    <div class="row">
+                        <div class="col-12">
+
+                        <div class="col-lg-4 col-sm-12">
+                            <div class="widget-box">
+                                <div class="widget-title">
+                                    <h5 style="width:100%; background-color: gold; color:black;">Gold</h5>
+
+                                </div>
+                                <div class="widget-content">
+                                    <div style="overflow:auto">
+                                        <table class="table table-bordered table-hover" style="background-color: lightgoldenrodyellow;">
+                                            <tr >
+                                                {% if can_edit %}
+                                                <th style="width:40px">
+                                                    Delete
+                                                </th>
+                                                <th style="width:40px">
+                                                    Edit
+                                                </th>
+                                                {%endif%}
+                                                <th>
+                                                    Store
+                                                </th>
+
+
+                                            </tr>
+                                            {% for i in stores_gold %}
+                                            <tr>
+                                                {% if can_edit %}
+                                                <td>
+                                                    <a href="{%url 'core_stock:deletestorerange' pk=i.id%}"><span class="glyphicon glyphicon-remove"></span></a>
+                                                </td>
+                                                <td>
+                                                    <a href="{%url 'core_stock:updatestock' pk=i.id%}"><span class="glyphicon glyphicon-edit"></span></a>
+                                                </td>
+                                                {%endif%}
+                                                <td>
+                                                    <a href="{%url 'core_stock:storedetail' pk=i.id%}">{{i.store.name}}</a>
+                                                </td>
+
+                                            </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-12">
+                        <div class="widget-box">
+                            <div class="widget-title">
+                                 <h5 style="width:100%; background-color: silver; color:black;">Silver</h5>
+                            </div>
+                            <div class="widget-content">
+                                <div style="overflow:auto">
+                                    <table class="table table-bordered"  style="background-color:#F6F6F6;">
+                                        <tr>
+                                            {% if can_edit %}
+                                                <th style="width:40px">
+                                                    Delete
+                                                </th>
+                                                <th style="width:40px">
+                                                    Edit
+                                                </th>
+                                            {%endif%}
+                                            <th>
+                                                Store
+                                            </th>
+
+
+                                        </tr>
+                                        {% for i in stores_silver %}
+                                        <tr>
+                                            {%if can_edit%}
+                                            <td>
+                                                <a href="{%url 'core_stock:deletestorerange' pk=i.id%}"><span class="glyphicon glyphicon-remove"></span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{%url 'core_stock:updatestock' pk=i.id%}"><span class="glyphicon glyphicon-edit"></span></a>
+                                            </td>
+                                            {% endif %}
+                                            <td>
+                                                <a href="{%url 'core_stock:storedetail' pk=i.id%}">{{i.store.name}}</a>
+                                            </td>
+
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                        <div class="col-lg-4 col-sm-12">
+                        <div class="widget-box">
+                            <div class="widget-title" id="bronze_title" >
+                                <h5 style="width:100%; background-color: #DFCE59; color:black;">Bronze</h5>
+                            </div>
+                            <div class="widget-content">
+                                <div style="overflow:auto">
+                                    <table class="table table-bordered" style="background-color:#FFE8BD">
+                                        <tr>
+                                            {% if can_edit %}
+                                            <th style="width:40px">
+                                                Delete
+                                            </th>
+                                            <th style="width:40px">
+                                                Edit
+                                            </th>
+                                            {% endif %}
+                                            <th>
+                                                Store
+                                            </th>
+
+
+                                        </tr>
+                                        {% for i in stores_bronze %}
+                                        <tr>
+                                            {% if can_edit %}
+                                            <td>
+                                                <a href="{%url 'core_stock:deletestorerange' pk=i.id%}"><span class="glyphicon glyphicon-remove"></span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{%url 'core_stock:updatestock' pk=i.id%}"><span class="glyphicon glyphicon-edit"></span></a>
+                                            </td>
+                                            {%endif%}
+                                            <td>
+                                                <a href="{%url 'core_stock:storedetail' pk=i.id%}">{{i.store.name}}</a>
+                                            </td>
+
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                        </div>
+                    </div>
+                    {%endif%}
+                </div>
+
+        </div>
+
+    </div>
+
+
+            <br>

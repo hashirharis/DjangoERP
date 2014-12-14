@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Store Employees{% endblock %}
+
+{% block content %}
+<div id="content-header">
+    <h1>Admin and Settings <small></small></h1>
+    <div class="btn-group">
+        <a class="addEntity btn btn-large tip-bottom" title="Add Staff"><i class="glyphicon glyphicon-plus"></i> Add Staff</a>
+        <a class="btn btn-large tip-bottom" title="Settings" href="{% url 'admin:adminSettings' %}"><i class="glyphicon glyphicon-cog"></i> Store Settings</a>
+        {% if store.displayHOMenu %}
+        <a class="btn btn-large tip-bottom" title="Settings" href="{% url 'admin:searchStores' %}"><i class="glyphicon glyphicon-map-marker"></i> Stores</a>
+        {% endif %}
+    </div>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'admin:listStaff' %}" class="tip-bottom" data-original-title="View all Employees"><i class="glyphicon glyphicon-user"></i> Admin</a>
+    <a class="current">View</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-title">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-user"></i>
+                </span>
+                    <h5>Employees</h5>
+                </div>
+                <div class="widget-content nopadding">
+                {% if staff_list %}
+                    <table class="table table-bordered data-table dataTable">
+                        <thead>
+                        <th>Username</th>
+                        <th>Name</th>
+                        <th>Privilege Level</th>
+                        <th>Actions</th>
+                        </thead>
+                        {% for staff in staff_list %}
+                            <tr {% if not staff.privelegeLevel %}class="error" {% endif %} >
+                                <td>{{ staff.name }}</td>
+                                <td>{{ staff.username }} {% if not staff.privelegeLevel %}(DISABLED){% endif %}</td>
+                                <td>{{ staff.privelegeLevel }}</td>
+                                <td>
+                                    <a class="btn editEntityItem" data-id="{{ staff.id }}"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
+                                    <a class="btn deleteEntityItem" data-id="{{ staff.id }}"><i class="glyphicon glyphicon-remove"></i> Disable</a>
+                                    <a class="btn editEntityItemPassword" data-id="{{ staff.id }}"><i class="glyphicon glyphicon-repeat"></i> Reset Password</a>
+                                    <!--<a class="btn viewEntityItem" data-id="{{ staff.id }}"><i class="glyphicon glyphicon-eye-open"></i> View</a>-->
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% else %}
+                    <p>No staff are available.</p>
+                {% endif %}
+                </div>
+            </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.maskedinput.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/templating" id="createForm">
+        <div class="row">
+            <div class="col-12">
+                <form method="post" id="createEntityForm" action="{% url 'admin:createStaff' %}" class="form-horizontal">
+                    {% csrf_token %}
+                    {% load crispy_forms_tags %}
+                    {{ form|crispy }}
+                </form>
+            </div>
+        </div>
+    </script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        $('.data-table').dataTable({
+            "bJQueryUI": true,
+            "sPaginationType": "full_numbers",
+            "sDom": '<""l>t<"F"fp>'
+        });
+
+        var search = br.search({
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            csrfToken:"{% csrf_token %}"
+        });
+
+        search.addEntity("Entities",{
+            prepend: "",
+            html: "Staff",
+            human: "Staff"
+        });
+
+        search.addCreate("Entities",{
+            form: $('#createForm').html(),
+            button: $('.addEntity')
+        });
+
+        search.addDelete("Entities",{
+            button: $('.deleteEntityItem'),
+            url:'{% url 'admin:deleteStaff' 1 %}'
+        });
+
+        search.addUpdate("Entities",{
+            button: $('.editEntityItem'),
+            url:'{% url 'admin:updateStaff' 1 %}'
+        });
+
+        search.addUpdate("Entities",{
+            button: $('.editEntityItemPassword'),
+            url:'{% url 'admin:updateStaffPassword' 1 %}'
+        });
+
+    });
+    </script>
+{% endblock %}

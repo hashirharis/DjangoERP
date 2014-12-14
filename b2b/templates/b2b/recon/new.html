@@ -1,0 +1,124 @@
+{% extends "b2b/recon/base.html" %}
+{% block title %}New Reconciliation{% endblock %}
+{% block content %}
+{% load br %}
+{{ block.super }}
+<div id="content-header">
+    <h1>New Reconciliation</h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+     <a href="{% url 'b2b:HOInvoicingHome' %}"><i class="glyphicon glyphicon-list-alt"></i><strong>Invoicing</strong></a>
+    <a href="{% url 'b2b:reconHome' %}"><i class="glyphicon glyphicon-list-alt"></i><strong>Reconciliation</strong></a>
+    <a href="#" class="supress"><i class="glyphicon glyphicon-th-list"></i><strong>New</strong></a>
+</div>
+
+<div class="row">
+   <div class="col-12">
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#collapseTwo" data-toggle="collapse">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-book"></i>
+                </span>
+                    <h5>Reconciliation Parameters</h5>
+                </a>
+            </div>
+            <div class="collapse in" id="collapseTwo">
+                <div class="widget-content">
+                    <form class="form-horizontal">
+                        <!-- select for distributor -->
+                         <div class="control-group">
+                            <label class="control-label" for="invoiceDate">Distributor</label>
+                            <div class="controls">
+                                <select name="distributor" id="distributor">
+                                    {% for distributor in distributors %}
+                                        <option value="{{ distributor.name }}">{{ distributor.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <!-- date picker for start and end dates
+                        <div class="control-group">
+                            <label class="control-label" for="invoiceDate">Start Date</label>
+                            <div class="controls">
+                                <input type="text" id="startDate" placeholder="dd/mm/yyyy">
+                            </div>
+                        </div>-->
+                        <div class="control-group">
+                            <label class="control-label" for="invoiceDate">End Date</label>
+                            <div class="controls">
+                                <input type="text" id="endDate" placeholder="dd/mm/yyyy">
+                            </div>
+                        </div>
+                        <!-- input box for total -->
+                        <div class="control-group">
+                            <label class="control-label" for="invoiceDate">Total</label>
+                            <div class="controls">
+                                <input type="text" id="statementTotal" placeholder="Statement Total">
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row">
+                        <div class="col-10">
+                            <div class="form-actions" style="text-align: right">
+                                <button id="searchInvoices" data-loading-text="Searching..." class="btn btn-large btn-info">Search Invoices</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12" style="text-align: center;">
+        <ul class="stat-boxes">
+            <li>
+                <span id="txt_statementTotal"><strong>$ 0</strong></span>
+                Statement Total
+            </li>
+            <li>
+                <span id="txt_selectedTotal"><strong>$ 0</strong></span>
+                Selected Total
+            </li>
+            <li>
+                <span id="txt_difference"><strong>$ 0</strong></span>
+                Difference
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-12">
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#collapseTwo" data-toggle="collapse">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-barcode"></i>
+                </span>
+                    <h5>Invoices</h5>
+                </a>
+            </div>
+            <div class="collapse in" id="collapseTwo">
+                 <div class="widget-content invoicesDiv nopadding" style="max-height:500px;overflow: scroll;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-12">
+        <div class="widget-box">
+            <div class="widget-content">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-actions" style="text-align: right">
+                            <button id="processModel" data-loading-text="Processing..." class="btn btn-large btn-success">Complete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

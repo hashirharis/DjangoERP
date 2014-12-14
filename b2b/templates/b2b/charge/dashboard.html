@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Charges Dashboard{% endblock %}
+
+{% block content %}
+{% load humanize %}
+<div id="content-header">
+    <h1> Charges <small> Dashboard </small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'b2b:HOInvoicingHome' %}"><i class="glyphicon glyphicon-list-alt"></i><strong>Invoicing</strong></a>
+    <a href="{% url 'b2b:chargesHome' %}"><i class="glyphicon glyphicon-list-alt"></i><strong>Charge</strong></a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 center" style="text-align: center;">
+            <ul class="quick-actions">
+                <li>
+                    <a href="{% url 'b2b:newCharge' %}" class="tip-bottom" data-original-title="New Charge">
+                        <i class="icon-survey"></i>
+                        New
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'b2b:searchCharges' %}" class="tip-bottom" data-original-title="View All Charges completed previously">
+                        <i class="icon-cabinet"></i>
+                        Archived
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseTwo" data-toggle="collapse">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-time"></i>
+                        </span>
+                        <h5>Recently Completed Reconciliations</h5>
+                        <span class="label label-success">{{ completed|length }}</span>
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseTwo">
+                    <div class="widget-content">
+                        {% if completed %}
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Charge Date</th>
+                                        <th>Store</th>
+                                        <th>Created by</th>
+                                        <th>Charge Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for charge in completed %}
+                                    <tr>
+                                        <td>{{ charge.chargeDate|date:'d M Y' }}</td>
+                                        <td>{{ charge.store.name }}</td>
+                                        <td>{{ charge.createdBy.name }} <small>{{ charge.created|naturaltime }}</small></td>
+                                        <td>$ {{ charge.totalInvoices }}</td>
+                                        <td>
+                                            <a class="btn btn-primary" href="{% url 'b2b:printStoreChargeSheet' charge.id %}"><i class="glyphicon glyphicon-print"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                        <p>There are no completed recons.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

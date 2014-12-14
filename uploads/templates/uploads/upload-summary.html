@@ -1,0 +1,69 @@
+{% load br %}
+
+<div class="col-12">
+    <div class="widget-box collapsible">
+        <div class="widget-title">
+            <a href="#collapseThree" data-toggle="collapse">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-chevron-up"></i>
+                </span>
+                <h5>
+                    {% if not writeupIsValid and uploadType == "writeups" %}
+                        These items do not exist, please edit your csv upload and re-upload it!
+                    {% elif not catalogueIsValid and uploadType == "catalogue" %}
+                        These items do not exist, please edit your csv upload and re-upload it!
+                    {% elif listConfusedEANExists and uploadType == "products" %}
+                        EAN already exists, please edit your csv upload and re-upload it!
+                    {% elif EANBlankError and uploadType == "products" %}
+                        Blank EAN Error, please edit your csv upload and re-upload it!
+                    {% elif invalidTradePrice %}
+                        Invalid Trade Price
+                    {% elif invalidGoPrice %}
+                        Invalid Go Price
+                    {% elif invalidSuggestedSell %}
+                        Invalid Suggested Sell Price
+                    {% elif invalidBrand %}
+                        Invalid Brand
+                    {% elif invalidCategory %}
+                        Invalid Category
+                    {% elif invalidPackSize %}
+                        Invalid Pack Size
+                    {% elif invalidIsCore %}
+                        Invalid Is Core value
+                    {% else %}
+                        {% if hasPK %}
+                            {% if not products %}
+                                Upload saved to disk ---
+                            {% endif %}
+                            Upload Name: {{x|getName:uploadId}}
+                            {% if uploadType == 'catalogue' %}
+                                --- Id.{{x|getId:uploadId}}
+                                --- (valid {{ metaData.start_date }} to {{ metaData.end_date }}).
+                                --- Created on {{x|getCreationDate:uploadId}} (Bris time)
+                                --- {{ metaData.general_comment }}.
+                            {% elif uploadType == 'writeups' %}
+                                --- Id.{{x|getId:uploadId}}
+                                --- Created on {{x|getCreationDate:uploadId}} (Bris time)
+                            {% elif uploadType == 'products' %}
+                                --- Id.{{x|getId:uploadId}}
+                                --- Created on {{x|getCreationDate:uploadId}} (Bris time)
+                                --- Brand: {{ None|getBrandName:metaData.brand }}.
+                            {%  endif %}
+                        {% else %}
+                        {% endif %}
+                    {% endif %}
+                </h5>
+            </a>
+        </div>
+        <div class="collapse in" id="collapseThree">
+            <div class="widget-content">
+                {% include "uploads/summary-writeup.html" %}
+                {% include "uploads/summary-catalogue.html" %}
+                {% include "uploads/summary-products.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,22 @@
+
+
+
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-body">
+	<form method="post" id="edit_form" class="form-horizontal" role="form">{% csrf_token %}
+		{{form.non_field_errors}}
+			<div class="form-group">
+			{{form.as_p}}
+	
+	</div>
+<input type="submit" value="Submit" class="form-control btn btn-primary">
+
+
+</form>
+
+
+</div>
+</div>
+</div>
+

@@ -1,0 +1,23 @@
+<div class="btn-group">
+	<a href="#addEntity"class="addEntity btn btn-large tip-bottom supress" data-toggle="modal" title="" data-original-title="Add Customer"><i class="glyphicon glyphicon-plus"></i></a>
+</div>
+<div id="addEntity" class="modal fade" aria-hidden="false" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button data-dismiss="modal" class="close" type="button">×</button>
+                <h3>Add New Store Range</h3>
+            </div>
+            <div class="modal-body">
+                <form method="post" class="form-horizontal" role="form">{% csrf_token %}
+                    {{form.non_field_errors}}
+                     <div class="form-group">
+                        {{form.as_p}}
+                        <img src="{{ STATIC_URL }}js/jquery.keybind.js">
+                    </div>
+                    <input type="submit" value="Submit" class="form-control btn btn-primary">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

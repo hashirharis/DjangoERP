@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+
+    <title>Sale {{ sale.code }} Invoice</title>
+
+    <link rel='stylesheet' type='text/css' href='{{ STATIC_URL }}css/invoice-A4style.css' />
+    <style type="text/css" media="print">
+        #hiderow,
+        .delete {
+          display: none;
+        }
+    </style>
+
+</head>
+
+<body onload="window.print()">
+
+<div id="page-wrap">
+
+    <div id="header">PURCHASE ORDER</div>
+
+    <div id="identity">
+
+        <div id="address"><strong>Store Details</strong>:<br />{{ etOrder.stockOrder.store.franchise }}<br /> {{ etOrder.stockOrder.store.name }} <br />{{ etOrder.stockOrder.store.htmlFormattedAddress|safe }}</div>
+
+        <div id="logo">
+            <img id="image" style="max-width: 540px; max-height: 100px;" src="{{ STATIC_URL }}img/logo.jpg" alt="logo" />
+        </div>
+
+    </div>
+
+    <div style="clear:both"></div>
+
+    <div id="customer">
+
+        <div id="customer-title"><strong>From Supplier: </strong>:<br />{{ etOrder.stockOrder.supplier }}<br /> ({{ etOrder.stockOrder.supplier.GLN }})
+            {% if etOrder.is_dd %}
+                <br />
+                <br />
+                <strong>Direct Deliver To: </strong><br />
+                {{ etOrder.ddName }} <br />
+                {{ etOrder.ddAddress1 }} <br />
+                {{ etOrder.ddAddress2 }} <br />
+                {{ etOrder.ddSuburb }} / {{ etOrder.ddState }} {{ etOrder.ddPostcode }} <br />
+                {{ etOrder.ddPhone }} <br />
+                {{ etOrder.ddEmail }}
+            {% endif %}
+        </div>
+
+        <table id="meta">
+            <tr>
+                <td class="meta-head">Order Origin</td>
+                <td>{{ etOrder.stockOrder.orderedBy.store }}</td>
+            </tr>
+            <tr>
+                <td class="meta-head">Reference</td>
+                <td>{{ etOrder.stockOrder.reference }}</td>
+            </tr>
+            <tr>
+                <td class="meta-head">Created</td>
+                <td>{{ etOrder.stockOrder.created|date:"d F, Y (h:i a)" }}</td>
+            </tr>
+            <tr>
+                <td class="meta-head">Date Required</td>
+                <td>{{ etOrder.dateRequired|date:"d F, Y" }}</td>
+            </tr>
+            <tr>
+                <td class="meta-head">Cancel If not Delivered By: </td>
+                <td>{{ etOrder.cancelOrderDate|date:"d F, Y" }}</td>
+            </tr>
+            <tr>
+                <td class="meta-head">Delivery Before: </td>
+                <td>{{ etOrder.deliveryWindowEnd|date:"d F, Y" }}</td>
+            </tr>
+            <tr>
+                <td class="meta-head">Delivery Before: </td>
+                <td>{{ etOrder.deliveryWindowStart|date:"d F, Y" }}</td>
+            </tr>
+        </table>
+
+    </div>
+
+    <table id="items">
+
+        <tr>
+            <th>Model</th>
+            <th>EAN</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Unit Price(Ex)</th>
+            <th>Amount(Ex)</th>
+        </tr>
+
+        {% for orderLine in orderLines %}
+
+            <tr class="item-row">
+                <td class="item-name"><div class="delete-wpr">{{ orderLine.item.model }}</div></td>
+                <td>{{ orderLine.item.EAN }}</td>
+                <td class="description">{{ orderLine.item.name }}</td>
+                <td>{{ orderLine.quantity }}</td>
+                <td>${{ orderLine.invoiceActual|floatformat:2 }}</td>
+                <td><span class="price">${{ orderLine.totalLineInvoice|floatformat:2 }}</span></td>
+            </tr>
+
+        {% endfor %}
+
+        <tr>
+            <td colspan="4" class="subtotalBlank"></td>
+            <td class="total-line">Totals Ex GST</td>
+            <td class="total-value"><div id="subtotal">${{ etOrder.stockOrder.orderTotalInvoiceExGST|floatformat:2 }}</div></td>
+        </tr>
+
+        <tr>
+            <td colspan="4" class="blank"></td>
+            <td class="total-line">GST Amount</td>
+            <td class="total-value"><div id="gst">${{ etOrder.stockOrder.orderTotalGST|floatformat:2 }}</div></td>
+        </tr>
+
+        <tr>
+
+            <td colspan="4" class="blank"> </td>
+            <td class="total-line">Total Inc GST</td>
+            <td class="total-value"><div id="total">${{ etOrder.stockOrder.orderTotalInvoiceInGST|floatformat:2 }}</div></td>
+        </tr>
+
+    </table>
+
+    <div id="terms">
+        <h5>Comments</h5>
+        {{ etOrder.stockOrder.comment }}
+    </div>
+</div>
+
+</body>
+
+</html>

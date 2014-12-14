@@ -1,0 +1,46 @@
+{% extends "stock_range_base.html" %}
+
+
+{%block upper_area%}
+        {%endblock%}
+
+{%block table_area%}
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-body">
+            <form method="post" id="edit_form" class="form-horizontal" role="form">{% csrf_token %}
+                {{form.non_field_errors}}
+                <div class="form-group">
+                    {{form.as_p}}
+                </div>
+
+                {% if object.product%}
+                    <a href="{%url 'core_stock:deleteproductrange' pk=object.id%}"><div class="form-control btn btn-primary">Delete</div></a><br><br>
+                    <a href="{%url 'core_stock:editRange'%}"><div class="form-control btn btn-primary">Cancel</div></a>
+
+                {% else %}
+                    <a href="{%url 'core_stock:stock_range'%}"><div class="form-control btn btn-primary">Cancel</div></a>
+                 {% endif %}
+                 <br>
+                <br>
+                <input type="submit" value="Submit" class="form-control btn btn-primary">
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{%endblock%}
+
+{%block javascript%}
+    <link rel="stylesheet" media="all" href="{{ STATIC_URL }}css/MonthPicker.2.1.css" />
+    <script type="text/javascript" src="{{ STATIC_URL }}js/MonthPicker.2.1.min.js"></script>
+    <script type="text/javascript" language="javascript">
+    options = {
+        pattern: 'MM/yyyy', // Default is 'mm/yyyy' and separator char is not mandatory
+        format:'MM/yyyy',
+        ShowIcon:false
+    };
+        $('#monthpicker').MonthPicker(options);
+        </script>
+{%endblock%}

@@ -1,0 +1,63 @@
+{% load reportTags %}
+
+{% if isJsb1 %}
+    {% for obj in objects %}
+        <tr>
+            <td>{{ obj.model }}</td>
+            <td>{{ obj.status }}</td>
+        </tr>
+    {% endfor %}
+{% elif isJsb2 %}
+    {% for obj in objects %}
+        <tr>
+            <td>{{ obj.product }}</td>
+            <td>{{ obj.brand }}</td>
+            <td>{{ obj.category }}</td>
+            <td>{{ obj.name }}</td>
+            <td>${% filter floatformat:2 %}{{ obj.webPrice }}{% endfilter %}</td>
+            <td>{{ obj.shortDesc }}</td>
+            <td>{{ obj.webDesc }}</td>
+            <td>{{ obj.specifications }}</td>
+            <td>{{ obj.manWarranty }}</td>
+            <td>${% filter floatformat:2 %}{{ obj.catPrice }}{% endfilter %}</td>
+            <td>{{ obj.catStartDate }}</td>
+            <td>{{ obj.catEndDate }}</td>
+        </tr>
+    {% endfor %}
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

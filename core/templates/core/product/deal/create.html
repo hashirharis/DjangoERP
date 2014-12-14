@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Create a Deal{% endblock %}
+
+{% block content %}
+
+<div id="content-header">
+    <h1>Deal <small>Create</small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'core:searchProducts' %}" class="tip-bottom" data-original-title="Search for Products"><i class="glyphicon glyphicon-barcode"></i>Products</a>
+    <a href="{% url 'core:viewProduct' product.id %}" class="tip-bottom" data-original-title="View {{ product.model }}"><i class="glyphicon glyphicon-gift"></i>{{ product.model }}</a>
+    <a href="" class="current"><i class="glyphicon glyphicon-star"></i> Deal</a>
+    <a href="" class="current">Create</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+            <div class="col-lg-3"></div>
+            <div class="col-12 col-lg-6">
+                <div class="widget-box">
+                    <div class="widget-title">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-gift"></i>
+                        </span>
+                        <h5>Create Deal</h5>
+                    </div>
+                    <div class="widget-content">
+                        <form method="POST" class="form-horizontal">
+                            <div class="row">
+                                <div class="col-12">
+                                    {% load crispy_forms_tags %}
+                                    {% crispy form %}
+                                    <div class="form-actions" style="text-align: right">
+                                      <button type="submit" class="btn btn-primary btn-large">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+    <script src="{{ STATIC_URL }}js/unicorn.form_common.js"></script>
+    <script type="text/javascript">
+        $('#id_startDate').datepicker();
+        $('#id_endDate').datepicker();
+
+        $(document).ready(function(e) {
+
+            $('#id_type').on("change", function(e) {
+                update_select(e.val);
+            });
+
+            var update_select = function(val) {
+                console.log(val);
+                if(val=="OI") {
+                    $('#id_percent').iCheck('uncheck');
+                    $('#id_percent').iCheck('disable');
+                } else {
+                    $('#id_percent').iCheck('enable');
+                }
+            };
+            update_select($('#id_type').select2('val'));
+        });
+    </script>
+{% endblock %}

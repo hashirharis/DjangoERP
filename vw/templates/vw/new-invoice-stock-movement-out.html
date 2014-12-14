@@ -1,0 +1,33 @@
+{% extends "vw/new-invoice-stock-movement-in.html" %}
+
+    {% block heading %}
+
+        <div id="content-header">
+            {% if invoice %}
+                <h1> Virtual Warehouse | Edit | <small>  Invoice: {{ invoice.invoiceNumber }}</small> | Stock OUT</h1>
+            {% else %}
+                <h1> Release <small>Stock from Virtual Warehouse</small> </h1>
+            {% endif %}
+        </div>
+
+    {% endblock %}
+
+    {% block selectStore %}
+
+        <select id="selectStore">
+        {% for store in stores %}
+            <option value="{{ store.id }}">{{ store.name }}</option>
+        {% endfor %}
+        </select>
+
+    {% endblock %}
+
+    {% block completeHOInvoice %}
+
+    {% if invoice %}
+        <a id="completeHOInvoice" class="btn btn-large btn-info isMovementOUT">Confirm Invoice</a>
+    {% else %}
+        <a id="completeHOInvoice" class="btn btn-large btn-info isMovementOUT">Create Invoice</a>
+    {% endif %}
+
+    {% endblock %}

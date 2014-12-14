@@ -1,0 +1,16 @@
+{% if object_list %}
+    <table class="table table-bordered table-hover">
+        <thead>
+        <th>Date</th>
+        <th>Amount</th>
+        </thead>
+        {% for payment in object_list %}
+            <tr>
+                <td>{{ payment.paymentDate|date:"d/m/Y" }}</td>
+                <td>${{ payment.paymentAmount|floatformat:2 }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No Customers Found !</p>
+{% endif %}

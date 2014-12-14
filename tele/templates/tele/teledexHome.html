@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Contacts Dashboard{% endblock %}
+
+{% block content %}
+
+    {% block header %}
+        <div id="content-header">
+            <h1> Contacts <small> Dashboard</small></h1>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-12 center" style="text-align: center;">
+                <ul class="quick-actions">
+                    <li>
+                        <a href="{% url 'tele:storeLookup' %}" class="tip-bottom" data-original-title="Search for Stores">
+                            <i class="icon-home"></i>
+                            Stores
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'tele:brandLookup' %}" class="tip-bottom" data-original-title="Search for Brands">
+                            <i class="icon-tag"></i>
+                            Brands
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'tele:localContactLookup' %}" class="tip-bottom" data-original-title="Search for Contacts">
+                            <i class="icon-book"></i>
+                            Local Contacts
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'tele:headOfficeContactLookup' %}" class="tip-bottom" data-original-title="Search for Contacts">
+                            <i class="icon-survey"></i>
+                            Head Office Contacts
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    {% endblock %}
+
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

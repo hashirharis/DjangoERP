@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Dashboard{% endblock %}
+
+{% block content %}
+
+    <div id="content-header">
+        <h1>Dashboard</h1>
+    </div>
+
+    <div id="breadcrumb">
+        <a href="#" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="#" class="current">Dashboard</a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-12 center" style="text-align: center;">
+            <ul class="quick-actions">
+
+                <li>
+                    <a href="{% url 'core:searchProducts' %}" data-module="Sale" class="tip-bottom" data-original-title="Product/Catalog Search">
+                        <i class="icon-search"></i>
+                        Search
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'pos:home' %}" data-module="Sale" class="tip-bottom" data-original-title="Point of Sale">
+                        <i class="icon-shopping-bag"></i>
+                        Sales
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'stock:dashboard' %}" data-module="Stock" class="tip-bottom" data-original-title="Stock Order/ Amendments">
+                        <i class="icon-wallet"></i>
+                        Stock
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin:listStaff' %}" data-module="Admin" class="tip-bottom" data-original-title="Add/Edit Staff and Settings">
+                        <i class="icon-lock"></i>
+                        Admin
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'reports:home' %}" class="tip-bottom" data-original-title="Reports and Reporting Tools" data-module="Admin">
+                        <i class="icon-graph"></i>
+                        Reports
+                    </a>
+                </li>
+                 <li>
+                    <a href="{% url 'tele:home' %}" class="tip-bottom" data-original-title="Contacts">
+                        <i class="icon-web"></i>
+                        Contacts
+                    </a>
+                </li>
+                {% if not staff %}
+                <li>
+                    <a href="{% url 'home' %}" class="tip-bottom" data-module="Sale" data-original-title="Log In">
+                        <i class="icon-user"></i>
+                        Log In
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+{% endblock %}
+
+{%  block javascript %}
+    <script src="{{ STATIC_URL }}js/unicorn.dashboard.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.flot.min.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.flot.resize.min.js"></script>
+{%  endblock %}

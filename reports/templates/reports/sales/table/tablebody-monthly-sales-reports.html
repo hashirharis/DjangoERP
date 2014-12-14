@@ -1,0 +1,65 @@
+{% load reportTags %}
+
+{% for obj in objects %}
+
+    <tr>
+        <td>{{ obj.monthLast }}</td>
+        <td>{{ obj.releasedLast }}</td>
+        <td>${% filter floatformat:2 %}{{ obj.gpLast }}{% endfilter %}</td>
+        <td>{% filter floatformat:2 %}{{ obj.gpPercLast }}{% endfilter %}%</td>
+        <td>{{ obj.incomeLast }}</td>
+        <td>{{ obj.accountsLast }}</td>
+    </tr>
+
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

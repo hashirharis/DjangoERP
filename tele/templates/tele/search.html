@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+    {% if storeSearch %}
+        Store Search
+    {% elif contactSearch %}
+        Local Contacts
+    {% elif brandSearch %}
+        Brand Search
+{#    {% elif supplierSearch %}#}
+{#        Supplier Search#}
+    {% elif headOfficeContactSearch %}
+        Head Office Contacts
+    {% else %}
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+    {% block header %}
+
+        <div id="content-header">
+            {% if storeSearch %}
+                <h1> Store <small> Search</small></h1>
+            {% elif brandSearch %}
+                <h1> Brand <small> Search</small></h1>
+{#            {% elif supplierSearch %}#}
+{#                <h1> Supplier <small> Search</small></h1>#}
+            {% elif contactSearch %}
+                <h1> Contacts <small>Local</small></h1>
+                <div class="btn-group">
+                    <a href="{% url 'tele:createLocalContact' %}" class="btn btn-large tip-bottom" data-toggle="modal"
+                       title="Add Contact"><i class="glyphicon glyphicon-plus"></i> Add local contact</a>
+                </div>
+            {% elif headOfficeContactSearch %}
+                <h1> Contacts <small>Head Office</small></h1>
+                <div class="btn-group">
+                    {% if store.displayHOMenu %}
+                    <a href="{% url 'tele:createLocalContact' %}" class="btn btn-large tip-bottom" data-toggle="modal"
+                       title="Add Local Contact"><i class="glyphicon glyphicon-plus"></i> Add local contact</a>
+                    <a href="{% url 'tele:createHeadOfficeContact' %}" class="btn btn-large tip-bottom" data-toggle="modal"
+                       title="Add Head Office Contact"><i class="glyphicon glyphicon-plus"></i> Add Head Office contact</a>
+                    {% else %}
+                    {% endif %}
+                </div>
+            {% else %}
+            {% endif %}
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 col-12 center" style="text-align: center;">
+                <ul class="quick-actions">
+                    <li>
+                        <a href="{% url 'tele:storeLookup' %}" class="tip-bottom" data-original-title="Search for Stores">
+                            <i class="icon-home"></i>
+                            Stores
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'tele:brandLookup' %}" class="tip-bottom" data-original-title="Search for Brands">
+                            <i class="icon-tag"></i>
+                            Brands
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'tele:localContactLookup' %}" class="tip-bottom" data-original-title="Search for Local Contacts">
+                            <i class="icon-book"></i>
+                            Local Contacts
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'tele:headOfficeContactLookup' %}" class="tip-bottom" data-original-title="Search for Head Office Contacts">
+                            <i class="icon-survey"></i>
+                            Head Office Contacts
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="breadcrumb">
+            <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home dashboard"><i class="glyphicon glyphicon-home"></i> Home</a>
+            <a href="{% url 'tele:home' %}" class="tip-bottom" data-original-title="Go to Contacts dashboard"><i class="glyphicon glyphicon-book"></i> Contacts</a>
+            {% if storeSearch %}
+                <a href="" class="tip-bottom" data-original-title="Store search"><i class="glyphicon glyphicon-picture"></i>Stores</a>
+            {% elif brandSearch %}
+                <a href="" class="tip-bottom" data-original-title="Brand search"><i class="glyphicon glyphicon-tag"></i>Brands</a>
+{#            {% elif supplierSearch %}#}
+{#                <a href="" class="tip-bottom" data-original-title="Supplier search"><i class="glyphicon glyphicon-tag"></i>Suppliers</a>#}
+            {% elif contactSearch %}
+                <a href="" class="tip-bottom" data-original-title="Local Contact search"><i class="glyphicon glyphicon-user"></i>Local Contacts</a>
+            {% elif headOfficeContactSearch %}
+                <a href="" class="tip-bottom" data-original-title="Head Office Contact search"><i class="glyphicon glyphicon-user"></i>Head Office Contacts</a>
+            {% else %}
+            {% endif %}
+        </div>
+    {% endblock %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </span>
+                        <h5>Search</h5>
+                    </div>
+                    <div class="widget-content">
+                        <form action="
+                            {% block formaction %}
+                                {% if storeSearch %}
+                                    {% url 'tele:storeLookup' %}
+                                {% elif brandSearch %}
+                                    {% url 'tele:brandLookup' %}
+                                {% elif contactSearch %}
+                                    {% url 'tele:localContactLookup' %}
+                                {% else %}
+                                {% endif %}
+                            {% endblock %}" method="GET">
+                            <div class="row">
+                                <div class="col-lg-8 col-12">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="q"
+                                               placeholder="Search here." value="{{ params.q }}">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary">Search!</button>
+                                        </span>
+                                    </div>
+                                </div>
+                                {% if brandSearch %}
+                                    <div class="col-12 hidden-lg" style="height:20px;"></div>
+                                    <div class="col-lg-2 col-12">
+                                        <input type="checkbox" value="Individual Account" name="individualAccount"/> Individual Purchasers
+                                    </div>
+                                    <div class="col-12 hidden-lg" style="height:20px;"></div>
+                                    <div class="col-lg-2 col-12">
+                                        <input type="checkbox" value="Head Office Preferred" name="headOfficePreferred"/> Head Office Preferred
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon">
+                    <i class="glyphicon glyphicon-list-alt"></i>
+                </span>
+                <h5>Results</h5>
+            </div>
+            <div class="widget-content">
+                <div id="resultsDiv">
+                    <table class="table table-bordered table-hover">
+                        {% if storeSearch %}
+                            {% include "tele/store/searchResultsTable.html" %}
+                        {% elif brandSearch %}
+                            {% include "tele/brand/searchResultsTable.html" %}
+                        {% elif contactSearch %}
+                            {% include "tele/localContact/searchResultsTable.html" %}
+                        {% elif headOfficeContactSearch %}
+                            {% include "tele/headOfficeContact/searchResultsTable.html" %}
+                        {% else %}
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/unicorn.form_common.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            if (_.contains(individualAccount,'Individual Account')) {
+                $('input[value=IndividualAccount]').iCheck('check');
+            }
+            if (_.contains(headOfficePreferred,'Head Office Preferred')) {
+                $('input[value=HeadOfficePreferred]').iCheck('check');
+            }
+        });
+    </script>
+{% endblock %}
+
+{##}
+{#       var search = br.search({#}
+{#            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",#}
+{#            csrfToken:"{% csrf_token %}"#}
+{#        });#}
+{##}
+{#        search.submitPage = function() {#}
+{#            window.location.reload();#}
+{#        };#}
+{##}
+{#        search.addEntity("Deal",{#}
+{#            prepend: "",#}
+{#            html: "Deal",#}
+{#            human: "Deal"#}
+{#        });#}
+{##}
+{#        search.addDelete("TeledexContact",{#}
+{#            button: $('.deleteTeledexContact'),#}
+{#            url:'{% url 'tele:deleteLocalContact' 1 %}'#}
+{#        });#}

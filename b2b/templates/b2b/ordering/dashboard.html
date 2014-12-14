@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Order Dashboard{% endblock %}
+
+{% block content %}
+{% load humanize %}
+<div id="content-header">
+    <h1> Stock Order <small> Dashboard </small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'stock:dashboard' %}"><i class="glyphicon glyphicon-gift"></i>Stock</a>
+    <a href="" class="supress"><i class="glyphicon glyphicon-list-alt"></i><strong>Stock Orders</strong></a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 center" style="text-align: center;">
+            <ul class="quick-actions">
+                <li>
+                    <a href="{% url 'b2b:newStockOrder' %}" class="tip-bottom" data-original-title="New Stock Order">
+                        <i class="icon-survey"></i>
+                        New
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'b2b:searchStockOrder' 'COMPLETED' %}" class="tip-bottom" data-original-title="View All Stock Orders completed previously">
+                        <i class="icon-cabinet"></i>
+                        Archived
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-8">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseOne" data-toggle="collapse">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-time"></i>
+                        </span>
+                        <h5>Pending Orders</h5>
+                        <span class="label label-warning">{{ pending|length }}</span>
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseOne">
+                    <div class="widget-content">
+                        {% if pending %}
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Reference</th>
+                                        <th>Created</th>
+                                        <th>Created by</th>
+                                        <th>ET</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for order in pending %}
+                                    <tr>
+                                        <td>{{ order.reference }}</td>
+                                        <td>{{ order.created|naturaltime }}</td>
+                                        <td>{{ order.orderedBy.name }}</td>
+                                        <td>{% if order.is_et %}Y{% else %}N{% endif %}</td>
+                                        <td>
+                                            <a class="btn btn-primary" href="{% url 'b2b:openOrder' order.id %}"><i class="glyphicon glyphicon-pencil"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                        <p>There are no pending Orders.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="widget-box">
+                <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-file"></i>
+                    </span>
+                    <h5>Saved Orders</h5>
+                    <span class="label label-info">{{ saved|length }}</span>
+                </div>
+                <div class="collapse in" id="collapseOne">
+                    <div class="widget-content">
+                        {% if saved %}
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Reference</th>
+                                        <th>Created</th>
+                                        <th>Created by</th>
+                                        <th>ET</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for order in saved %}
+                                    <tr>
+                                        <td>{{ order.reference }}</td>
+                                        <td>{{ order.created|naturaltime }}</td>
+                                        <td>{{ order.orderedBy.name }}</td>
+                                        <td>{% if order.is_et %}Y{% else %}N{% endif %}</td>
+                                        <td>
+                                            <a class="btn btn-primary" href="{% url 'b2b:openOrder' order.id %}"><i class="glyphicon glyphicon-pencil"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                        <p>There are no pending Orders.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseTwo" data-toggle="collapse">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-time"></i>
+                        </span>
+                        <h5>Recently Completed Orders</h5>
+                        <span class="label label-success">{{ completed|length }}</span>
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseTwo">
+                    <div class="widget-content">
+                        {% if completed %}
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Reference</th>
+                                        <th>Modified</th>
+                                        <th>Created by</th>
+                                        <th>ET</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for order in completed %}
+                                    <tr>
+                                        <td>{{ order.reference }}</td>
+                                        <td>{{ order.modified|naturaltime }}</td>
+                                        <td>{{ order.orderedBy.name }}</td>
+                                        <td>{% if order.is_et %}Y{% else %}N{% endif %}</td>
+                                        <td>
+                                            <a class="btn btn-primary" href="{% url 'b2b:openOrder' order.id %}"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                        <p>There are no completed Claims.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% load reportTags %}
+
+{% for salesLine in objects %}
+    <tr>
+        <td>{{ salesLine.salesPerson }}</td>
+        <td>{{ salesLine.date }}</td>
+        <td>{{ salesLine.sale }}</td>
+        <td>{{ salesLine.invoice }}</td>
+        <td>{{ salesLine.warranty }}</td>
+        <td>{{ salesLine.for }}</td>
+        <td>${% filter floatformat:2 %}{{ salesLine.price }}{% endfilter %}</td>  <!--sell inc-->
+    </tr>
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

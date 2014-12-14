@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Store/Franchise Products{% endblock %}
+
+{% block content %}
+
+    <div id="content-header">
+        <h1> End of Day <small> Terminal Closure</small></h1>
+    </div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="{% url 'pos:home' %}" class="tip-bottom" data-original-title="POS Home"><i class="glyphicon glyphicon-list-alt"></i>Dashboard</a>
+        <a href="#"><i class="glyphicon glyphicon-th-list"></i>EOD</a>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box widget-plain">
+                <div class="widget-content center">
+                    <ul class="stats-plain">
+                        <li>
+                            <h4><a class="btn btn-primary supress" href="#">{{ startDate }}</a></h4>
+                        </li>
+                        <li>
+                            <h4>-</h4>
+                        </li>
+                        <li>
+                            <h4><a class="btn btn-primary supress" href="#">{{ endDate }}</a></h4>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box widget-plain">
+                <div class="widget-content center">
+                    <ul class="stats-plain">
+                        {% for total in totals %}
+                        <li>
+                            <h4>${{ total.total|floatformat:2 }}</h4>
+                            <span>{{ total.name }}</span>
+                        </li>
+                        {% endfor %}
+                        <li>
+                            <h4>${{ completeTotal|floatformat:2 }}</h4>
+                            <span>Total</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-8">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-tasks"></i>
+                    </span>
+                        <h5>Totals</h5>
+                    </div>
+                    <div class="widget-content">
+                        <h4>Totals</h4>
+                        <table class="counts table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Payment Type</th>
+                                <th>Till Count</th>
+                                <th>Computer</th>
+                                <th>Difference</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for total in totals %}
+                                <tr id="{{ total.id }}">
+                                    <td>{{ total.name }}</td>
+                                    <td><input type="number" class="count" value="{{ total.total }}" /></td>
+                                    <td class="compVal">{{ total.total }}</td>
+                                    <td><span class="difference"></span></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <div style="clear:both;"></div>
+                        <h4>Comment<small> Must be added if till does not balance</small></h4>
+                        <textarea id="eodComment" rows="5" style="width:100%">​</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                        <h5>Log</h5>
+                    </div>
+                    <div class="widget-content">
+                        <span class="uneditable-input" style="height:450px;overflow-y: scroll;overflow-x: hidden;">
+                            {% for log in paymentLogs %}
+                                Invoice Num: {{ log.InvoiceNum }} <br />
+                                Received By: {{ log.ReceivedBy }} <br />
+                                Payment Amount: ${{ log.PaymentAmount|floatformat:2 }} <br />
+                                Payed with: {{ log.PaymentMethod }} <br />
+                                Date/Time: {{ log.DateTime }} <br />
+                            {% endfor %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-content">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-actions" style="text-align: right">
+                                    <a id="completeEOD" href="#" data-toggle="modal" class="supress btn btn-large btn-info">Balance</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/underscore.js"></script>
+    <script type="text/javascript">
+
+
+        $(document).ready(function() {
+
+            $('.count').change(function(evt){
+                var numberinput = $(this);
+                var thisval = parseFloat(numberinput.val())
+                var computerval = parseFloat(numberinput.closest("tr").find(".compVal").text());
+                var difference = thisval-computerval;
+                numberinput.closest("tr").find(".difference").text("$" + difference);
+            });
+
+            function hasDifference() {
+                //returns whether any of the totals don't balance
+                var trigger = false;
+                $.each($('.difference'),function(k,v) {
+                    var boxVal = parseFloat($(v).text().substring(1));
+                    if (boxVal > 0 || boxVal <0) {
+                        trigger = true;
+                        return false;
+                    }
+                });
+                return trigger;
+            };
+
+            $('.supress').click(function(e) {
+                e.preventDefault();
+            });
+
+            $('#completeEOD').click(function(e)  {
+                if (!validateEOD()) { return; }
+                var encodedEOD = encodeEOD();
+                if(encodedEOD.total >0||encodedEOD.total<0) {
+                    postEOD(encodedEOD);
+                }
+                else {
+                    alert("The totals are zero, this is a purposeless End Of Day!")
+                }
+            });
+
+            function postEOD(encodedEOD) {
+                var request = $.ajax({
+                    url: "{% url 'pos:saveEOD' terminal.id %}",
+                    type: "POST",
+                    data: {EODData : JSON.stringify(encodedEOD)},
+                    dataType: "json",
+                    beforeSend: function(xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", br.getCookie('csrftoken'));
+                    }
+                });
+
+                request.done(function(msg) {
+                    window.location = "{% url 'pos:home' %}";
+                });
+            }
+
+            function encodeEOD() {
+                var TerminalCounts = [];
+                var totalTotal = 0.00;
+                var totalCount = 0.00;
+                var totalDifference = 0.00;
+
+                $.each($('.count'),function(k,v) {
+                    var payment_id = $(v).closest("tr").attr('id');
+                    var count = parseFloat($(v).val());
+                    totalCount += count;
+                    TerminalCounts[k] = {id:payment_id,count:count};
+                });
+
+                $.each($('.compVal'),function(k,v) {
+                    var datFloat = parseFloat($(v).text());
+                    TerminalCounts[k]['total'] = datFloat;
+                    totalTotal += datFloat;
+                });
+
+                $.each($('.difference'),function(k,v) {
+                    var datFloat = parseFloat($(v).text().substring(1));
+                    if (_.isNumber(datFloat)&& !_.isNaN(datFloat)) {
+                        TerminalCounts[k]['difference'] = datFloat;
+                        totalDifference += datFloat;
+                        console.log(datFloat);
+                    }
+                    else{
+                        TerminalCounts[k]['difference'] = 0.00
+                    }
+                });
+
+                var status = "BALANCED";
+                if (hasDifference()) { status = "NOBALANCED";}
+
+                var EODData = {
+                    TerminalCounts: TerminalCounts,
+                    startDate : "{{ startDate|date:"c" }}",
+                    status : status,
+                    comment : $('#eodComment').val(),
+                    total: totalTotal,
+                    count: totalCount,
+                    difference: totalDifference
+                }
+                return EODData;
+            }
+
+            function validateEOD() {
+                if (hasDifference()) {
+                    if ($('#eodComment').val().trim().length==0) {
+                        alert("Please enter a comment if the counts do not match the totals!");
+                        return false;
+                    }
+                }
+                return true;
+            }
+        });
+
+    </script>
+{% endblock %}

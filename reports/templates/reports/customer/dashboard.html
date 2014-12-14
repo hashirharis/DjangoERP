@@ -1,0 +1,44 @@
+<ul class="quick-actions">
+    <li>
+        <a href="{% url 'reports:customerReportsView' report_type="onlySales" report_class="customer" %}" class="tip-bottom" data-original-title="">
+            <i class="icon-graph"></i>
+            Only customers with sales
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'reports:customerReportsView' report_type="all" report_class="customer" %}" class="tip-bottom" data-original-title="">
+            <i class="icon-graph"></i>
+            All Customers
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'reports:customerReportsView' report_type="email" report_class="customer" %}" class="tip-bottom" data-original-title="">
+            <i class="icon-graph"></i>
+            Only customers with email
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'reports:customerReportsView' report_type="birthdays" report_class="customer" %}" class="tip-bottom" data-original-title="">
+            <i class="icon-graph"></i>
+            Customer Birthdays
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'reports:customerReportsView' report_type="orders" report_class="customer" %}" class="tip-bottom" data-original-title="">
+            <i class="icon-graph"></i>
+            Customer Orders
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'reports:customerReportsView' report_type="attendance" report_class="customer" %}" class="tip-bottom" data-original-title="">
+            <i class="icon-graph"></i>
+            Customer Attendance
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'reports:customerReportsView' report_type="new" report_class="customer" %}" class="tip-bottom" data-original-title="">
+            <i class="icon-graph"></i>
+            New Customers
+        </a>
+    </li>
+</ul>

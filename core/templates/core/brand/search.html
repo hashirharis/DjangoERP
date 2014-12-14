@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Store/Franchise Brands{% endblock %}
+
+{% block content %}
+
+<div id="content-header">
+    <h1> Brands <small> Search </small></h1>
+    <div class="btn-group">
+        <a href="{% url 'core:createBrand' %}" class="btn btn-large tip-bottom" data-toggle="modal" title="Add Brand"><i class="glyphicon glyphicon-plus"></i> Create</a>
+    </div>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-barcode"></i> Pricebook</a>
+    <a href="" class="tip-bottom current" data-original-title="Search for Brands"><i class="glyphicon glyphicon-search"></i> Brand</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </span>
+                    <h5>Search</h5>
+                </div>
+                <div class="widget-content">
+                    <div class="row">
+                        <div class="col-12">
+                            <form method="GET">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="q" placeholder="Search the Brand Name or Distributor." value="{{ q }}">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary">Search!</button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                    <h5>Results</h5>
+                </div>
+                <div class="widget-content">
+                    <div id="resultsDiv">
+                        {% if object_list %}
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <th>Brand</th>
+                                <th>Distributor</th>
+                                <th>Actions</th>
+                                </thead>
+                                <tbody>
+                                {% for object in object_list %}
+                                    <tr>
+                                        <td>{{ object.brand|title }}</td>
+                                        <td>{{ object.distributor|title }}</td>
+                                        <td>
+                                            <a class="btn btn-primary" href="{% url 'core:viewBrand' object.id %}"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                            {% load br %}
+                                            {% if store|canEdit:object %}
+                                                <a class="btn btn-primary" href="{% url 'core:updateBrand' object.id %}"><i class="glyphicon glyphicon-pencil"></i></a>
+                                                <a class="btn btn-primary deleteBrand" data-id="{{ object.id }}"><i class="glyphicon glyphicon-remove"></i></a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <ul class="pagination alternate pull-right">
+                                {% for x in paginator.page_range %}
+                                    <li{% if page_obj.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>Failed to return results.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+
+            var search = br.search({
+                ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+                csrfToken:"{% csrf_token %}"
+            });
+
+            search.addEntity("Entities",{
+                prepend: "",
+                html: "Entity",
+                human: "Products"
+            });
+
+            search.addQuerySet("Entities",{
+                name:'All',
+                prepend:"",
+                parameters: {
+                    q: '{{ q }}',
+                    page: '{{ page_obj.number }}'
+                }
+            });
+
+            search.addDelete("Entities",{
+                button: $('.deleteBrand'),
+                url:'{% url 'core:deleteBrand' 1 %}'
+            });
+
+            search.addPagination("Entities","All",'page',$('#resultsDiv'));
+
+        });
+    </script>
+{% endblock %}

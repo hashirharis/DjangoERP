@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block javascript %}
+<script type="text/javascript" src="http://cdn.datatables.net/1.10.0/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.maskedinput.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.modalsearch.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.profitmargincalculator.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.linestable.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.recon.js"></script>
+<script type="text/template" id="ReconLineRowTemplate">
+<tr class="item">
+    <td><input name="<%= values.id %>" type="checkbox" <%= values.selected ? 'checked' : '' %> /></td>
+    <td><%= values.id %></td>
+    <td><%= values.invoiceNum %></td>
+    <td><%= values.invoiceDate %></td>
+    <td><%= values.store %></td>
+    <td><%= values.orderNum %></td>
+    <td><%= values.debit %></td>
+    <td><%= values.credit %></td>
+    <td><%= values.balance %></td>
+    <td><%= values.extCredit %></td>
+    <td><%= values.dueDate %></td>
+    <td>
+        <% if (values.selected) { %>
+        <textarea class="commentText"><%= values.comment %></textarea>
+        <% } else { %>
+        <span class="commentText"><%= values.comment %></span>
+        <% } %>
+    </td>
+</tr>
+</script>
+<script type="text/javascript">
+    var reconModel = br.reconModel();
+    $(document).ready(function() {
+        $('#distributor').select2();
+
+        reconModel.saveURL = "{% url 'b2b:saveRecon' %}";
+
+        //tables
+        var reconLinesTable = br.lineTableWidget({
+            totals: [
+                {title: 'x',key :"x",value: 0.00}
+            ],
+            headers: [
+                {title: "", key:'checked'},
+                {title: "ID",key: 'id'},
+                {title: "Invoice Number", key: 'invoiceNum'},
+                {title: "invoiceDate", key: 'invoiceDate'},
+                {title: "Store", key: 'store'},
+                {title: "Order Reference", key: 'orderNum'},
+                {title: "Debit", key: 'debit'},
+                {title: "Credit", key: 'credit'},
+                {title: "Balance", key: 'balance'},
+                {title: "Ext Credit", key: 'extCredit'},
+                {title: "Due Date", key: 'dueDate'},
+                {title: "Comment", key: 'comment'}
+            ],
+            emptyText: "No Invoices Found, Please Search For Invoices using the options above!",
+            rowTemplate: _.template($('#ReconLineRowTemplate').html()),
+            rowBindingFunction: function(row) {
+                var line = row.data('line');
+                var rowModel = reconModel.getReconLine(line);
+                var that = this;
+                //bind edit and checkbox
+                $(row).find('input[type=checkbox]').change(function() {
+                    reconModel.selectReconLine(line, this.checked);
+                    reconModel.getSelectedTotals();
+                });
+                $(row).find('textarea.commentText').on('change', function(e) {
+                    reconModel.commentReconLine(line, $(this).val());
+                });
+                return row
+            },
+            rowUnBindingFunction: function(row) {
+                //unbind all buttons and checkbox in the row.
+                $(row).off("change", "input[type=checkbox]")
+                return row;
+            }
+        });
+
+        $('.invoicesDiv').append(reconLinesTable.tableElement);
+        reconLinesTable.tableElement.addClass("table-hover");
+        reconLinesTable.tableElement.find('tr.success').hide();
+
+        //bing tables
+        reconModel.bindCollectionToTable(reconLinesTable,"reconLines"); //just for CRUD operations, totals have to be updated manually
+
+        //bind total
+        $('#statementTotal').change(function() {
+            var newVal = $(this).val();
+            if (newVal == '' || newVal == null || isNaN(parseInt(newVal))) {
+                alert("Invalid Total Entered!");
+                return;
+            }
+            reconModel.set('statementTotal', parseFloat(newVal));
+        });
+        reconModel.bindEvent('statementTotal',"update",function(newVal) {
+            $('#statementTotal').val(newVal);
+            $('#txt_statementTotal > strong').text("$ " +newVal);
+            var differentVal = newVal - reconModel.selectedTotal;
+            $('#txt_difference > strong').text("$ " + differentVal.toFixed(2));
+        });
+        reconModel.bindEvent('selectedTotal',"update",function(newVal) {
+            console.log(newVal);
+            $('#txt_selectedTotal > strong').text("$ " + newVal.toFixed(2));
+            var differentVal = reconModel.statementTotal - newVal;
+            $('#txt_difference > strong').text("$ " + differentVal.toFixed(2));
+        });
+        reconModel.set('distributor', $('#distributor').select2('val'));
+        reconModel.completeControlBind($('#distributor'),'distributor', true);
+
+        //bind dates
+        reconModel.completeDatePickerControlBind($("#endDate"),"endDate");
+
+        function switchButtonPending(element) {
+            var button = $(element);
+            var prevText = button.text();
+            button.attr('disabled', 'true');
+            button.text($(element).data('loading-text'));
+            window.setTimeout(function() {
+                button.text(prevText);
+                button.removeAttr('disabled');
+            }, 1000);
+        }
+
+        $('#searchInvoices').click(function(e) {
+            if (reconModel.endDate=='') {
+                alert("Please enter a valid end date");
+                return;
+            }
+            if (reconModel.total!=0&&!confirm('This will clear the currently marked invoices, do you wish to proceed ?')) {
+                return
+            }
+            switchButtonPending(this);
+            var request = $.ajax({
+                url: '{% url 'b2b:searchHOInvoicesAjax' %}',
+                type: "POST",
+                data: {format: 'recon', 'startDate': reconModel.startDate, 'endDate': reconModel.endDate, distributor:reconModel.distributor},
+                dataType: "json",
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", br.getCookie('csrftoken'));
+                }
+            });
+
+            request.done(function(msg) {
+                //populate data table;
+                if(reconModel.reconLines.length>0&&!confirm("Changing the date will clear all your existing work, are you sure you want to proceed ?")) {
+                    return;
+                }
+                reconModel.removeAllReconLines();
+                if(msg.length) {
+                    $.each(msg, function(k, v) {
+                        reconModel.addReconLineFromServer(v);
+                    });
+                }
+            });
+        });
+        $('#processModel').click(function(){
+            if(!confirm("Are you sure you wish to complete this recon ?")) {
+                return;
+            }
+            switchButtonPending(this);
+            reconModel.saveReconModel();
+        });
+
+        //after sale has been loaded bind change event.
+        reconModel.bindEvent("all", "update", function(newVal) {
+            //if anything changes
+            window.onbeforeunload = function() {
+               return "Are you sure you want to leave, all unsaved changes will be lost as a result.";
+            };
+        });
+    });
+</script>
+{% endblock %}

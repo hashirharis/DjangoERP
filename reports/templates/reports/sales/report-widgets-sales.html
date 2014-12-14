@@ -1,0 +1,58 @@
+{% if isPanelAtTopView %} <!-- panel to top -->
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box widget-box2">
+                <div class="widget-content">
+                    {% include "reports/sales/form-action.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{%  if not isMonthlySalesView %}  <!-- single table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-content">
+                    {% include "reports/sales/page-title.html" %}
+                    {% include "reports/sales/table/table.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+{%  else %}  <!-- side by side tables -->
+    <div class="row">
+        <div class="col-12 col-lg-6">
+            <div class="widget-box">
+                <div class="widget-content">
+                    {% include "reports/sales/page-title.html" with current="false" %}
+                    {% include "reports/sales/table/table.html" with current="false" %}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="widget-box">
+                <div class="widget-content">
+                    {% include "reports/sales/page-title.html" with current="true" %}
+                    {% include "reports/sales/table/table2.html" with current="true" %}
+                </div>
+            </div>
+        </div>
+    </div>
+{%  endif %}
+{% if not isPanelAtTopView %} <!-- panel to bottom -->
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box widget-box2">
+                <div class="widget-content">
+                    {% include "reports/sales/form-action.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+
+
+
+

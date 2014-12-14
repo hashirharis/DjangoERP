@@ -1,0 +1,77 @@
+
+/** merchandiser - cancel default unicorn and bootstrap styles **/
+    /*user nav icon size*/
+#user-nav > ul > li > a {
+    font-size: 10px;
+    padding: 9px 10px;
+}
+    /*fixed position for pagination bar*/
+.fixed {
+    position: fixed;
+    top: -16px;
+    left:47%; margin-left:-53px
+}
+#example_info{
+    display: none;
+}
+    /*nav bar size*/
+/*#sidebar > ul {*/
+    /*width: 43px;*/
+/*}*/
+/*#content {*/
+    /*margin-left: 43px;*/
+/*}*/
+/*#sidebar > ul > li > a > span {*/
+    /*display: none;*/
+/*}*/
+#header {
+    height: 33px;
+}
+#header h1 {
+    top: 0px;
+}
+    /*row alignment, colour and size*/
+.table thead>tr>th, .table tbody>tr>th, .table tfoot>tr>th, .table thead>tr>td, .table tbody>tr>td, .table tfoot>tr>td {
+    padding: 4px;
+}
+#example tbody > tr > td {
+    white-space: nowrap;
+}
+tr {
+    height: 40px;
+}
+.alignRight {
+    text-align: right;
+}
+table.DTFC_Cloned tr.even {
+background-color: white;
+}
+.even{
+    background-color: white;
+}
+    /*filter widget size*/
+.widget-box {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+.widget-box2 {
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+.col-12 {
+    position: relative;
+    min-height: 1px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+.widget-content {
+    padding: 3px 10px;
+}
+    /*size of filtering panel*/
+.site-stats li {
+    padding: 0px 0px 0px;
+}
+.col-lg-4 {
+    height: 0px;
+}
+/** merchandiser - cancel default unicorn and bootstrap styles **/

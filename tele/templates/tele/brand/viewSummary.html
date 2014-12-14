@@ -1,0 +1,200 @@
+<div class="row">
+    <div class="col-12 col-lg-6">
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#collapseOne" data-toggle="collapse">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-chevron-up"></i>
+                    </span>
+                    <h5>Brand Summary</h5>
+                </a>
+            </div>
+            <div class="collapse in" id="collapseOne">
+                <div class="widget-content">
+                    <table class="table table-bordered">
+                        <tr>
+                            <td>Name</td>
+                            <td> {{ object.brand}}</td>
+                        </tr>
+                        <tr>
+                            <td>Supplier</td>
+                            <td> {{ object.distributor}}</td>
+                        </tr>
+                        <tr>
+                            <td>Address</td>
+                            <td> {{ object.address}}</td>
+                        </tr>
+                        <tr>
+                            <td>Address p</td>
+                            <td> {{ object.purchaser}}</td>
+                        </tr>
+                        <tr>
+                            <td>Suburb</td>
+                            <td> {{ object.suburb}}</td>
+                        </tr>
+                        <tr>
+                            <td>State</td>
+                            <td> {{ object.cityState}}</td>
+                        </tr>
+                        <tr>
+                            <td>Postcode</td>
+                            <td> {{ object.postcode}}</td>
+                        </tr>
+                        <tr>
+                            <td>Postal address</td>
+                            <td> {{ object.paddress}}</td>
+                        </tr>
+                        <tr>
+                            <td>Postal state</td>
+                            <td> {{ object.pcityState}}</td>
+                        </tr>
+                        <tr>
+                            <td>Postal postcode</td>
+                            <td> {{ object.ppostcode}}</td>
+                        </tr>
+                        <tr>
+                            <td>Phone</td>
+                            <td> {{ object.phone}}</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td> {{ object.email}}</td>
+                        </tr>
+                        <tr>
+                            <td>Account manager</td>
+                            <td> {{ object.repName}}</td>
+                        </tr>
+                        <tr>
+                            <td>Account manager phone</td>
+                            <td> {{ object.repPhone}}</td>
+                        </tr>
+                        <tr>
+                            <td>ABN</td>
+                            <td> {{ object.ABN}}</td>
+                        </tr>
+                        <tr>
+                            <td>Comments</td>
+                            <td> {{ object.comments}}</td>
+                        </tr>
+                        <tr>
+                            <td>Electronic trading</td>
+                            <td> {{ object.hasElectronicTrading}}</td>
+                        </tr>
+                        <tr>
+                            <td>GLN</td>
+                            <td> {{ object.GLN}}</td>
+                        </tr>
+                        <tr>
+                            <td>HOP referred</td>
+                            <td> {{ object.isHOPreferred}}</td>
+                        </tr>
+                        <tr>
+                            <td>GFK</td>
+                            <td> {{ object.isInGFK}}</td>
+                        </tr>
+                        <tr>
+                            <td>Rebate</td>
+                            <td> {{ object.rebate}}</td>
+                        </tr>
+                        <tr>
+                            <td>Actual rebate</td>
+                            <td> {{ object.actualRebate}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    {% for object in brandAddressbookContact  %}
+        <div class="col-12 col-lg-6">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseTwo" data-toggle="collapse">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-chevron-up"></i>
+                        </span>
+                        <h5>Local Brand Rep Summary</h5>
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseTwo">
+                    <div class="widget-content">
+                        <table class="table table-bordered">
+                            <tr >
+                                <td>Name</td>
+                                <td> {{ object.name}}</td>
+                            </tr>
+                            <tr >
+                                <td>Address</td>
+                                <td> {{ object.address}}</td>
+                            </tr>
+                            <tr >
+                                <td>Landline</td>
+                                <td> {{ object.landline}}</td>
+                            </tr>
+                            <tr >
+                                <td>Mobile</td>
+                                <td> {{ object.mobile}}</td>
+                            </tr>
+                            <tr >
+                                <td>Email</td>
+                                <td> {{ object.email}}</td>
+                            </tr>
+                            <tr >
+                                <td>Fax</td>
+                                <td> {{ object.fax}}</td>
+                            </tr>
+                            <tr >
+                                <td>Comments</td>
+                                <td> {{ object.comment}}</td>
+                            </tr>
+                            <tr >
+                                <td>Service Type</td>
+                                <td> {{ object.serviceType}}</td>
+                            </tr>
+                            <tr >
+                                <td>
+                                </td>
+                                <td>
+                                    <a class="btn btn-primary tip-bottom" style="float:right;" data-original-title="Delete" href="{% url 'tele:deleteLocalBrandRep' object.id %}"><i class="glyphicon glyphicon-remove"></i></a>
+                                    <a class="btn btn-primary tip-bottom" style="float:right;"  data-original-title="Edit" href="{% url 'tele:updateLocalBrandRep' object.id %}"><i class="glyphicon glyphicon-pencil"></i></a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <div class="col-12 col-lg-6">
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#collapseThree" data-toggle="collapse">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-chevron-up"></i>
+                    </span>
+                    <h5>All brands for {{ object.distributor}} </h5>
+                </a>
+            </div>
+            <div class="collapse in" id="collapseThree">
+{#                <a href="{% url 'tele:viewSupplier' object.id %}" style="float:right;" data-original-title="View Supplier">{{ object.distributor}}</a>#}
+                <div class="widget-content">
+                    <table class="table table-bordered">
+                        {%  for object in distributors %}
+                            <tr>
+                                <td> {{ object.brand}} <a class="btn btn-primary tip-bottom" style="float:right;" href="{% url 'tele:viewBrand' object.id %}" data-original-title="View Brand"><i class="glyphicon glyphicon-eye-open"></i></a></td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

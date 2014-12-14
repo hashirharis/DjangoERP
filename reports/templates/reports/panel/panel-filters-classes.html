@@ -1,0 +1,11 @@
+<div class="col-lg-2">
+    Classes:
+    <label>
+        <select placeholder="Filter by Class" multiple="multiple" id="searchCategory" class="selectmultiple" name="category">
+            {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name|title }}</option>
+            {% endfor %}
+        </select>
+    </label>
+</div>
+

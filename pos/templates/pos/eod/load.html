@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Store/Franchise Products{% endblock %}
+
+{% block content %}
+
+    <div id="content-header">
+        <h1> End of Day <small> Terminal Closure</small></h1>
+    </div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="{% url 'pos:home' %}" class="tip-bottom" data-original-title="POS Home"><i class="glyphicon glyphicon-list-alt"></i>Dashboard</a>
+        <a href="#"><i class="glyphicon glyphicon-th-list"></i>EOD</a>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box widget-plain">
+                <div class="widget-content center">
+                    <ul class="stats-plain">
+                        <li>
+                            <h4><a class="btn btn-primary supress" href="#">{{ startDate }}</a></h4>
+                        </li>
+                        <li>
+                            <h4>-</h4>
+                        </li>
+                        <li>
+                            <h4><a class="btn btn-primary supress" href="#">{{ endDate }}</a></h4>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box widget-plain">
+                <div class="widget-content center">
+                    <ul class="stats-plain">
+                        {% for total in totals %}
+                            <li>
+                                <h4>${{ total.total|floatformat:2 }}</h4>
+                                <span>{{ total.name }}</span>
+                            </li>
+                        {% endfor %}
+                        <li>
+                            <h4>${{ completeTotal|floatformat:2 }}</h4>
+                            <span>Total</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-8">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-tasks"></i>
+                    </span>
+                        <h5>Totals</h5>
+                    </div>
+                    <div class="widget-content">
+                        <h4>Totals</h4>
+                        <table class="counts table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Payment Type</th>
+                                <th>Till Count</th>
+                                <th>Computer</th>
+                                <th>Difference</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for total in totals %}
+                                <tr id="{{ total.id }}">
+                                    <td>{{ total.name }}</td>
+                                    <td><input type="number" class="count" disabled="true" value="{{ total.count }}" /></td>
+                                    <td class="compVal">{{ total.total }}</td>
+                                    <td><span class="difference">{{ total.difference }}</span></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <div style="clear:both;"></div>
+                        <h4>Comment</h4>
+                        {% if comment.strip %}
+                            <span class="uneditable-input">{{ comment }}</span>
+                        {% else %}
+                            <p>No Comment was added to this EOD</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                        <h5>Log</h5>
+                    </div>
+                    <div class="widget-content">
+                        <span class="uneditable-input" style="height:500px;overflow-x:hidden;overflow-y:scroll;">
+                            {% for log in paymentLogs %}
+                                Invoice Num: {{ log.InvoiceNum }} <br />
+                                Received By: {{ log.ReceivedBy }} <br />
+                                Payment Amount: ${{ log.PaymentAmount|floatformat:2 }} <br />
+                                Payed with: {{ log.PaymentMethod }} <br />
+                                Date/Time: {{ log.DateTime }} <br />
+                            {% endfor %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.supress').click(function(e) {
+                e.preventDefault();
+            });
+        });
+
+    </script>
+{% endblock %}

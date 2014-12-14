@@ -1,0 +1,30 @@
+{% load br %}
+
+<div class="col-lg-3">
+    <h1>Uploads
+    {% if uploadType == 'catalogue' %}
+        <small>Catalogues
+    {% elif uploadType == 'writeups' %}
+        <small>Writeups
+    {% elif uploadType == 'products' %}
+        <small>Products
+    {%  endif %}
+    </small></h1>
+</div>
+{% if uploadType == 'catalogue' %}
+    {% include "uploads/catalogue/view-image-widget.html" %}
+{% endif %}
+{% if uploadType == 'catalogue' %}
+    <div class="col-lg-7">
+{% else %}
+    <div class="col-lg-9">
+{% endif %}
+    {% include "uploads/upload-lists.html" %}
+    {% include "uploads/upload-selector.html" %}
+    {% if products %}
+        {% if listConfusedEANExists or EANBlankError %}
+        {% else %}
+            {% include "uploads/upload-save.html" %}
+        {% endif %}
+    {% endif %}
+</div>

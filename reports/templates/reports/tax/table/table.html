@@ -1,0 +1,15 @@
+{% load br %}
+
+<thead>
+    <tr>
+        {% include "reports/tax/table/tablerow.html" %}
+    </tr>
+</thead>
+<tfoot>
+    <tr>
+        {% include "reports/tax/table/tablerow.html" %}
+    </tr>
+</tfoot>
+<tbody>
+    {% include "reports/tax/table/tablebody.html" %}
+</tbody>

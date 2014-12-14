@@ -1,0 +1,191 @@
+{% extends "collations/base.html" %}
+
+{% block title %}Update Collation{% endblock %}
+
+{% block css %}
+    {{ block.super }}
+    <style type="text/css">
+    .form-horizontal input[type=text], .form-horizontal input[type=password], .form-horizontal textarea {
+        width: 100%;
+    }
+    @media (min-width: 1200px) {
+        #endDate,
+        #archiveDate,
+        .select2container {
+            margin-left: 20px;
+        }
+        .orderDetailsDiv {
+            margin-left: 25px;
+            width: 200px;
+        }
+    }
+    input[type=text].datetimeinput {
+        width: 200px;
+    }
+    .select2-container-multi .select2-choices .select2-search-field input {
+        min-width: 200px;
+    }
+    .controls h5 {
+        font-weight: bold;
+    }
+    .btn.btn-xs {
+        padding:0px;
+        margin:0px;
+    }
+    #DeliveryMonthsTable thead tr,
+    #ProductsTable thead tr
+    {
+        display:none;
+    }
+    tr.success {
+        display:none;
+    }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+{{ block.super }}
+<div id="content-header">
+    <h1>Collation <small> Update</small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'bulletins:collations' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Collations</a>
+    <a href="" class="current">Update Collation</a>
+</div>
+
+<div class="col-lg-12 col-12">
+    <div class="widget-box">
+        <div class="widget-title">
+        <span class="icon">
+            <i class="glyphicon glyphicon-gift"></i>
+        </span>
+            <h5>Update Collation</h5>
+        </div>
+        <div class="widget-content">
+            <form method="POST" class="form-horizontal">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="control-group">
+                            <label for="subject" class="control-label">
+                                Subject
+                                <span class="asteriskField">*</span>
+                            </label>
+                            <div class="controls">
+                                <input type="text" id="subject"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label for="subject" class="control-label">
+                                Dates
+                                <span class="asteriskField">*</span>
+                            </label>
+                            <div class="controls">
+                                <input type="text" id="startDate" placeholder="Start Date" class="datetimeinput" />
+                                <input type="text" id="endDate" placeholder="End Date" class="datetimeinput" />
+                                <input type="text" id="archiveDate" placeholder="Archive Date" class="datetimeinput" />
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label for="subject" class="control-label">
+                                Method / Recipients
+                                <span class="asteriskField">*</span>
+                            </label>
+                            <div class="controls">
+                                <select name="orderMethod" id="orderMethod">
+                                    <option value="Email">Email</option>
+                                    <option value="Fax">Fax</option>
+                                    <option value="EDI">EDI</option>
+                                    <option value="Manual">Manual</option>
+                                    <option value="PDO">PDO</option>
+                                </select>
+                                <span class="select2container">
+                                    <select class="selectmultiple" name="toGroups" id="toGroups" multiple="multiple">
+                                        {% for group in groups %}
+                                        <option value="{{ group.id }}">{{ group.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </span>
+                                <span class="select2container">
+                                    <select class="selectmultiple" name="toStores" id="toStores" multiple="multiple">
+                                        {% for store in stores %}
+                                        <option value="{{ store.id }}">{{ store.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                         <div class="control-group">
+                                <label for="subject" class="control-label">
+                                    Delivery
+                                </label>
+                                <div class="controls">
+                                    <label for="sendEmail">
+                                        <input class="checkboxinput" id="sendEmail" name="sendEmail" type="checkbox" />
+                                        Notification Email
+                                    </label>
+                                    <label for="sendEmail">
+                                        <input class="checkboxinput" id="sendSMS" name="sendSMS" type="checkbox" />
+                                        Notification SMS
+                                    </label>
+                                    <label for="sendEmail">
+                                        <input class="checkboxinput" id="sendEmailReminder" name="sendEmailReminder" type="checkbox" />
+                                        Reminder Email
+                                    </label>
+                                    <label for="sendEmail">
+                                        <input class="checkboxinput" id="sendSMSReminder" name="sendSMSReminder" type="checkbox" />
+                                        Reminder SMS
+                                    </label>
+                                </div>
+                        </div>
+                    <div class="control-group">
+                        <label class="control-label">Order Details</label>
+                        <div class="controls">
+                            <div class="row">
+                                <div class="orderDetailsDiv col-lg-4 col-12" style="margin-left: 0px;">
+                                    <h5>Products <a class="btn btn-xs suppress" href="#" id="addProductBtn"><i class="glyphicon glyphicon-plus"></i></a></h5>
+                                    <div id="ProductsTable">
+                                    </div>
+                                </div>
+                                <div class="orderDetailsDiv col-lg-4 col-12">
+                                    <h5>Delivery Months <a class="btn btn-xs suppress" href="#" id="addDeliveryMonthBtn"><i class="glyphicon glyphicon-plus"></i></a></h5>
+                                    <div id="DeliveryMonthsTable">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="orderDetailsDiv col-lg-4 col-12" style="margin-left: 0px;">
+                                    <a href="#previewOrderingForm" data-toggle="modal" style="margin-top: 10px;" id="previewOrdering" class="btn btn-primary">Preview Ordering Form</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+{#                    <div class="control-group">#}
+{#                        <label class="control-label" for="toGroups">Collation Notes</label>#}
+{#                        <div class="controls">#}
+{#                            <textarea class="textarea" cols="40" id="collationNotes" name="notes" rows="10"></textarea>#}
+{#                        </div>#}
+{#                    </div>#}
+                    <div class="control-group">
+                        <label class="control-label" for="toGroups">Auto Generate Content</label>
+                        <div class="controls">
+                            <a href="#" id="generateContent" class="btn btn-primary">Auto Generate Content</a>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="toGroups">Content</label>
+                        <div class="controls">
+                            <textarea class="textarea" cols="40" id="collationContent" name="content" rows="10"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-actions" style="text-align: right">
+                      <button id="saveCollation" type="submit" class="btn btn-primary btn-lg">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

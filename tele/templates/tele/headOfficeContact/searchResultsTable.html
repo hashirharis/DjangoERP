@@ -1,0 +1,23 @@
+<thead>
+    <th>Name </th>
+    <th class="visible-lg">Address </th>
+    <th>Email </th>
+    <th class="visible-lg">Actions </th>
+</thead>
+<tbody>
+    {% for object in searchResults %}
+        <tr>
+            <td class="hidden-lg"><a class="btn btn-primary tip-bottom" data-original-title="View" href="{% url 'tele:viewHeadOfficeContact' object.id %}">{{ object.name }}</a></td>
+            <td class="visible-lg">{{ object.name }}</td>
+            <td>{{ object.address }}</td>
+            <td class="visible-lg">{{ object.email }}</td>
+            <td class="visible-lg">
+                <a class="btn btn-primary tip-bottom" data-original-title="View" href="{% url 'tele:viewHeadOfficeContact' object.id %}"><i class="glyphicon glyphicon-eye-open"></i></a>
+                {% if store.displayHOMenu %}
+                    <a class="btn btn-primary tip-bottom" data-original-title="Edit" href="{% url 'tele:updateHeadOfficeContact' object.id %}"><i class="glyphicon glyphicon-pencil"></i></a>
+                    <a class="btn btn-primary tip-bottom" data-original-title="Delete" href="{% url 'tele:deleteHeadOfficeContact' object.id %}"><i class="glyphicon glyphicon-remove"></i></a>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>

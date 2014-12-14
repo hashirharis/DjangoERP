@@ -1,0 +1,96 @@
+{% if isStorePurchases %}
+    <th>Distributor</th>
+    <th>Store Name</th>
+    <th>State</th>
+    <th>Date</th>
+    <th>Invoice</th>
+    <th>Inv Type</th>
+    <th>Ref</th>
+    <th>Class/Type/Cat</th>
+    <th>Model</th>
+    <th>Qty</th>
+    <th>Unit Price inc</th>
+    <th>Total Inv inc</th>
+    <th>Total Net inc</th>
+{% elif isExtended %}
+    <th>Store</th>
+    <th>Distributor </th>
+    <th>Invoice</th>
+    <th>Net Price inc</th>
+    <th>Due Date</th>
+{% elif isInvoiceByDate %}
+    <th>Invoice</th>
+    <th>Type</th>
+    <th>Distributor</th>
+    <th>Invoice Date</th>
+    <th>Invoice Amt</th>
+    <th>Order</th>
+    <th>Store</th>
+    <th>Operator</th>
+    <th>Date Entered</th>
+{% elif isStoreListing %}
+    <th>Name</th>
+    <th>Address</th>
+    <th>Land line</th>
+    <th>Mobile</th>
+    <th>Email</th>
+    <th>Fax</th>
+{% elif isWholesale %}
+    <th>Manufacturer</th>
+    <th>Model</th>
+    <th>Desc</th>
+    <th>Price</th>
+    <th>RRP Price</th>
+    <th>Last Change</th>
+{% elif isRebates %}
+    <th>Distributor</th>
+    <th><a style="color: #666666" class="tip-top" data-original-title="Sum of all store purchases">TotInv inc</a></th>
+    <th><a style="color: #666666" class="tip-top" data-original-title="Sum of StoreNet">Store Net inc</a></th>
+    <th><a style="color: #666666" class="tip-top" data-original-title="Sum HO Rebate">HO Rebate</a></th>
+    <th><a style="color: #666666" class="tip-top" data-original-title="Sum of all $bonuses awarded">HO $Bonus inc</a></th>
+    <th><a style="color: #666666" class="tip-top" data-original-title="Sum of all %bonues awarded">HO %Bonus inc</a></th>
+    <th><a style="color: #666666" class="tip-top" data-original-title="Sum of all class vendor bonuses">HO VC Bonus inc</a></th>
+    <th><a style="color: #666666" class="tip-top" data-original-title="Total Invoice minus Supplier Rebate">HO Net inc</a></th>
+    <th><a style="color: #666666" class="tip-top" data-original-title="HONet minus Store Net">Diff</a></th>
+{% elif isIAS %}
+    <th>Store</th>
+    <th>Purchase Orders</th>
+    <th>IRP Invoices</th>
+    <th>Total Purchase </th>
+    <th>Extended Credit</th>
+    <th>Credit Debt</th>
+    <th>Limit</th>
+    <th>Open to Buy</th>
+    <th>Permit</th>
+{% elif isB2B %}
+    <th>Supplier</th>
+    <th>Invoice</th>
+    <th>Date</th>
+    <th>Order Ref </th>
+    <th>Store</th>
+    <th>Invoice Amt</th>
+    <th>Printed</th>
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

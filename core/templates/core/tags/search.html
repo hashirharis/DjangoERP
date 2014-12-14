@@ -1,0 +1,91 @@
+{% extends "base-crud.html" %}
+
+{% block title %}Product Tags Search{% endblock %}
+
+{% block content %}
+
+    <div id="content-header">
+        <h1>Product Tags <small> Search </small></h1>
+        <div class="btn-group">
+            <a class="addEntity btn btn-large tip-bottom supress" data-toggle="modal" title="Add Tag"><i class="glyphicon glyphicon-plus"></i></a>
+        </div>
+    </div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="{% url 'core:searchProductTags' %}" class="tip-bottom" data-original-title="Search for Tags"><i class="glyphicon glyphicon-barcode"></i>Tags</a>
+        <a href="">Search</a>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </span>
+                        <h5>Search</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="row">
+                            <div class="col-12">
+                                <form method="GET">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="q" placeholder="Search the Tag here." value="{{ q }}">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary">Search!</button>
+                                        </span>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="widget-box">
+                    <div class="widget-title">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                    </span>
+                        <h5>Results</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div id="resultsDiv">
+                            {% if object_list %}
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                    <th>Tag</th>
+                                    <th>Type</th>
+                                    <th>Actions</th>
+                                    </thead>
+                                    <tbody>
+                                    {% for object in object_list %}
+                                        <tr>
+                                            <td>{{ object.tag }}</td>
+                                            <td>{{ object.type }}</td>
+                                            <td>
+                                                {% load br %}
+                                                {% if store|canEdit:object %}
+                                                    <a class="btn btn-primary editEntityItem" data-id="{{ object.id }}"><i class="glyphicon glyphicon-pencil"></i></a>
+                                                    <a class="btn btn-primary deleteEntityItem" data-id="{{ object.id }}"><i class="glyphicon glyphicon-remove"></i></a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <ul class="pagination alternate pull-right">
+                                    {% for x in paginator.page_range %}
+                                        <li{% if page_obj.number == x %} class="disabled"{% endif %}><a page="{{ x }}">{{ x }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>Failed to return results.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

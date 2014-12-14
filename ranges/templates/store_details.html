@@ -1,0 +1,91 @@
+{%extends "stock_ranges_main.html"%}
+
+{%block upper_area%}
+
+
+
+            <h1>
+                {{storerange}}  Summary <small>for {{month}} {{year}}</small>
+            </h1>
+
+
+<br>
+<br>
+
+<div id="breadcrumb">
+		<a href="{%url 'home'%}" title="" class="tip-bottom" data-original-title="Go to Home"><i class="fa fa-home"></i></i><span class="glyphicon glyphicon-home"></span> Home</a>
+		<a href="{%url 'core_stock:stock_range'%}" class="fa"><i class="glyphicon glyphicon-flag"></i>Ranges Home</a>
+		<a href="#" class="current"><i class="glyphicon glyphicon-th-list"></i>Store Details</a>
+
+	</div>
+<br>
+
+{%endblock%}
+
+{%block table_area%}
+<style>
+td
+{
+	text-align:center;
+}
+</style>
+
+    <div class="col-12">
+         <div class="widget-box">
+                    <div class="widget-content">
+                        <table class="table table-bordered table-striped table-hover">
+                            <tr>
+                                <th>Product</th>
+                                <th>Bonus</th>
+                                <th>Guaranteed</th>
+                                <th>Passed</th>
+                            </tr>
+                            {% if details|length <= 0 %}
+                            <tr>
+                                <td colspan=4>
+                                    <h3>No products invoiced for this month</h3>
+                                </td>
+                            </tr>
+                            {% endif %}
+
+                            {%for i in details%}
+                            <tr>
+                                <td>
+                                    {{i.product.model}}
+                                </td>
+                                <td>
+                                    ${{i.bonus}}
+                                </td>
+                                <td>
+
+                                    {% if i.guaranteed%}
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    {% else%}
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    {%endif%}
+                                </td>
+                                <td>
+
+                                        <span class="glyphicon glyphicon-ok"></span>
+
+                                </td>
+                            </tr>
+                            {%endfor%}
+                        </table>
+                    </div>
+         </div>
+     </div>
+
+	<div class="col-12">
+        <div class="col-xs-12 col-sm-4">
+	<ul class="site-stats">
+		<li><div class="cc"><i class="fa fa-user"></i> 				<small>Total Bonues</small> :<strong> ${{ total }}</strong></div>
+</li>
+	</ul>
+</div>
+
+	</div>
+
+{%endblock%}
+
+

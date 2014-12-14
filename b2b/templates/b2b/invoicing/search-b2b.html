@@ -1,0 +1,26 @@
+{% if object_list %}
+    <table class="table table-bordered table-hover">
+        <thead>
+            <th class="hidden">id</th>
+            <th>Distributor</th>
+            <th>Invoice Number</th>
+            <th>Invoice Date</th>
+            <th>Order Number</th>
+            <th>Attach</th>
+        </thead>
+        {% for invoice in object_list  %}
+            <tr>
+                <td class="hidden id">{{ invoice.id }}</td>
+                <td class="distributor">{{ invoice.distributor.distributor }}</td>
+                <td class="invoiceNum">{{ invoice.invoiceNumber }}</td>
+                <td class="invoiceDate">{{ invoice.invoiceDate }}</td>
+                <td class="orderNum">{{ invoice.orderNumber }}</td>
+                <td>
+                    <a class="addInvoice btn btn-primary" href="#"><i class="glyphicon glyphicon-plus"></i></a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No B2B Invoices Found !</p>
+{% endif %}

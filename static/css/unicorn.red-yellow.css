@@ -1,0 +1,145 @@
+/**
+ * Unicorn Admin Template
+ * Version 2.0
+ * Diablo9983 -> diablo9983@gmail.com
+**/
+
+body {
+	background-color: #fdb813;
+}
+
+#header {
+    box-shadow: 0 1px 0 #920112;
+	background-color: #9c0f12;
+    background-image: -webkit-gradient(linear, 0 0%, 0 100%, from(#3F3F3F), to(#222222));
+    background-image: -webkit-linear-gradient(top, #3F3F3F 0%, #222222 100%);
+    background-image: -moz-linear-gradient(top, #9c0f12 0%, #78000f 100%);
+	background-image: -ms-linear-gradient(top, #3F3F3F 0%, #222222 100%);
+	background-image: -o-linear-gradient(top, #3F3F3F 0%, #222222 100%);
+	background-image: linear-gradient(top, #3F3F3F 0%, #222222 100%);
+    border-bottom: 1px solid #900112;
+}
+.flat #header {
+	background-image: none;
+}
+#search {
+	top: 5px;
+}
+#search input[type=text], #search button {
+	background-color: rgba(0,0,0,0.3);
+}
+#search input[type=text] {
+	color: rgba(255,255,255,0.7);
+	box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2) inset, 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+#search button {
+	box-shadow: -2px 2px 3px rgba(0, 0, 0, 0.2) inset, 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+#search input[type=text]:focus {
+	color: rgba(255,255,256,0.6);
+}
+
+#sidebar > ul {
+	border-top: 1px solid #e49a2e;
+	border-bottom: 1px solid #fbc580;
+}
+#sidebar > ul > li {
+	border-top: 1px solid #fbc580;
+	border-bottom: 1px solid #e49a2e;
+}
+#sidebar > ul > li > a {
+	color: rgba(255,255,255,0.7);
+}
+#sidebar > ul > li.active {
+    background-color: #3a3a3a;
+	background-image: -webkit-gradient(linear, 0 0%, 0 100%, from(#333333), to(#3F3F3F));
+	background-image: -webkit-linear-gradient(top, #333333 0%, #3F3F3F 100%);
+	background-image: -moz-linear-gradient(top, #ae7623 0%, #d6912b 100%);
+	background-image: -moz-linear-gradient(top, #ae7623 0%, #d6912b 100%);
+	background-image: -ms-linear-gradient(top, #333333 0%, #3F3F3F 100%);
+	background-image: -o-linear-gradient(top, #333333 0%, #3F3F3F 100%);
+	background-image: linear-gradient(top, #333333 0%, #3F3F3F 100%);
+}
+#sidebar > ul > li.active:after {
+    border-bottom: 8px solid transparent;
+    border-left: 8px solid transparent;
+    border-right: 8px solid #f9f9f9;
+    border-top: 8px solid transparent;
+    content: "";
+    display: inline-block;
+    position: absolute;
+	right: 0;
+	margin-top: -28px;
+	z-index: 15;
+}
+#sidebar > ul > li.active.submenu:after {
+	margin-top: 0;
+	top: 12px;
+}
+#sidebar > ul > li.active > a {
+	background-image: none !important;
+	color: rgba(255,255,255,0.9);
+}
+#sidebar > ul > li.active > a > i {
+	opacity: 0.8;
+}
+#sidebar > ul > li.open.submenu > a {
+	border-bottom: none;
+}
+#sidebar > ul > li.open.active.submenu > a {
+	border-bottom: 1px solid #cc8027;
+}
+#sidebar > ul > li > a > .label {
+	background-color: #ae7623;
+}
+#sidebar > ul > li > a:hover {
+	background-color: #faa933;
+}
+#sidebar > ul ul {
+	border-top: none;
+	background-color: #d6912b;
+	box-shadow: 0 0 3px rgba(0, 0, 0, 0.3) inset;
+}
+#sidebar > ul ul li a {
+	color: rgba(255,255,255,0.5);
+	border-top: 1px solid #ed952e;
+	border-bottom: 1px solid #c17925;
+}
+#sidebar > ul ul li a:hover, #sidebar > ul ul li.active a {
+	color: rgba(255,255,255,0.6);
+	background-color: #c17925;
+}
+#content {
+	box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+}
+.dropdown-menu li a:hover, .dropdown-menu .active a, .dropdown-menu .active a:hover {
+    color: #eeeeee;
+	background-color: #b3161e;
+    background-image: -webkit-gradient(linear, 0 0%, 0 100%, #555555, #222222);
+    background-image: -webkit-linear-gradient(top, #555555 0%, #222222 100%);
+    background-image: -moz-linear-gradient(top, #d71921 0%, #b3161e 100%);
+    background-image: -ms-linear-gradient(top, #555555 0%, #222222 100%);
+    background-image: -o-linear-gradient(top, #555555 0%, #222222 100%);
+    background-image: linear-gradient(top, #555555 0%, #222222 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#555555', endColorstr='#222222',GradientType=0 ); /* IE6-9 */
+}
+.flat .dropdown-menu li a:hover, .flat .dropdown-menu .active a, .flat .dropdown-menu .active a:hover {
+	background-image: none;
+}
+@media (max-width: 480px) {
+	#sidebar > a {
+		background-image: -moz-linear-gradient(top, #464646 0%, #404040 100%);
+		border-bottom: 1px solid #6e6e6e;
+	}
+	#sidebar > ul {
+		background-color: #444444;
+	}
+}
+@media (min-width: 481px) and (max-width: 768px) {
+	#sidebar > ul ul:before {
+		border-right: 7px solid rgba(0, 0, 0, 0.2);
+	}
+	#sidebar > ul ul:after {
+		border-right: 6px solid #222222;
+    }
+}

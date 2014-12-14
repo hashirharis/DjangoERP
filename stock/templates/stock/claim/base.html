@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block javascript %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.maskedinput.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.claim.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.modalsearch.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.profitmargincalculator.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}brjs/br.linestable.js"></script>
+<script type="text/template" id="ClaimLineRowTemplate">
+    <tr class="item">
+        <td class="actions">
+            <button class="btn btn-primary btn-mini removeLine"><i class="glyphicon glyphicon-remove"></i></button>
+        </td>
+        <td><%= values.description %></td>
+        <td><%= values.unitPrice %></td>
+        <td><button class="btn btn-primary btn-mini changeUnitPrice"><%= values.newUnitPrice %> <i class="glyphicon glyphicon-edit"></i></button></td>
+        <td><%= values.claimTotal.toFixed(2) %></td>
+    </tr>
+</script>
+<script type="text/javascript">
+    var claimModel = br.claimModel();
+    $(document).ready(function() {
+        $('select').select2({
+                width: 'resolve'
+        });
+        claimModel.saveURL = "{% url 'stock:saveClaim' %}";
+
+        var claimLinesTable = br.lineTableWidget({
+            totals: [
+                {title: 'Total Claim',key :"claimTotal",value: 0.00}
+            ],
+            headers: [
+                {title: "Actions", key: 'actions'},
+                {title: "Model",key: 'description'},
+                {title: "Original Unit Price", key: 'unitPrice'},
+                {title: "New Unit Price", key: 'newUnitPrice'},
+                {title: "Claim Total", key: 'claimTotal'}
+            ],
+            emptyText: "Please add products using the option above!",
+            rowTemplate: _.template($('#ClaimLineRowTemplate').html()),
+            rowBindingFunction: function(row) {
+                var line = row.data('line');
+                var that = this;
+                if (claimModel.status=="SAVED"||claimModel.status=="NEW") {
+                    row.find('.changeUnitPrice').click(function() {
+                        var orderLine = claimModel.getClaimLine(line);
+                        var initValue = orderLine.newUnitPrice;
+                        var newval = prompt("Please enter new Quantity",initValue);
+                        claimModel.changeLineUnitPrice(line,newval);
+                    });
+                    row.find('.removeLine').click(function() {
+                        if(confirm("Are you sure you want to remove this line from the stocktake ?")) {
+                            var orderLine = claimModel.removeClaimLine(line);
+                        };
+                    });
+                }else {
+                    row.find('.btn').attr('disabled', 'true');
+                    row.find('td.actions').hide();
+                }
+                return row
+            },
+            rowUnBindingFunction: function(row) {
+                row.find('.changeQuantity').unbind('click');
+                return row;
+            }
+        });
+
+        $('.claimLinesDiv').append(claimLinesTable.tableElement);
+        claimModel.bindCollectionToTable(claimLinesTable,"claimLines"); //just for CRUD operations, totals have to be updated manually
+
+        var genericProductSearchObject = br.genericModalSearch({
+            entity: "Product",
+            placeholder: "Please search for Products here",
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            url:"{% url 'stock:searchInventory' %}",
+            postData: {format: "claim", exclude: function() { return JSON.stringify(claimModel.getIDs()) }},
+            callback: function(obj) {
+                obj = claimModel.addClaimLineFromModal(obj);
+                genericProductSearchObject.ajaxSearchAndReturn();
+            }
+        });
+
+        var ProductSearchModal = genericProductSearchObject.element;
+
+        //vice versa bindings
+        claimModel.completeControlBind($('#selectClaimType'),'type',true);
+        claimModel.completeControlBind($('#storeNote'),'comments');
+
+        //model -> element bindings
+        claimModel.bindEvent("claimTotal","update",function(newVal) {
+            claimLinesTable.changeTotal('claimTotal',"$" + newVal.toFixed(2));
+        });
+        //saving, processing and completing claim
+        var processClaimBtn = $('#processClaim');
+        var completeClaimBtn = $('#completeClaim');
+        processClaimBtn.hide();
+
+        claimModel.bindEvent("type","update",function(newVal) {
+            if (newVal=="ICIHO") {
+                completeClaimBtn.hide();
+                processClaimBtn.show();
+            } else {
+                completeClaimBtn.show();
+                processClaimBtn.hide();
+            }
+        });
+        //element -> model bindings
+        $('#addProductButton').click(function() {
+            ProductSearchModal.modal('show');
+        });
+        completeClaimBtn.click(function() {
+            claimModel.completeClaim();
+        });
+        processClaimBtn.click(function() {
+            claimModel.processClaim();
+        });
+        $('#saveClaim').click(function() {
+            claimModel.saveClaim();
+        });
+        //loading
+        {% if claimData %}
+            claimModel.loadClaim({{ claimData|safe }});
+            console.log(claimModel);
+        {% endif %}
+        //end of sale loading
+        //after sale has been loaded bind change event.
+        claimModel.bindEvent("all", "update", function(newVal) {
+            //if anything changes
+            window.onbeforeunload = function() {
+               return "Are you sure you want to leave, all unsaved changes will be lost as a result.";
+            };
+        });
+
+
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+    {% if object.isContact %}
+        {{ object.name }} - Contact Details
+    {% elif isBrand %}
+        {{ object.brand }} - Brand Details
+{#    {% elif isSupplier %}#}
+{#        {{ object.distributor }} - Supplier Details#}
+    {% else %}
+        {{ object.name }} - Store Details
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div id="content-header">
+        {% if object.isContact %}
+            {% if object.isShared %}
+                <h1>{{ object.name }} <small>Head Office Contact</small></h1>
+                {% if store.displayHOMenu %}
+                <div class="btn-group">
+                    <a href="{% url 'tele:updateHeadOfficeContact' object.id %}" class="btn btn-large tip-bottom" data-toggle="modal"
+                    title="Update Head Office Contact"><i class="glyphicon glyphicon-plus"></i> Update Head Office Contact</a>
+                </div>
+                {% endif %}
+            {% else %}
+                <h1>{{ object.name }} <small>Local Contact</small></h1>
+                <div class="btn-group">
+                    <a href="{% url 'tele:updateLocalContact' object.id %}" class="btn btn-large tip-bottom" data-toggle="modal"
+                       title="Update Local Contact"><i class="glyphicon glyphicon-plus"></i> Update Local Contact</a>
+                </div>
+            {% endif %}
+{#        {% elif isSupplier%}#}
+{#            <h1>{{ object.distributor }} <small></small></h1>#}
+        {% elif isBrand%}
+            <h1>{{ object.brand }} <small></small></h1>
+            {% if isBrand %}
+                <div class="btn-group">
+                    <a href="{% url 'tele:createLocalBrandRep' object.id %}" class="btn btn-large tip-bottom" data-toggle="modal"
+                    title="Add Local Rep details"><i class="glyphicon glyphicon-plus"></i> Add Local Rep details</a>
+                </div>
+            {% endif %}
+        {% else %} <!--is a store-->
+            <h1>{{ object.name }} <small></small></h1>
+        {% endif %}
+    </div>
+
+    <div id="breadcrumb">
+        <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+        <a href="{% url 'tele:home' %}" class="tip-bottom" data-original-title="Go to Contacts Home"><i class="glyphicon glyphicon-book"></i> Contacts</a>
+        {% if object.isContact %}
+            {% if object.isShared %}
+                <a href="{% url 'tele:headOfficeContactLookup' %}" class="tip-bottom" data-original-title="Go to Head Office Contact search"><i class="glyphicon glyphicon-book"></i> Head Office Contacts</a>
+            {% else %}
+                <a href="{% url 'tele:localContactLookup' %}" class="tip-bottom" data-original-title="Go to Local Contact search"><i class="glyphicon glyphicon-book"></i> Local Contacts</a>
+            {% endif %}
+            <a href="" class="tip-bottom" data-original-title="View Contact"><i class="glyphicon glyphicon-eye-open"></i>View Contact</a>
+            <a href="" class="tip-bottom" data-original-title="View"><i class="glyphicon glyphicon-flag"></i> {{ object.name }}</a>
+        {% elif isBrand %}
+            <a href="{% url 'tele:brandLookup' %}" class="tip-bottom" data-original-title="Go to Brand search"><i class="glyphicon glyphicon-tag"></i> Brands</a>
+            <a href="" class="tip-bottom" data-original-title="View Brand"><i class="glyphicon glyphicon-eye-open"></i>View Brand</a>
+            <a href="" class="tip-bottom" data-original-title="View"><i class="glyphicon glyphicon-flag"></i> {{ object.brand }}</a>
+{#        {% elif isSupplier %}#}
+{#            <a href="{% url 'tele:supplierLookup' %}" class="tip-bottom" data-original-title="Go to Supplier Search"><i class="glyphicon glyphicon-tag"></i> Suppliers</a>#}
+{#            <a href="" class="tip-bottom" data-original-title="View Supplier"><i class="glyphicon glyphicon-eye-open"></i>View Supplier</a>#}
+{#            <a href="" class="tip-bottom" data-original-title="View"><i class="glyphicon glyphicon-flag"></i> {{ object.distributor}}</a>#}
+        {% else %}
+            <a href="{% url 'tele:storeLookup' %}" class="tip-bottom" data-original-title="Go to Store Search"><i class="glyphicon glyphicon-picture"></i> Stores</a>
+            <a href="" class="tip-bottom" data-original-title="View Store"><i class="glyphicon glyphicon-eye-open"></i>View Store</a>
+            <a href="" class="tip-bottom" data-original-title="View"><i class="glyphicon glyphicon-flag"></i> {{ object.name }}</a>
+        {% endif %}
+    </div>
+
+    <!--object summary and details-->
+    {% if object.isContact %}
+        {% if object.isShared %}
+            {% include "tele/headOfficeContact/viewSummary.html" %}
+        {% else %}
+            {% include "tele/localContact/viewSummary.html" %}
+        {% endif %}
+{#    {% elif isSupplier%}#}
+{#            {% include "tele/supplier/viewSummary.html" %}#}
+    {% elif isBrand%}
+            {% include "tele/brand/viewSummary.html" %}
+    {% else %} <!--is a store-->
+        {% include "tele/store/viewSummary.html" %}
+    {% endif %}
+
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+
+        $('.supress').click(function(e){
+            e.preventDefault();
+        });
+
+        $('.tagSearch').click(function(){
+            productSearch({tags:$(this).attr('data-id')})
+        });
+
+        $('.brandSearch').click(function(){
+            productSearch({brand:$(this).attr('data-id')})
+        });
+
+        $('.categorySearch').click(function(){
+            productSearch({category:$(this).attr('data-id')})
+        });
+
+        var productSearch = function(params) {
+            // The rest of this code assumes you are not using a library.
+            // It can be made less wordy if you use one.
+            var form = $('<form></form>');
+            form.attr("method", 'get');
+            form.attr("action", '{% url 'core:searchProducts' %}');
+
+            for(var key in params) {
+                if(params.hasOwnProperty(key)) {
+                    var hiddenField = $('<input></input>')
+                    hiddenField.attr("type", "hidden");
+                    hiddenField.attr("name", key);
+                    hiddenField.attr("value", params[key]);
+                    form.append(hiddenField);
+                }
+            }
+
+            $('body').append(form);
+            form.submit();
+        };
+
+        var productsearch = br.search({
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            csrfToken:"{% csrf_token %}"
+        });
+
+        productsearch.submitPage = function() {
+            {% if canEdit %}window.location = "{% url 'core:searchProducts' %}";
+            {% else %}window.location = "{% url 'core:priceLookup' %}";
+            {% endif %}
+        };
+
+        productsearch.addEntity("Product",{
+            prepend: "",
+            html: "Product",
+            human: "Product"
+        });
+
+        productsearch.addDelete("Product",{
+            button: $('.deleteProduct'),
+            url:'{% url 'core:deleteProduct' 1 %}'
+        });
+
+        var search = br.search({
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            csrfToken:"{% csrf_token %}"
+        });
+
+        search.submitPage = function() {
+            window.location.reload();
+        };
+
+        search.addEntity("Deal",{
+            prepend: "",
+            html: "Deal",
+            human: "Deal"
+        });
+
+        search.addDelete("Deal",{
+            button: $('.deleteDeal'),
+            url:'{% url 'core:deleteProductDeal' 1 %}'
+        });
+    });
+    </script>
+{% endblock %}

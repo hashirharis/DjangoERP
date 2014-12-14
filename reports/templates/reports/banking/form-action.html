@@ -1,0 +1,14 @@
+<form action="
+
+    {% block formaction %}
+
+        {% if isBankingReport %}
+            {% url 'reports:bankingReportsView' report_type="bankingReport" report_class="banking" %}
+        {% else %}
+        {% endif %}
+
+    {% endblock %}
+
+method="GET">
+    {% include "reports/panel/panel.html" %}
+</form>

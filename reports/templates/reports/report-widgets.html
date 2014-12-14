@@ -1,0 +1,20 @@
+{% if isSales %}
+    {% include "reports/sales/report-widgets-sales.html" %}
+{% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-content">
+                    {% include "reports/content-title.html" %}
+                    {% include "reports/table.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include "reports/form-action.html" %}
+{% endif %}
+
+
+
+
+

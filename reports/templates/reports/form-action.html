@@ -1,0 +1,30 @@
+<div class="row">
+    <div class="col-12">
+        <div class="widget-box widget-box2">
+            <div class="widget-content">
+                {% if isSales %}
+                    {% include "reports/sales/form-action.html" %}
+                {% elif isIRP %}
+                    {% include "reports/IRP/form-action.html" %}
+                {% elif isBanking %}
+                    {% include "reports/banking/form-action.html" %}
+                {% elif isCustomer %}
+                    {% include "reports/customer/form-action.html" %}
+                {% elif isInward %}
+                    {% include "reports/inward/form-action.html" %}
+                {% elif isLedger %}
+                    {% include "reports/ledger/form-action.html" %}
+                {% elif isJsb %}
+                    {% include "reports/jsb/form-action.html" %}
+                {% elif isTax %}
+                    {% include "reports/tax/form-action.html" %}
+                {% elif isWarranties %}
+                    {% include "reports/warranties/form-action.html" %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,119 @@
+EAPO: [
+  'recordIdentifier',
+  'transactionSet',
+  'orderType',
+  'orderNumber',
+  'messageFunction', #5
+  'testProductionFlag',
+  'receiverIdentifier',
+  'senderIdentifier',
+  'orderDatetime',
+  'datetimeExpected', #10
+  'shipmentRequest',
+  'cancelNotAfter',
+  'deliverNotAfter',
+  'deliverNotBefore',
+  'contractNumberReference', #15
+  'blanketOrderNoReference',
+  'promotionDealNoReference',
+  'salesDeptNoReference',
+  'purchaser',
+  'purchasersName',  #20
+  'purchasersStreetAddressLine1',
+  'purchasersStreetAddressLine2',
+  'purchasersCitySuburb',
+  'purchasersState',
+  'purchasersPostcode', #25
+  'purchasersCountry',
+  'purchasersContactName',
+  'purchasersEmailAddress',
+  'purchasersPhoneNumber',
+  'supplier', #30 
+  'suppliersName',
+  'suppliersStreetAddressLine1',
+  'suppliersStreetAddressLine2',
+  'suppliersCitySuburb',
+  'suppliersState', #35 
+  'suppliersPostcode',
+  'suppliersCountry',
+  'purchasersShipToCode',
+  'purchasersShipToName',
+  'purchasersShipToStreetAddressLine1', #40
+  'purchasersShipToStreetAddressLine2',
+  'purchasersShipToCitySuburb',
+  'purchasersShipToState',
+  'purchasersShipToPostcode',
+  'purchasersShipToCountry', #45
+  'purchasersShipToAddressLocation',
+  'purchasersShipToReferenceQualifier',
+  'purchasersShipToReferenceNumber',
+  'purchasersBillToCode',
+  'purchasersBillToName',
+  'purchasersBillToStreetAddressLine1',
+  'purchasersBillToStreetAddressLine2',
+  'purchasersBillToCitySuburb',
+  'purchasersBillToState',
+  'purchasersBillToPostcode',
+  'purchasersBillToCountry',
+  'finalShipToCode',
+  'finalShipToName',
+  'finalShipToStreetAddress1',
+  'finalShipToStreetAddress2',
+  'finalShipToCitySuburb',
+  'finalShipToState',
+  'finalShipToPostcode',
+  'finalShipToCountry',
+  'finalShipToContactName',
+  'finalShipToEmailAddress',
+  'currency',
+  'finalShipToPhoneNumber',
+  'termsNetDueDate',
+]
+FTXHEADER: [
+  'recordIdentifier',
+  'freeTextQualifier',
+  'freeTextLine1',
+  'freeTextLine2',
+  'freeTextLine3',
+  'freeTextLine4',
+  'freeTextLine5',
+]
+LINEITEM : [
+  'recordIdentifier',
+  'lineItemNumber',
+  'purchaserProductCode',
+  'gtinProductCode',
+  'suppliersProductCode', #5
+  'itemDescription',
+  'quantity',
+  'unitOfMeasure',
+  'datetimeExpected',
+  'priceQualifier', #10
+  'unitPrice',
+  'contractNumberReference',
+  'numberOfPackages',
+  'packagingLevel',
+  'taxDetails', #15
+  'lineItemFreeText1',
+  'lineItemFreeText2',
+  'shipToCode',
+  'name',
+  'streetAddressLine1', #20
+  'streetAddressLine2',
+  'citySuburb',
+  'state',
+  'postcode'
+]
+LINELOC : [
+  'recordIdentifier',
+  'deliveryLocation',
+  'agency',
+  'quantity',
+  'unitOfMeasure', #5
+  'datetimeExpected'
+]
+END: [
+  'recordIdentifier',
+  'totalMonetaryAmount',
+  'orderNumber'
+]

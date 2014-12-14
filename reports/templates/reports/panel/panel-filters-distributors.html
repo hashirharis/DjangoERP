@@ -1,0 +1,10 @@
+<div class="col-lg-2">
+    Distributors:
+    <label>
+        <select placeholder="Filter by Brands" multiple="multiple" id="searchBrand" class="selectmultiple" name="brand">
+            {% for distributor in distributors %}
+                <option value="{{ distributor.id }}">{{ distributor.distributor|title }}</option>
+            {% endfor %}
+        </select>
+    </label>
+</div>

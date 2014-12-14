@@ -1,0 +1,14 @@
+{%extends "stock_range_base.html"%}
+<div class="widget-box">
+	<div class="widget-title">
+		<span class="icon"><i class="fa fa-repeat"></i></span>
+		<h5>GOLD</h5>
+	</div>
+	<div class="widget-content nopadding">
+		<ul class="activity-list">
+			{% for i in object_list%}
+				<li>{{i}}</li>
+				{%endfor%}
+		</ul>
+	</div>
+</div>

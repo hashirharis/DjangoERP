@@ -1,0 +1,13 @@
+{% if isStatements %}
+<li>
+    <a href="/reports/export/statements/ledger/?{{search_string}}">Export</a>
+</li>
+{% elif isAged %}
+<li>
+    <a href="/reports/export/aged/ledger/?{{search_string}}">Export</a>
+</li>
+{% elif isSelected %}
+<li>
+    <a href="/reports/export/selected/ledger/?{{search_string}}">Export</a>
+</li>
+{% endif %}

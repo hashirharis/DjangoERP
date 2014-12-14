@@ -1,0 +1,117 @@
+- model: pos.paymentmethod
+  pk: 1
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: Cash
+
+- model: pos.paymentmethod
+  pk: 2
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: Cheque
+
+- model: pos.paymentmethod
+  pk: 3
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: EFTPos
+
+- model: pos.paymentmethod
+  pk: 4
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: Credit Card
+
+- model: pos.paymentmethod
+  pk: 5
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: Mastercard
+    parentMethod: 4
+
+- model: pos.paymentmethod
+  pk: 6
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: VISA
+    parentMethod: 4
+
+- model: pos.paymentmethod
+  pk: 7
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: Direct Deposit
+
+- model: pos.paymentmethod
+  pk: 8
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: Finance
+
+- model: pos.paymentmethod
+  pk: 9
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: Account
+
+- model: pos.paymentmethod
+  pk: 10
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: 7 day Account
+    parentMethod: 9
+
+- model: pos.paymentmethod
+  pk: 11
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: 10 day Account
+    parentMethod: 9
+
+- model: pos.paymentmethod
+  pk: 12
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: 30 day Account
+    parentMethod: 9
+
+- model: pos.paymentmethod
+  pk: 13
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: 60 day Account
+    parentMethod: 9
+
+- model: pos.paymentmethod
+  pk: 14
+  fields:
+    group: 1
+    store: 12
+    isShared: true
+    name: Credit

@@ -1,0 +1,15 @@
+<form action="
+
+    {% block formaction %}
+
+        {% if isDailySnapshot %}
+        {% elif isTaxReport %}
+        {% endif %}
+
+    {% endblock %}
+
+" method="GET">
+    {% include "reports/panel/panel.html" %}
+
+</form>
+

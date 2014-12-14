@@ -1,0 +1,387 @@
+{% extends "b2b/ordering/base.html" %}
+
+{% block title %}Stock Order{% endblock %}
+
+{% block content %}
+
+<div id="content-header">
+    <h1> {% if etOrder %}{{ etOrder.status|title }}{% elif order %}{{ order.status|title }}{% else %}New{% endif %} <small>{% if etOrder %} Electronic {% endif %} Stock Order </small></h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    <a href="{% url 'stock:dashboard' %}"><i class="glyphicon glyphicon-gift"></i>Stock/Invoicing</a>
+    <a href="{% url 'b2b:stockOrderHome' %}"><i class="glyphicon glyphicon-list-alt"></i>Stock Ordering</a>
+    <a href="{% url 'b2b:newStockOrder' %}"><i class="glyphicon glyphicon-plus-sign"></i><strong>New</strong></a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseOne" data-toggle="collapse">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-info-sign"></i>
+                    </span>
+                        <h5>Order Information</h5>
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseOne">
+                    <div class="widget-content">
+                        <form id="OrderInformationForm" class="form-horizontal">
+                            <div class="control-group">
+                                <label class="control-label" for="selectPurchaserStore">Purchaser</label>
+                                <div class="controls">
+                                    <select id="selectPurchaserStore">
+                                        {% for purchaser in purchasers %}
+                                            <option value="{{ purchaser }}">{{ purchaser }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {% if stores %}
+                                <div class="control-group ordering-store">
+                                    <label class="control-label" for="selectOrderingStore">Ordering Store</label>
+                                    <div class="controls">
+                                        <select id="selectOrderingStore">
+                                            {% for store in stores %}
+                                                <option value="{{ store.id }}">{{ store.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="control-group">
+                                <label class="control-label" for="inputOrderReference">Order Reference</label>
+                                <div class="controls">
+                                    <input type="text" id="inputOrderReference" placeholder="Generate -->">
+                                    <button id="refreshOrderReference" class="btn btn-primary tip-bottom" data-original-title="Retrieve a new Order Reference" type="button"><i class="glyphicon glyphicon-refresh"></i></button>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="packingSlipNumber">Packing Slip Number</label>
+                                <div class="controls">
+                                    <input type="text" id="packingSlipNumber" placeholder="Packing Slip Number">
+                                </div>
+                            </div>
+                        </form>
+                        <form class="form-horizontal">
+                            {% if order %}
+                                <!-- if order is not new or saved i.e pending or complete -->
+                                <div class="control-group invoiceNumberLinkDiv hidden">
+                                    <label class="control-label" for="inputInvoiceNumber">Invoice Number</label>
+                                    <div class="controls">
+                                        <div class="input-append">
+                                            <input type="text" id="inputInvoiceNumber" placeholder="Invoice Number">
+                                            {% if order.invoice %}
+                                                <button id="viewInvoiceNumber" class="btn" type="button"><i class="glyphicon glyphicon-eye-open"></i></button>
+                                            {% endif %}
+                                            <button id="findInvoiceNumber" class="btn" type="button"><i class="glyphicon glyphicon-search"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- endif -->
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseThree" data-toggle="collapse">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-file"></i>
+                    </span>
+                        <h5>Comments</h5>
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseThree">
+                    <div class="widget-content">
+                        <textarea id="orderNotes" rows="8" style="width:100%">​</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseTwo" data-toggle="collapse">
+                        <span class="totalgreen label label-success">Total Store Net : $0.00</span>
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-barcode"></i>
+                    </span>
+                        <h5>Order Models/Products</h5>
+                        <div class="buttons">
+                            <a id="addProductButton" href="#addProduct" role="button" class="btn btn-mini" data-toggle="modal"><i class="glyphicon glyphicon-plus"></i> Add Product</a>
+                        </div>
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseTwo">
+                    <div class="widget-content orderLinesDiv">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-content">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-actions" style="text-align: right">
+                                <a href="#" data-target="#openToBuyBreakdown" data-toggle="modal" class="btn btn-danger btn-large">Open To Buy</a>
+                                <a id="saveStockOrder" class="btn btn-success btn-large disabled">Save Order</a>
+                                <a id="postStockOrder" class="btn btn-info btn-large disabled">Post Order</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="netBreakDown">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Cost Price Breakdown</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="netBreakDownContent">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="EDIDetails" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Electronic Trading</h3>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <form class="form-horizontal">
+                                <div class="control-group">
+                                    <label class="control-label">Order Type</label>
+                                    <div class="controls">
+                                        <label><input type="radio" value="220" checked="true" name="et_type" /> Purchase</label>
+                                        <label><input type="radio" value="221" name="et_type" /> Blanket Order</label>
+                                        <label><input type="radio" value="226" name="et_type" /> Call Off Order</label>
+                                    </div>
+                                    <div class="controls">
+                                        <label><input type="checkbox" name="radioDD" /> Direct Delivery</label>
+                                    </div>
+                                </div>
+                                <div class="control-group directDelivery" style="display:none;background: #def0d8">
+                                    <h3 style="text-align: center;margin-bottom: 10px;">Delivery Details</h3>
+                                    <label class="control-label">Name</label>
+                                    <div class="controls">
+                                        <input type="text" id="dd-name" value="" />
+                                    </div>
+                                    <label class="control-label">Street Address Line 1</label>
+                                    <div class="controls">
+                                        <input type="text" id="dd-street-address-1" value="" />
+                                    </div>
+                                    <label class="control-label">Street Address Line 2</label>
+                                    <div class="controls">
+                                        <input type="text" id="dd-street-address-2" value="" />
+                                    </div>
+                                    <label class="control-label">Suburb</label> <!-- load suburbs from db -->
+                                    <div class="controls">
+                                        <input type="text" id="dd-suburb" value=""/>
+                                    </div>
+                                    <label class="control-label">State</label>
+                                    <div class="controls">
+                                        <input type="text" id="dd-state" value="" />
+                                    </div>
+                                    <label class="control-label">Postcode</label>
+                                    <div class="controls">
+                                        <input type="text" id="dd-post-code" value="" />
+                                    </div>
+                                    <label class="control-label">Contact Name</label>
+                                    <div class="controls">
+                                        <input type="text" id="dd-contact-name" value="" />
+                                    </div>
+                                    <label class="control-label">Phone Number</label>
+                                    <div class="controls">
+                                        <input type="text" id="dd-phone" value="" />
+                                    </div>
+                                    <label class="control-label">Email Address</label>
+                                    <div class="controls">
+                                        <input type="text" id="dd-email" value="" />
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label">Promotional Reference</label>
+                                    <div class="controls">
+                                        <input type="text" id="promo-ref" value="" />
+                                    </div>
+                                    <label class="control-label">Quotation Reference</label>
+                                    <div class="controls">
+                                        <input type="text" id="quote-ref" value="" />
+                                    </div>
+                                    <label class="control-label">Blanket Order Reference</label>
+                                    <div class="controls">
+                                        <input type="text" id="bo-ref" value="" />
+                                    </div>
+                                </div>
+                                <div class="control-group datesAndWindow">
+                                    <label class="control-label">Date Required</label>
+                                    <div class="controls">
+                                        <input type="text" class="dateTimeInput" id="datetime-expected" value="{{ tomorrow|date:"m/d/Y" }}" placeholder="dd/mm/yyyy" /> <!-- tomorrows date -->
+                                    </div>
+                                    <label class="control-label">Window Start</label>
+                                    <div class="controls">
+                                        <input type="text" class="dateTimeInput" id="deliver-not-before" value="{{ tomorrow|date:"m/d/Y" }}" placeholder="dd/mm/yyyy" /> <!-- tomorrows date -->
+                                    </div>
+                                    <label class="control-label">Window End</label>
+                                    <div class="controls">
+                                        <input type="text" class="dateTimeInput" id="deliver-not-after" value="{{ after3months|date:"m/d/Y" }}" placeholder="dd/mm/yyyy" /> <!-- 3 months from tomorrow -->
+                                    </div>
+                                    <label class="control-label">Cancel Order</label>
+                                    <div class="controls">
+                                        <input type="text" class="dateTimeInput" id="cancel-not-after" value="{{ after3months|date:"m/d/Y" }}" placeholder="dd/mm/yyyy" /> <!-- 3 months from tomorrow -->
+                                    </div>
+                                </div>
+                                <div class="control-group orderInstructionsDiv" style="display:none;">
+                                    <h3 style="text-align: center;">Order Instructions</h3>
+                                    <div id="orderInstructionsTableDiv">
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" id="sendETOrder">Send Order</button>
+                <button class="btn btn-inverse" id="addInstructions">Add Delivery/Payment Instructions</button>
+                <button class="btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addInstructionsModal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Add Delivery/Payment Instructions</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <form class="form-horizontal">
+                            <div class="control-group">
+                                <label class="control-label">Instructions Type</label>
+                                <div class="controls">
+                                    <label><input type="radio" value="Delivery" checked="true" name="inst_type" /> Delivery</label>
+                                    <label><input type="radio" value="Payment" name="inst_type" /> Payment</label>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Instructions</label>
+                                <div class="controls">
+                                    <input type="text" id="instructionsL1" value="" maxlength="70" placeholder="Line 1" />
+                                    <input type="text" id="instructionsL2" value="" maxlength="70" placeholder="Line 2" />
+                                    <input type="text" id="instructionsL3" value="" maxlength="70" placeholder="Line 3" />
+                                    <input type="text" id="instructionsL4" value="" maxlength="70" placeholder="Line 4" />
+                                    <input type="text" id="instructionsL5" value="" maxlength="70" placeholder="Line 5" />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" id="completeAddInstructions">Add Instructions</button>
+                <button class="btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="openToBuyBreakdown">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h3>Open to buy Breakdown</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <th>Calculation</th>
+                            <th>Amount</th>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Purchase Limit</td>
+                                <td>${{ store.purchaseLimit|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">-------------</td>
+                            </tr>
+                            <tr>
+                                <td>+ Ext. Credit</td>
+                                <td>${{ store.extendedCreditTotals|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td>- Current Debt</td>
+                                <td>${{ store.currentDebt|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">-------------</td>
+                            </tr>
+                            <tr>
+                                <td>- IRP Invoices</td>
+                                <td>${{ store.irpInvoices|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td>- Not Invoiced</td>
+                                <td>${{ store.notInvoiced|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">-------------</td>
+                            </tr>
+                            <tr>
+                                <td>Open To Buy</td>
+                                <td>${{ store.openToBuy|floatformat:2 }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

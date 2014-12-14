@@ -1,0 +1,151 @@
+{% load reportTags %}
+
+{% if isStorePurchases %}
+    {% for obj in objects %}
+        <tr>
+            <td>{{ obj.Distributor }}</td>
+            <td>{{ obj.StoreName }}</td>
+            <td>{{ obj.State }}</td>
+            <td>{{ obj.Date }}</td>
+            <td>{{ obj.Invoice }}</td>
+            <td>{{ obj.InvType }}</td>
+            <td>{{ obj.Ref }}</td>
+            <td>{{ obj.Class }}</td>
+            <td>{{ obj.item }}</td>
+            <td>{{ obj.quantity }}</td>
+            <td>${% filter floatformat:2 %}{{ obj.invoicePrice }}{% endfilter %}</td>
+            <td>${% filter floatformat:2 %}{{ obj.TotalInvinc }}{% endfilter %}</td>
+            <td>${% filter floatformat:2 %}{{ obj.TotalNetinc }}{% endfilter %}</td>
+        </tr>
+    {% endfor %}
+{% elif isExtended %}
+    {% for obj in objects %}
+        <tr>
+            <td>isExtended{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+        </tr>
+    {% endfor %}
+{% elif isInvoiceByDate %}
+    {% for obj in objects %}
+        <tr>
+            <td>{{ obj.invoiceNumber }}</td>
+            <td>{{ obj.type }}</td>
+            <td>{{ obj.distributor }}</td>
+            <td>{{ obj.invoiceDate }}</td>
+            <td>${% filter floatformat:2 %}{{ obj.invTotalExGST }}{% endfilter %}</td>
+            <td>{{ obj.orderReference }}</td>
+            <td>{{ obj.store }}</td>
+            <td>{{ obj.createdBy }}</td>
+            <td>{{ obj.createdDate }}</td>
+        </tr>
+    {% endfor %}
+{% elif isStoreListing %}
+    {% for obj in objects %}
+        <tr>
+            <td>{{ obj.name }}</td>
+            <td>{{ obj.address }}</td>
+            <td>{{ obj.landphone }}</td>
+            <td>{{ obj.mobphone }}</td>
+            <td>{{ obj.email }}</td>
+            <td>{{ obj.fax }}</td>
+        </tr>
+    {% endfor %}
+{% elif isWholesale %}
+    {% for obj in objects %}
+        <tr>
+            <td>isWholesale{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+        </tr>
+    {% endfor %}
+{% elif isRebates %}
+    {% for obj in objects %}
+        <tr>
+            <td>{{ obj.distributor }}</td>
+            <td>${% filter floatformat:2 %}{{ obj.totInv }}{% endfilter %}</td>
+            <td>${% filter floatformat:2 %}{{ obj.storeNet }}{% endfilter %}</td>
+            <td>${% filter floatformat:2 %}{{ obj.HORebate }}{% endfilter %}</td>
+            <td>${% filter floatformat:2 %}{{ obj.HODollarBonus }}{% endfilter %}</td>
+            <td>${% filter floatformat:2 %}{{ obj.HOPercBonus }}{% endfilter %}</td>
+            <td>${% filter floatformat:2 %}{{ obj.HOVCBonus }}{% endfilter %}</td>
+            <td>${% filter floatformat:2 %}{{ obj.HONet }}{% endfilter %}</td>
+            <td>${% filter floatformat:2 %}{{ obj.diff }}{% endfilter %}</td>
+        </tr>
+    {% endfor %}
+{% elif isIAS %}
+    {% for obj in objects %}
+        <tr>
+            <td>{{ obj.name }}</td>
+            <td>{{ obj.purchaseOrders }}</td>
+            <td>{{ obj.iRPInvoices }}</td>
+            <td>{{ obj.totalPurchase }}</td>
+            <td>{{ obj.extendedCredit }}</td>
+            <td>{{ obj.creditDebt }}</td>
+            <td>{{ obj.limit }}</td>
+            <td>{{ obj.openBuy }}</td>
+            <td>{{ obj.permit }}</td>
+        </tr>
+    {% endfor %}
+{% elif isB2B %}
+    {% for obj in objects %}
+        <tr>
+            <td>isB2B{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+        </tr>
+    {% endfor %}
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

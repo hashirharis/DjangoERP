@@ -1,0 +1,36 @@
+{% if isSalesAnalysisView %}
+<li>
+    {% include "reports/panel/sales/panel-form-group-sales-analysis.html" %}
+</li>
+{% elif isItemisedView %}
+<li>
+    {% include "reports/panel/sales/panel-form-group-itemised.html" %}
+</li>
+{% elif isItemisedSummaryView %}
+<li>
+    <a href="/reports/export/itemisedsummary/0/?{{search_string}}">Export</a>
+</li>
+{% elif isMonthlySalesView %}
+<li>
+    <a href="/reports/export/monthly/0/?{{search_string}}">Export</a>
+</li>
+{% elif isSalesPersonView %}
+<li>
+    <a href="/reports/export/salesperson/0/?{{search_string}}">Export</a>
+</li>
+{% elif isDistributionView %}
+<li>
+    <a href="/reports/export/distribution/0/?{{search_string}}">Export</a>
+</li>
+{% elif isSalesByCustomerView %}
+<li>
+    <a href="/reports/export/salesByCustomer/0/?{{search_string}}">Export</a>
+</li>
+{% elif isWarrantiesView %}
+<li>
+    <a href="/reports/export/warranties/0/?{{search_string}}">Export</a>
+</li>
+{% else %}
+{% endif%}
+
+

@@ -1,0 +1,38 @@
+{% load reportTags %}
+
+{% for postcode in objects %}
+    <tr>
+        <td>{{ postcode.code }}</td>
+        <td>{{ postcode.state }}</td>
+        <td>${% filter floatformat:2 %}{{ postcode.salesTotalInc }}{% endfilter %}</td>
+        <td>${% filter floatformat:2 %}{{ postcode.salesTotalEx }}{% endfilter %}</td>
+        <td>${% filter floatformat:2 %}{{ postcode.costPriceTotal }}{% endfilter %}</td>
+        <td>${% filter floatformat:2 %}{{ postcode.gpDollarTotal }}{% endfilter %}</td>
+        <td>{% filter floatformat:2 %}{{ postcode.gpPercTotal }}{% endfilter %}%</td>
+        <td>{{ postcode.type }}</td>
+    </tr>
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

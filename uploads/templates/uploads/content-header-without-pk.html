@@ -1,0 +1,14 @@
+{% load br %}
+
+{% if hasPK %}
+    {% if uploadType == 'catalogue' %}
+        <h1>Catalogue upload:<small>
+    {% elif uploadType == 'writeups' %}
+        <h1>Writeups upload <small>
+    {% elif uploadType == 'products' %}
+        <h1>Products upload<small>
+    {%  endif %}
+{% else %}
+    <h1>Uploads<small>
+{% endif %}
+</small></h1>

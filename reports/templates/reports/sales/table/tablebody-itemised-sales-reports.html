@@ -1,0 +1,43 @@
+{% load reportTags %}
+
+{% for salesLine in objects %}
+    <tr>
+        <td>{{ salesLine.saleCode }}</td> <!--sale id-->
+        <td>{{ salesLine.brand }}</td>  <!--brand-->
+        <td>{{ salesLine.model }}</td>  <!--model-->
+        <td>{{ salesLine.type }}</td>  <!--type-->
+        <td>{% filter truncatechars:18 %}{{ salesLine.desc }}{% endfilter %}</td>  <!--desc-->
+        <td>{{ salesLine.quantity }}</td>  <!--Quantity-->
+        <td></td>  <!--Invoice-->
+        <td>${% filter floatformat:2 %}{{ salesLine.sellInc }}{% endfilter %}</td>  <!--sell inc-->
+        <td>${{ salesLine.sellEx }}</td>  <!--sell ex-->
+        <td>${{ salesLine.nett }}</td>  <!--nett-->
+        <td>${{ salesLine.gpDollar }}</td>  <!--gp-->
+        <td>{{ salesLine.gpPerc }}%</td>  <!--gp % -->
+        <td>{{ salesLine.rep }}</td>  <!--sold by-->
+        <td>{{ salesLine.cust }}</td>  <!--cust-->
+        <td>{{ salesLine.dateSold }}</td>  <!--date sold-->
+        <td>{{ salesLine.paymentDate }}</td>  <!--payment date-->
+    </tr>
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+{% block title %} {{ product.model }} - Product Details {% endblock %}
+
+{% block content %}
+
+<div id="content-header">
+    <h1>{{ product.model }} <small>Product Information</small></h1>
+    {% if canEdit %}
+    <div class="btn-group">
+        {% if product.warranty %}
+            <a href="{% url 'core:updateWarranty' product.id %}" class="btn btn-large tip-bottom" title="Update Product"><i class="glyphicon glyphicon-pencil"></i> Update</a>
+        {% else %}
+            <a href="{% url 'core:updateProduct' product.id %}" class="btn btn-large tip-bottom" title="Update Product"><i class="glyphicon glyphicon-pencil"></i> Update</a>
+        {% endif %}
+        <a class="btn btn-large deleteProduct" data-id="{{ product.id }}"><i class="glyphicon glyphicon-remove"></i> Delete</a>
+    </div>
+    {% endif %}
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'core:home' %}" class="tip-bottom" data-original-title="Go to Home"><i class="glyphicon glyphicon-home"></i> Home</a>
+    {% if canEdit %}<a href="{% url 'core:searchProducts' %}" class="tip-bottom" data-original-title="Search for Products"><i class="glyphicon glyphicon-barcode"></i>Products</a>
+    {% else %}<a href="{% url 'core:priceLookup' %}" class="tip-bottom" data-original-title="Search for Products"><i class="glyphicon glyphicon-search"></i>Products</a>{% endif %}
+    <a href="{% url 'core:viewProduct' product.id %}" class="tip-bottom" data-original-title="View {{ product.model }}"><i class="glyphicon glyphicon-gift"></i>{{ product.model }}</a>
+    <a href="">View</a>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Give the customer information expanded by default -->
+        <div class="col-12 col-lg-6">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseOne" data-toggle="collapse">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-chevron-up"></i>
+                        </span>
+                        <h5>Public Summary</h5>
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseOne">
+                    <div class="widget-content">
+                        <table class="table table-bordered">
+                            <tr class="success">
+                                <td>Go Price</td>
+                                <td>$ {{ product.goPrice }}</td>
+                            </tr>
+                            <tr>
+                                <td>Cost Price</td>
+                                <td><small><em>Check Under Store Information Summary</em></small></td>
+                            </tr>
+                            {% if product.warranty %}
+                            <tr>
+                                <td>Start Range</td>
+                                <td>$ {{ product.warranty.startValue }}</td>
+                            </tr>
+                            <tr>
+                                <td>End Range</td>
+                                <td>$ {{ product.warranty.endValue }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <td>Brand</td>
+                                <td><a href data-id="{{  product.brand.id }}" class="supress brandSearch">{{ product.brand.brand|title }}</a></td>
+                            </tr>
+                            <tr>
+                                <td>Class</td>
+                                <td><a href data-id="{{  product.category.parentCategory.parentCategory.id }}" class="supress categorySearch">{{ product.category.parentCategory.parentCategory }}</a></td>
+                            </tr>
+                            <tr>
+                                <td>Type</td>
+                                <td><a href data-id="{{  product.category.parentCategory.id }}" class="supress categorySearch">{{ product.category.parentCategory }}</a></td>
+                            </tr>
+                            <tr>
+                                <td>Category</td>
+                                <td><a href data-id="{{  product.category.id }}" class="supress categorySearch">{{ product.category }}</a></td>
+                            </tr>
+                            <tr>
+                                <td>Model Status</td>
+                                <td>{{ product.status }}</td>
+                            </tr>
+                            <tr>
+                                <td>Tags</td>
+                                <td>
+                                    {% for tag in product.tags.all %}
+                                        <a href class="supress"><span data-id="{{ tag.id }}" class="tagSearch
+                                        {% if tag.type == "Deal" %}
+                                            label-success
+                                        {% elif tag.type == "Feature" %}
+                                            label-warning
+                                        {% elif tag.type == "Other" %}
+                                            label-info
+                                        {% endif %} label">{{ tag }}</span></a>&nbsp
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- done deal - information overloaded -->
+        </div>
+        <div class="col-lg-6 col-12">
+            <!-- Let there be light upon our backend information - this is not expanded by default -->
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseTwo" data-toggle="collapse" class="collapsed">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-chevron-down"></i>
+                        </span>
+                        <h5>Store Summary</h5>
+                        <div class="buttons"><a href="#" class="btn btn-mini"><i class="glyphicon glyphicon-print"></i> Print Label </a></div>
+                        {% if not product.warranty %}<div class="buttons"><a href="{% url 'stock:createMovement' %}" class="btn btn-mini"><i class="glyphicon glyphicon-resize-vertical"></i> Amend Stock Levels </a></div>{% endif %}
+                        <!-- <div class="buttons"><a href="#" class="btn btn-mini"><i class="glyphicon glyphicon-shopping-cart"></i> Quick Sale </a></div>
+                        <div class="buttons"><a href="#" class="btn btn-mini"><i class="glyphicon glyphicon-file"></i> New Note </a></div> -->
+
+                    </a>
+                </div>
+                <div class="collapse in" id="collapseTwo">
+                    <div class="widget-content">
+                        <h3>Cost Breakdown</h3>
+                        {% include 'core/product/product-calc-summary.html' %}
+
+                        <h3>Product Deals <span class="badge badge-success">{{ currentCount }} Current</span> <span class="badge badge-info">{{ pendingCount }} Pending</span>
+                            {% if canEdit %}
+                                <a href="{% url 'core:createProductDeal' product.id %}" class="btn btn-primary btn-mini"><i class="glyphicon glyphicon-plus"></i> Add</a>
+                                <a href="{% url 'core:searchProductDeals' product.id %}" class="btn btn-primary btn-mini"><i class="glyphicon glyphicon-folder-open"></i> Archives</a>
+                            {% endif %}
+                        </h3>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Deal Type</th>
+                                <th>Amount</th>
+                                <th>Comments</th>
+                                <th>Start-End Date</th>
+                                {% if canEdit %}
+                                <th>Actions</th>
+                                {% endif %}
+                            </tr>
+                            {% if deals %}
+                            {% for deal in deals %}
+                                <tr class="{% if deal.active %}success{% else %}info{% endif %}">
+                                    <td>{{ deal.get_verbose_type }}</td>
+                                    <td>{% if not deal.percent %}${% endif %}{{ deal.amount }}{% if deal.percent %}%{% endif %}</td>
+                                    <td>{{ deal.comments }}</td>
+                                    <td>{{ deal.startDate|date:'d/m/y' }} - {{ deal.endDate|date:'d/m/y' }}</td>
+                                    {% if canEdit %}
+                                    <td>
+                                        <a class="btn btn-primary btn-mini" href="{% url 'core:updateProductDeal' deal.id %}"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
+                                        <a class="btn btn-primary btn-mini deleteDeal" data-id="{{ deal.id }}"><i class="glyphicon glyphicon-remove"></i> Delete</a>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            {% else %}
+                                <tr class="error" align="center">
+                                    <td colspan="5">There are no deals currently being offered with this product..</td>
+                                </tr>
+                            {% endif %}
+                        </table>
+
+                        {% if not product.warranty %}
+                            <h3>Stock Levels <span class="badge">{% if stock_level_total > 0 %}{{ stock_level_total }}{% else %}0{% endif %} </span></h3>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Stock Level</th>
+                                    <th>Store</th>
+                                    <th>Contact</th>
+                                </tr>
+                                {% if stock_level_total > 0 %}
+                                {% for stocklevel in stock_levels %}
+                                    <tr>
+                                        <td>{{ stocklevel.level }}</td>
+                                        <td><a href="#">{{ stocklevel.store }}</a></td>
+                                        <td><a href="#">{{ stocklevel.store.contact.firstName }}</a></td>
+                                    </tr>
+                                {% endfor %}
+                                {% else %}
+                                    <tr class="error" align="center">
+                                        <td colspan="3">There are no stores which currently have this product in stock.</td>
+                                    </tr>
+                                {% endif %}
+                            </table>
+
+                            <h3>Recent Stock Movements</h3>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Serial #</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th>Reference</th>
+                                    <th>Created By</th>
+                                </tr>
+                                {% for inventoryitem in local_levels.storeinventoryitem_set.all|slice:"20" %}
+                                    <tr class="success">
+                                        <td style="background:white" rowspan="2">{% if inventoryitem.serial %}{{ inventoryitem.serial }}{% else %}GENERIC#{{ inventoryitem.pk }}{% endif %}</td>
+                                        <td>Movement In</td>
+                                        <td>{{ inventoryitem.movementIn.docDate }}</td>
+                                        <td><a href="{{ inventoryitem.movementIn.url }}"> {{ inventoryitem.movementIn.docType }} {{ inventoryitem.movementIn.docReference }} @ {{ inventoryitem.purchaseNet }}</a></td>
+                                        <td>{{ inventoryitem.movementIn.createdBy.name }}</td>
+                                    </tr>
+                                    <tr class="danger">
+                                        <td>Movement Out</td>
+                                        <td>{{ inventoryitem.movementOut.docDate }}</td>
+                                        <td><a href="{{ inventoryitem.movementOut.url }}"> {{ inventoryitem.movementOut.docType }} {{ inventoryitem.movementOut.docReference }} </a></td>
+                                        <td>{{ inventoryitem.movementOut.createdBy.name }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        {% endif %}
+
+                        <!-- <h2>Notes <span class="badge">3</span></h2>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Date</th>
+                                <th>Note Content</th>
+                                <th>Author</th>
+                                <th>Share Settings</th>
+                            </tr>
+                            <tr>
+                                <td>01/01/2012</td>
+                                <td>Initial inclusion into Inventory</td>
+                                <td>Head Office</td>
+                                <td>Franchise Wide</td>
+                            </tr>
+                        </table> -->
+
+                        <!-- <h2>Sales History <span class="badge">2</span></h2>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>Customer</th>
+                                <th>Invoice</th>
+                                <th>Store</th>
+                            </tr>
+                            <tr>
+                                <td>01/01/2012 17:15</td>
+                                <td><a href="#">Ronald McDonald</a></td>
+                                <td><a href="#">#4123421</a></td>
+                                <td>Archerfield</td>
+                            </tr>
+                        </table> -->
+                    </div>
+                </div>
+            </div>
+            <!-- finish le store information -->
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="widget-box">
+                <div class="widget-title">
+                            <span class="icon">
+                                <i class="glyphicon glyphicon-list-alt"></i>
+                            </span>
+                    <h5>Product Description</h5>
+                </div>
+                <div class="widget-content">
+                    {% autoescape off %}
+                        {{ product.description }}
+                    {% endautoescape %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+
+        $('.supress').click(function(e){
+            e.preventDefault();
+        });
+
+        $('.tagSearch').click(function(){
+            productSearch({tags:$(this).attr('data-id')})
+        });
+
+        $('.brandSearch').click(function(){
+            productSearch({brand:$(this).attr('data-id')})
+        });
+
+        $('.categorySearch').click(function(){
+            productSearch({category:$(this).attr('data-id')})
+        });
+
+        var productSearch = function(params) {
+            // The rest of this code assumes you are not using a library.
+            // It can be made less wordy if you use one.
+            var form = $('<form></form>');
+            form.attr("method", 'get');
+
+            {% if canEdit %}form.attr("action", '{% url 'core:searchProducts' %}');
+            {% else %}form.attr("action", '{% url 'core:priceLookup' %}');
+            {% endif %}
+
+            for(var key in params) {
+                if(params.hasOwnProperty(key)) {
+                    var hiddenField = $('<input></input>')
+                    hiddenField.attr("type", "hidden");
+                    hiddenField.attr("name", key);
+                    hiddenField.attr("value", params[key]);
+                    form.append(hiddenField);
+                }
+            }
+
+            $('body').append(form);
+            form.submit();
+        };
+
+        var productsearch = br.search({
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            csrfToken:"{% csrf_token %}"
+        });
+
+        productsearch.submitPage = function() {
+            {% if canEdit %}window.location = "{% url 'core:searchProducts' %}";
+            {% else %}window.location = "{% url 'core:priceLookup' %}";
+            {% endif %}
+        };
+
+        productsearch.addEntity("Product",{
+            prepend: "",
+            html: "Product",
+            human: "Product"
+        });
+
+        productsearch.addDelete("Product",{
+            button: $('.deleteProduct'),
+            url:'{% url 'core:deleteProduct' 1 %}'
+        });
+
+        var search = br.search({
+            ajaxLoader: "<div class='offset2 col-6' style='text-align:center;margin-top:20px;'> <img src='{{ STATIC_URL }}img/ajax-loader.gif' /> </div>",
+            csrfToken:"{% csrf_token %}"
+        });
+
+        search.submitPage = function() {
+            window.location.reload();
+        };
+
+        search.addEntity("Deal",{
+            prepend: "",
+            html: "Deal",
+            human: "Deal"
+        });
+
+        search.addDelete("Deal",{
+            button: $('.deleteDeal'),
+            url:'{% url 'core:deleteProductDeal' 1 %}'
+        });
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "stock/movement/create.html" %}
+
+{% block header%}
+
+    <h1>Virtual Warehouse <small>Move stock without invoice</small></h1>
+
+{% endblock %}
+
+{% block breadcrumbs%}
+
+<a href="{% url 'vw:home' %}"><i class="glyphicon glyphicon-gift"></i>Virtual Warehouse</a>
+<a href="#" class="supress"><i class="glyphicon glyphicon-th-list"></i><strong>Book Stock In/Out</strong></a>
+
+{% endblock %}

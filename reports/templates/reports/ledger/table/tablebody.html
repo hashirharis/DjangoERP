@@ -1,0 +1,85 @@
+{% load reportTags %}
+
+{% if isStatements %}
+    {% for obj in objects %}
+        <tr>
+            <td>isStatements {{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+        </tr>
+    {% endfor %}
+{% elif isAged %}
+    {% for obj in objects %}
+        <tr>
+            <td>isAged{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+        </tr>
+    {% endfor %}
+{% elif isSelected %}
+    {% for obj in objects %}
+        <tr>
+            <td>isSelected{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+            <td>{{ obj.id }}</td>
+        </tr>
+    {% endfor %}
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

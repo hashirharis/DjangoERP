@@ -1,0 +1,61 @@
+<style type="text/css">
+
+</style>
+
+
+{% if paginator.num_pages == 1 %}
+{% else %}
+<div class="fixed">
+    <ul class="pagination alternate pull-right">
+        {% if page_obj.number == 1 %}
+            <li class="disabled">
+                <a page="1">Page 1</a>
+            </li>
+            <li class="disabled">
+                <a page=1>Prev</a>
+            </li>
+            {% if page_obj.has_next %}
+                <li>
+                    <a page={{ page_obj.next_page_number }}>Next</a>
+                </li>
+                <li>
+                    <a page="{{ paginator.num_pages }}">Page {{ paginator.num_pages }}</a>
+                </li>
+            {% else %}
+                <li class="disabled">
+                    <a page=1>Next</a>
+                </li>
+                <li class=""disabled>
+                    <a page="{{ paginator.num_pages }}">Page {{ paginator.num_pages }}</a>
+                </li>
+            {% endif %}
+        {% elif page_obj.number == paginator.num_pages %}
+            <li>
+                <a page="1">Page 1</a>
+            </li>
+            <li>
+                <a page={{ page_obj.previous_page_number }}>Prev</a>
+            </li>
+            <li class="disabled">
+                <a page='last'>Next</a>
+            </li>
+            <li class="disabled">
+                <a page="{{ paginator.num_pages }}">Page {{ paginator.num_pages }}</a>
+            </li>
+        {% else %}
+            <li>
+                <a page="1">Page 1</a>
+            </li>
+            <li>
+                <a page={{ page_obj.previous_page_number }}>Prev</a>
+            </li>
+            <li>
+                <a page={{ page_obj.next_page_number }}>Next</a>
+            </li>
+            <li>
+                <a page="{{ paginator.num_pages }}">Page {{ paginator.num_pages }}</a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+{% endif %}

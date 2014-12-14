@@ -1,0 +1,39 @@
+{% extends "stock_range_base.html" %}
+
+{%block table_area%}
+	
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirm Delete</h3>
+        </div>
+        <div class="modal-body">
+            <form method="post" id="edit_form" class="form-horizontal" role="form">{% csrf_token %}
+                <p><h5>You Are About To Delete
+                {%if object.product %}
+                    {{object.product}}
+                {%elif object.store.name%}
+                    {{object.store.name}}  From Store Ranging For The Selected Month.</h5>
+                {%endif%}</p>
+                <p> Continue ? </p>
+                {{form.non_field_errors}}
+                <div class="form-group">
+                    {{form.as_p}}
+                </div>
+                 <div class="row">
+                    <div class="col-12">
+                    <input type="submit" value="OK" class="btn btn-primary"> {%if object.product %}<a href="{% url 'core_stock:editRange'%}"><div value="cancel" class="btn btn-primary">cancel</div></a>
+                    {%else%}
+                        <a href="{% url 'core_stock:stock_range'%}"><div value="cancel" class="btn btn-primary">Cancel</div></a>
+                    {%endif%}
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+ 
+
+{%endblock%}
+

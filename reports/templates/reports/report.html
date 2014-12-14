@@ -1,0 +1,167 @@
+{% extends "base-reports.html" %}
+
+{% block title %}
+
+    Reports:
+    {% if isIRP %}
+        {% include "reports/IRP/page-title.html" %}
+    {% elif isSales %}
+        {% include "reports/sales/page-title.html" %}
+    {% elif isBanking %}
+        {% include "reports/banking/page-title.html" %}
+    {% elif isCustomer %}
+        {% include "reports/customer/page-title.html" %}
+    {% elif isInward %}
+        {% include "reports/inward/page-title.html" %}
+    {% elif isIRP %}
+        {% include "reports/IRP/page-title.html" %}
+    {% elif isLedger %}
+        {% include "reports/ledger/page-title.html" %}
+    {% elif isJsb %}
+        {% include "reports/jsb/page-title.html" %}
+    {% elif isTax %}
+        {% include "reports/tax/page-title.html" %}
+    {% elif isWarranties %}
+        {% include "reports/warranties/page-title.html" %}
+    {% else %}
+    {% endif %}
+
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-glyphicons.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/icheck/flat/blue.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.gritter.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/unicorn.main.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/unicorn.grey.css" class="skin-color" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/dataTables.bootstrap.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/style-reports.css" />
+    <style type="text/css">
+        #title {
+            font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+            font-size: 16px;
+            color: white;
+        }
+        .btn {
+        margin: 5px;
+        }
+        .form-group {
+        margin-bottom: -5px;
+        }
+        label {
+            margin-bottom: 0px;
+            margin-right: 10px;
+        }
+        .widget-content {
+        padding: 10px 10px;
+        }
+        td{
+         text-align:center;
+        }
+        {% if isItemisedView or isMonthlySalesView%}
+            {#nav bar sizer#}
+            #sidebar > ul {
+                width: 43px;
+            }
+            #content {
+                margin-left: 43px;
+            }
+            #sidebar > ul > li > a > span {
+                display: none;
+            }
+        {% else %}
+        {% endif %}
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        {% include "reports/report-widgets.html" %}
+    </div>
+
+{% endblock %}
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+
+<script>
+    // Datepicker
+    $('#ui-datepicker').datepicker({
+        dateFormat:("dd/mm/yy"),
+        numberOfMonths: 1,
+        onClose: function( selectedDate ) {
+            $( "#ui-datepicker-2" ).datepicker( "option", "minDate", selectedDate );
+        }
+    });
+    $('#ui-datepicker-2').datepicker({
+        dateFormat:("dd/mm/yy"),
+        numberOfMonths: 1,
+        onClose: function( selectedDate ) {
+            $( "#ui-datepicker" ).datepicker( "option", "maxDate", selectedDate );
+        }
+    });
+</script>
+
+{% block javascript %}
+
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jqueryForDataTables.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/FixedColumns.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/dataTables.bootstrap.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/excanvas.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.custom.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jpanelmenu.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/unicorn.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/unicorn.jui.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.icheck.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.keybind.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/underscore.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.ajaxdjangosetup.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.loginprompt.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/unicorn.form_common.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.base.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/br.search.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/reports/br.table-resizer.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}brjs/reports/br.select2refresh_salesanalysis.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            var viewType;  <!--Start table sizing-->
+            {% if isSalesAnalysisView %}
+                viewType = "isSalesAnalysisView";
+            {% elif isItemisedView %}
+                viewType = "isItemisedView";
+            {% elif isItemisedSummaryView %}
+                viewType = "isItemisedSummaryView";
+            {% elif isSalesPersonView %}
+                viewType = "isSalesPersonView";
+            {% elif isMonthlySalesView %}
+                viewType = "isMonthlySalesView";
+            {% elif isSalesPersonView %}
+                viewType = "isSalesPersonView";
+            {% elif isSalesPersonView %}
+                viewType = "isSalesPersonView";
+            {% elif isSalesPersonView %}
+                viewType = "isSalesPersonView";
+            {% elif isSalesPersonView %}
+                viewType = "isSalesPersonView";
+            {% else %}
+            {% endif %}
+            {% if isMonthlySalesView %}
+            {% else %}
+                br.tableResizer(viewType);   <!--End table sizing-->
+            {% endif %}
+            <!--Start select2 refresh for page elements-->
+            br.select2Refresh_SalesAnalysis('{{ page_obj.number }}', '{{ params.category }}','{{ params.brand }}','{{ params.startDate }}',
+                        '{{ params.endDate}}', '{{ params.chkTrueGP }}', '{{ params.product }}', '{{ params.store }}','{{ params.salesPeople }}', '{{ params.sortTypes }}');
+        });
+    </script>
+{% endblock %}

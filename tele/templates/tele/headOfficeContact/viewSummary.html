@@ -1,0 +1,63 @@
+<div class="row">
+    <div class="col-12 col-lg-6">
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#collapseOne" data-toggle="collapse">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-chevron-up"></i>
+                    </span>
+                    <h5>Contact Summary</h5>
+                </a>
+            </div>
+            <div class="collapse in" id="collapseOne">
+                <div class="widget-content">
+                    <table class="table table-bordered">
+                        <tr>
+                            <td>Name</td>
+                            <td> {{ object.name}}</td>
+                        </tr>
+                        <tr>
+                            <td>Address</td>
+                            <td> {{ object.address}}</td>
+                        </tr>
+                        <tr>
+                            <td>Landline</td>
+                            <td> {{ object.landline}}</td>
+                        </tr>
+                        <tr>
+                            <td>Mobile</td>
+                            <td> {{ object.mobile}}</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td> {{ object.email}}</td>
+                        </tr>
+                        <tr>
+                            <td>Fax</td>
+                            <td> {{ object.fax}}</td>
+                        </tr>
+                        <tr>
+                            <td>Comments</td>
+                            <td> {{ object.comment}}</td>
+                        </tr>
+                        <tr>
+                            <td>Service Type</td>
+                            <td> {{ object.serviceType}}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                            </td>
+                            <td>
+                                {%  if store.displayHOMenu %}
+                                    <a class="btn btn-primary tip-bottom" style="float:right;" data-original-title="Delete" href="{% url 'tele:deleteHeadOfficeContact' object.id %}"><i class="glyphicon glyphicon-remove"></i></a>
+                                    <a class="btn btn-primary tip-bottom" style="float:right;" data-original-title="Edit" href="{% url 'tele:updateHeadOfficeContact' object.id %}"><i class="glyphicon glyphicon-pencil"></i></a>
+                                {% else %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

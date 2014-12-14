@@ -1,0 +1,525 @@
+{% extends "bulletins/list.html" %}
+{% block title %}Bi-Rite Collations Board{% endblock %}
+{% block css %}
+    <style>
+    .ui-dialog-titlebar-close {
+      visibility: hidden;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+<div id="content-header">
+    <h1>Collations</h1>
+</div>
+
+<div id="breadcrumb">
+    <a href="{% url 'bulletins:collations' %}" class="current"><i class="glyphicon glyphicon-home"></i> Collations</a>
+</div>
+
+<div class="row">
+    {% if request.GET.success %}
+        <div class="col-lg-12 col-12" style="margin-top:20px;">
+            <div class="alert alert-warning alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h4>Thank you for your order!</h4>
+                <p>We have recieved your order, you can track the progress of your order using the collation status table below.</p>
+            </div>
+        </div>
+    {% endif %}
+    {% if bbuser.is_bb_admin %}
+        <div class="col-lg-12 col-12">
+    {% else %}
+        <div class="col-lg-7 col-12">
+    {% endif %}
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#shortTerm" data-toggle="collapse">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-envelope"></i>
+                    </span>
+                    <h5>Short Term</h5>
+                    <div class="buttons">
+                        {% if bbuser.is_bb_admin %}
+                            <a href="{% url "bulletins:createBulletin" "short" %}" class="btn createbtn"><i class="glyphicon glyphicon-plus"></i> Create Bulletin</a>
+                            <a href="{% url "bulletins:createCollation" "short" %}" class="btn createbtn"><i class="glyphicon glyphicon-plus"></i> Create Collation</a>
+                        {% endif %}
+                        <a href="#" class="btn searchbtn tip-bottom" data-original-title="Search Bulletins"><i class="glyphicon glyphicon-search"></i></a>
+                        <a href="#" class="btn filterbtn tip-bottom" data-original-title="Filter Bulletins by Tag"><i class="glyphicon glyphicon-filter"></i></a>
+                        <a href="#" class="btn archivedbtn tip-bottom" data-original-title="View/Hide Archived Bulletins"><i class="glyphicon glyphicon-folder-open"></i></a>
+                    </div>
+                </a>
+            </div>
+            <div class="collapse in" id="shortTerm">
+                <div class="widget-content nopadding updates">
+                    <ul class="recent-posts">
+                        <li class="hidden">
+                            <input class="showArchived" type="hidden" value="false"/>
+                        </li>
+                        <li class="search" style="display:none;">
+                            Search :
+                            <input type="text"/>
+                        </li>
+                        <li class="filter" style="display:none;">
+                            Filter :
+                            <select class="tagFilter">
+                                <option value="">All</option>
+                                <option value="Important">Important</option>
+                                <option value="Price List">Price List</option>
+                                <option value="Collations">Collations</option>
+                                <option value="Promotions">Promotions</option>
+                                <option value="Sell Through">Sell Through</option>
+                                <option value="Price Drops">Price Drops</option>
+                                <option value="Miscellaneous">Miscellaneous</option>
+                                <option value="Catalogue">Catalogue</option>
+                            </select>
+                        </li>
+                    </ul>
+                    {% if short %}
+                        {% for message in short %}
+                            {% include "bulletins/message.html" %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-block">
+                            <h4 class="alert-heading">No Messages For You!</h4>
+                            There are no messages for you ...
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#longTerm" data-toggle="collapse">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-envelope"></i>
+                    </span>
+                    <h5>Long Term</h5>
+                    <div class="buttons">
+                        {% if bbuser.is_bb_admin %}
+                            <a href="{% url "bulletins:createBulletin" "long" %}" class="btn createbtn"><i class="glyphicon glyphicon-plus"></i> Create Bulletin</a>
+                            <a href="{% url "bulletins:createCollation" "long" %}" class="btn createbtn"><i class="glyphicon glyphicon-plus"></i> Create Collation</a>
+                        {% endif %}
+                        <a href="#" class="btn searchbtn tip-bottom" data-original-title="Search Bulletins"><i class="glyphicon glyphicon-search"></i></a>
+                        <a href="#" class="btn filterbtn tip-bottom" data-original-title="Filter Bulletins by Tag"><i class="glyphicon glyphicon-filter"></i></a>
+                        <a href="#" class="btn archivedbtn tip-bottom" data-original-title="View/Hide Archived Bulletins"><i class="glyphicon glyphicon-folder-open"></i></a>
+                    </div>
+                </a>
+            </div>
+            <div class="collapse in" id="longTerm">
+                <div class="widget-content nopadding updates">
+                    <ul class="recent-posts">
+                        <li class="hidden">
+                            <input class="showArchived" type="hidden" value="false"/>
+                        </li>
+                        <li class="search" style="display:none;">
+                            Search :
+                            <input type="text"/>
+                        </li>
+                        <li class="filter" style="display:none;">
+                            Filter :
+                            <select class="tagFilter">
+                                <option value="">All</option>
+                                <option value="Important">Important</option>
+                                <option value="Price List">Price List</option>
+                                <option value="Collations">Collations</option>
+                                <option value="Promotions">Promotions</option>
+                                <option value="Sell Through">Sell Through</option>
+                                <option value="Price Drops">Price Drops</option>
+                                <option value="Miscellaneous">Miscellaneous</option>
+                                <option value="Catalogue">Catalogue</option>
+                            </select>
+                        </li>
+                    </ul>
+                    {% if long %}
+                        {% for message in long %}
+                            {% include "bulletins/message.html" %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-block">
+                            <h4 class="alert-heading">No Messages For You!</h4>
+                            There are no messages for you ...
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if False %}
+    <div class="col-lg-5 col-12">
+        <div class="widget-box">
+            <div class="widget-content nopadding righttable">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Store</th>
+                            <th>Last Logged In</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="warning">
+                        <td>Total Logged In</td>
+                        <td>{{ loggedInPercent|floatformat:2 }} %</td>
+                    </tr>
+                    {% for user in users %}
+                        <tr class="{% if user.been_three_days %}danger{% else %}success{% endif %}">
+                            <td>{{ user.store.name }}</td>
+                            <td>{{ user.user.profile.last_accessed }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if not bbuser.is_bb_admin %}
+    <div class="col-lg-5 col-12">
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+                <table class="table table-bordered table-hover ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Collation</th>
+                            <th>Status</th>
+                            <th>Delivery Month</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if collationOrders %}
+                        {% for order in collationOrders %}
+                            {% include "order.html" %}
+                        {% endfor %}
+                    {% else %}
+                        <tr class="danger">
+                            <td colspan='4'>No Collation orders have been placed</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<div id="viewMessage" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button data-dismiss="modal" class="close" type="button">×</button>
+                <h3>View Message</h3>
+            </div>
+            <div class="modal-body">
+                <p>Lorem ipsum dolor sit amet...</p>
+            </div>
+            <div class="modal-footer">
+                <strong class="pull-left">Collation Valid From: <span class="startDate"></span> - <span class="endDate"></span></strong>
+                {% if bbuser.is_bb_admin %}
+                    <a id="edit" class="btn btn-default btn-small" href="#">Edit</a>
+                {% else %}
+                    <a id="orderFromCollation" class="btn btn-success btn-small suppress" href="#">Order Now</a>
+                {% endif %}
+                <a data-dismiss="modal" id="print" class="btn btn-info btn-small suppress" href="#">Print</a>
+                <a data-dismiss="modal" class="btn btn-default btn-small" href="#">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="orderingFormModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">×</button>
+                <h3>Ordering Form</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="orderingForm">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="submitCollationOrderBtn">Send</button>
+                <button class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% if not bbuser.is_bb_admin %}
+<div id="collationOrderDialog" title="Do you wish to Order From this collation ?">
+</div>
+<div id="whyDialog" title="Please tell us why you do not wish to order!">
+    <p>
+        <br/>
+        <select name="why" class="normal" id="nonOrderReason">
+            <option value="" selected>---</option>
+            <option>Brand Issues</option>
+            <option>Not Part Of Range</option>
+            <option>Overstocked</option>
+            <option>Other</option>
+        </select>
+        <br/><br/>
+        <textarea style="display:none;" name="OtherReason" id="otherReason" cols="30" rows="10"></textarea>
+    </p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block navname %}collations{% endblock %}
+
+{% block javascript %}
+    {{ block.super }}
+    <script>
+    {% if not bbuser.is_admin %}
+        var collationOrder = $('#collationOrderDialog');
+        var whyDialog = $('#whyDialog');
+        var viewBulletinModal = $('#viewMessage');
+
+        collationOrder.dialog({
+            buttons: [
+                {
+                  text: "Yes",
+                  click: function() {
+                    $(this).dialog( "close" );
+                    newOrderFromCollation(currentBulletin);
+                  }
+                },
+                {
+                  text: "No",
+                  click: function() {
+                    $(this).dialog( "close" );
+                    whyDialog.dialog('open');
+                  }
+                },
+                {
+                  text: "Remind me later",
+                  click: function() {
+                    $(this).dialog( "close" );
+                    remindMeLater(currentBulletin);
+                  }
+                }
+            ],
+            autoOpen: false,
+            minWidth: 400,
+            modal: true
+        });
+
+        whyDialog.dialog({
+            buttons: [
+                {
+                  text: "Ok",
+                  click: function() {
+                    /** make sure reason selected or if Other text inputted **/
+                    var reason = "";
+                    reason = $(this).find('select').val();
+                    if(reason=='') {
+                        alert("Please select a reason why you do not wish to order!");
+                        return;
+                    }
+                    if(reason=='Other'&&whyDialog.find('textarea').val()=='') {
+                        alert("Please type in the reason why you do not wish to order!");
+                        return;
+                    }
+                    if(reason=='Other') {reason = whyDialog.find('textarea').val();}
+                    sayNoToCollation(reason, currentBulletin);
+                    $(this).dialog( "close" );
+                  }
+                }
+            ],
+            autoOpen: false,
+            minWidth: 400,
+            modal: true,
+            closeOnEscape: false /**make sure the dialog is not dissmisable **/
+        });
+
+         whyDialog.find('select').on('change', function(e) {
+            if(e.val=='Other') {
+                whyDialog.find('textarea').show('slow');
+            }
+            else {
+                whyDialog.find('textarea').hide('slow');
+            }
+         });
+
+        viewBulletinModal.on('hidden.bs.modal', function() {
+            //if proceeding to order from order now button then return
+            if($(this).data('suppressHidden')==true) {
+                $(this).data('suppressHidden', false);
+                return;
+            }
+            var prompt = viewBulletinModal.data('prompt');
+            if (prompt==true) {
+                $("#collationOrderDialog").dialog("open");
+            }
+        });
+
+    {% endif %}
+
+    //collation functions.
+    var collationOrderModal = $('#orderingFormModal');
+    var submitCollationOrderBtn = collationOrderModal.find('#submitCollationOrderBtn');
+    var updateURL = '';
+
+    //No
+    var sayNoToCollation = function(reason, collationID) {
+        var url = '{% url 'bulletins:collationOrderForCollation' 1 %}';
+        url = url.substring(0,url.length-2) + collationID + "/";
+
+        var request = $.ajax({
+            url: url,
+            type: "POST",
+            data: {action: 'REJECT', reason: reason},
+            dataType: "json",
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", br.getCookie('csrftoken'));
+            }
+        });
+
+        request.done(function(msg) {
+            console.log("Said no to collation !");
+        });
+    }
+
+    //Yes
+    var newOrderFromCollation = function(collationID) {
+        //get the currently outstanding Open order for the collation or create a new collation order.
+        var url = '{% url 'bulletins:collationOrderForCollation' 1 %}';
+
+        url = url.substring(0,url.length-2) + collationID + "/";
+        updateURL = url;
+
+        var request = $.get(url, {format:'HTML'}, function(msg) {
+            var $tableEl = collationOrderModal.find('#orderingForm').html(msg);
+            $tableEl.find('input.orderNum').bind('focus', function() {if ($(this).val()=="") {$(this).val("{{ bbuser.store.code }}-")}});
+            submitCollationOrderBtn.show();
+            viewBulletinModal.data('suppressHidden', true);
+            viewBulletinModal.modal('hide');
+            collationOrderModal.modal('show');
+        });
+    };
+
+    //remind me later.
+    var remindMeLater = function(collationID) {
+        var url = '{% url 'bulletins:collationOrderForCollation' 1 %}';
+        url = url.substring(0,url.length-2) + collationID + "/";
+
+        var request = $.ajax({
+            url: url,
+            type: "POST",
+            data: {action: 'LATER'},
+            dataType: "json",
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", br.getCookie('csrftoken'));
+            }
+        });
+
+        request.done(function(msg) {
+            window.location = "{% url 'bulletins:collations' %}"
+        });
+    }
+
+    var viewOrder = function(collationOrderID, viewOnly) {
+        //get the currently outstanding Open order for the collation or create a new collation order.
+        var url = '{% url 'bulletins:collationOrder' 1 %}';
+        url = url.substring(0,url.length-2) + collationOrderID + "/";
+        updateURL = url;
+
+        var request = $.get(url, {format:"HTML"}, function(msg) {
+            var $tableEl = collationOrderModal.find('#orderingForm').html(msg);
+            if(viewOnly) {
+                $tableEl.find('input').attr('disabled','disabled');
+                $tableEl.find('textarea').attr('disabled','disabled');
+                submitCollationOrderBtn.hide();
+            } else {
+                $tableEl.find('input.orderNum').bind('focus', function() {if ($(this).val()=="") {$(this).val("{{ bbuser.store.code }}")}});
+                submitCollationOrderBtn.show();
+            }
+            collationOrderModal.modal('show');
+        });
+    };
+
+    $('#orderFromCollation').click(function(e) {
+        e.preventDefault();
+        newOrderFromCollation(currentBulletin);
+    });
+
+    var encodeOrder = function() {
+        var orders = [];
+        //orderNumbers
+        collationOrderModal.find('input.orderNum').each(function(k, el) {
+            var $commentEl = $(collationOrderModal.find('textarea.orderComment')[k]);
+            var $el = $(el);
+            var order = {
+                id: $el.data('orderid'),
+                orderNum: $el.val(),
+                orderComment: $commentEl.val(),
+                orderLines: []
+            }
+            orders.push(order);
+        });
+        //orderLines
+        collationOrderModal.find('input.quantity').each(function(k, el) {
+            var $el = $(el);
+            var order = _.findWhere(orders, {id: $el.data('orderid')});
+            order['orderLines'].push({
+                lineid: $el.data('orderlineid'),
+                quantity: parseInt($el.val())
+            });
+        });
+        return orders;
+    };
+
+    var validateOrders = function(orders) {
+        //make sure all orders with quantities have order nums
+        var passed = true;
+        _.each(orders, function(v) {
+            var totalQuantity = _.reduce(v.orderLines, function(prev, next) {
+                return prev + next.quantity;
+            },0)
+            v.totalQuantity = totalQuantity;
+            if (totalQuantity>0&& v.orderNum==="") {
+                alert("Please enter order numbers for the Months in which you have ordered.")
+                passed = false;
+            }
+        });
+        return passed;
+    };
+
+    submitCollationOrderBtn.click(function(e) {
+        var orders = encodeOrder();
+        console.log(orders);
+
+        if(!validateOrders(orders)) {
+            return
+        }
+
+        var request = $.ajax({
+            url: updateURL,
+            type: "POST",
+            data: {action: 'CREATE', orders: JSON.stringify(orders)},
+            dataType: "json",
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", br.getCookie('csrftoken'));
+            }
+        });
+
+        request.done(function(msg) {
+            window.location.replace("{% url 'bulletins:collations' %}?success=true");
+        });
+    });
+
+    //collation status table
+    $('.updateCollationOrder').click(function() {
+       var id = $(this).data('id');
+       viewOrder(id, false);
+    });
+
+    $('.viewCollationOrder').click(function() {
+        var id = $(this).data('id');
+        viewOrder(id, true);
+    });
+    </script>
+{% endblock %}

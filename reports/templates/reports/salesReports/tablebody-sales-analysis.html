@@ -1,0 +1,38 @@
+{% for object in objects %}
+    <tr>
+        {% if isBrandsView %}
+            <td>{{ object.brand }}</td>
+        {% else %}
+            <td>{{ object.category }}</td>
+        {% endif %}
+        <td>{{ object.quantity }}</td>
+        <td>${{ object.totalSalesSell }}</td>  <!--sell-->
+        <td>${{ object.totalSalesNett }}</td>  <!--nett-->
+        <td>${{ object.GP }}</td> <!--GP-->
+        <td>{{ object.GPPerc }}%</td> <!--GP%-->
+    </tr>
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

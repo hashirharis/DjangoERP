@@ -1,0 +1,177 @@
+<div class="row">
+    <div class="col-12 col-lg-6">
+        <div class="widget-box collapsible">
+            <div class="widget-title">
+                <a href="#collapseOne" data-toggle="collapse">
+                    <span class="icon">
+                        <i class="glyphicon glyphicon-chevron-up"></i>
+                    </span>
+                    <h5>Contact Summary</h5>
+                </a>
+            </div>
+            <div class="collapse in" id="collapseOne">
+                <div class="widget-content">
+                    <table class="table table-bordered">
+                        <tr>
+                            <td>Name</td>
+                            <td> {{ object.name}}</td>
+                        </tr>
+                        <tr>
+                            <td>Address</td>
+                            <td> {{ object.address}}</td>
+                        </tr>
+                        <tr>
+                            <td>Landline</td>
+                            <td> {{ object.landline}}</td>
+                        </tr>
+                        <tr>
+                            <td>Mobile</td>
+                            <td> {{ object.mobile}}</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td> {{ object.email}}</td>
+                        </tr>
+                        <tr>
+                            <td>Fax</td>
+                            <td> {{ object.fax}}</td>
+                        </tr>
+                        <tr>
+                            <td>Comments</td>
+                            <td> {{ object.comment}}</td>
+                        </tr>
+                        <tr>
+                            <td>Service Type</td>
+                            {% if brandAddressbookContact %}
+                                <td> Brand Rep</td>
+                            {% else %}
+                                <td> {{ object.serviceType}}</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>
+                            </td>
+                            <td>
+                                <a class="btn btn-primary tip-bottom" style="float:right;" data-original-title="Delete" href="{% url 'tele:deleteLocalContact' object.id %}"><i class="glyphicon glyphicon-remove"></i></a>
+                                <a class="btn btn-primary tip-bottom" style="float:right;" data-original-title="Edit" href="{% url 'tele:updateLocalContact' object.id %}"><i class="glyphicon glyphicon-pencil"></i></a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if brandAddressbookContact %}
+        <div class="col-12 col-lg-6">
+            <div class="widget-box collapsible">
+                <div class="widget-title">
+                    <a href="#collapseTwo" data-toggle="collapse">
+                        <span class="icon">
+                            <i class="glyphicon glyphicon-chevron-up"></i>
+                        </span>
+                        <h5>{{ object.name}} is a Brand Rep for: </h5>
+                    </a>
+                </div>
+
+{#            {% for object  in brand %}#}
+{##}
+{#            {% endfor %}#}
+
+                <div class="collapse in" id="collapseTwo">
+                    <div class="widget-content">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td>Name</td>
+                                <td> {{ brand.brand}}</td>
+                            </tr>
+                            <tr>
+                                <td>Supplier</td>
+                                <td> {{ brand.distributor}}</td>
+                            </tr>
+                            <tr>
+                                <td>Address</td>
+                                <td> {{ brand.address}}</td>
+                            </tr>
+                            <tr>
+                                <td>Suburb</td>
+                                <td> {{ brand.suburb}}</td>
+                            </tr>
+                            <tr>
+                                <td>State</td>
+                                <td> {{ brand.cityState}}</td>
+                            </tr>
+                            <tr>
+                                <td>Postcode</td>
+                                <td> {{ brand.postcode}}</td>
+                            </tr>
+                            <tr>
+                                <td>Postal address</td>
+                                <td> {{ brand.paddress}}</td>
+                            </tr>
+                            <tr>
+                                <td>Postal state</td>
+                                <td> {{ brand.pcityState}}</td>
+                            </tr>
+                            <tr>
+                                <td>Postal postcode</td>
+                                <td> {{ brand.ppostcode}}</td>
+                            </tr>
+                            <tr>
+                                <td>Phone</td>
+                                <td> {{ brand.phone}}</td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td> {{ brand.email}}</td>
+                            </tr>
+                            <tr>
+                                <td>Account manager</td>
+                                <td> {{ brand.repName}}</td>
+                            </tr>
+                            <tr>
+                                <td>Account manager phone</td>
+                                <td> {{ brand.repPhone}}</td>
+                            </tr>
+                            <tr>
+                                <td>ABN</td>
+                                <td> {{ brand.ABN}}</td>
+                            </tr>
+                            <tr>
+                                <td>Comments</td>
+                                <td> {{ brand.comments}}</td>
+                            </tr>
+                            <tr>
+                                <td>Electronic trading</td>
+                                <td> {{ brand.hasElectronicTrading}}</td>
+                            </tr>
+                            <tr>
+                                <td>GLN</td>
+                                <td> {{ brand.GLN}}</td>
+                            </tr>
+                            <tr>
+                                <td>HOP referred</td>
+                                <td> {{ brand.isHOPreferred}}</td>
+                            </tr>
+                            <tr>
+                                <td>GFK</td>
+                                <td> {{ brand.isInGFK}}</td>
+                            </tr>
+                            <tr>
+                                <td>Rebate</td>
+                                <td> {{ brand.rebate}}</td>
+                            </tr>
+                            <tr>
+                                <td>Actual rebate</td>
+                                <td> {{ brand.actualRebate}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+    {% endif %}
+</div>
+
+

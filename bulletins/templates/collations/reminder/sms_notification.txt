@@ -1,0 +1,1 @@
+NEW Collation "{{ bulletin.subject|truncatechars:92 }}" is now open for ordering and will close in {{ bulletin.endDate|timeuntil }}
